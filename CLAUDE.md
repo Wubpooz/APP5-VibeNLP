@@ -8,21 +8,24 @@ VibeNLP is a new NLP project. The codebase is currently being initialized.
 
 ## Language Requirements
 
-### Bilingual Files (中法双语文件)
+### Trilingual Files (中英法三语文件)
 
-**Important**: The following files require **Chinese and French** bilingual versions:
+**Important**: The following files require **Chinese, English, and French** trilingual versions:
 - All `.md` files in the root directory (except `CLAUDE.md`)
 - All files in the `exercises/` folder
 
 **File naming convention**:
+- English version: `filename_en.md` (e.g., `COURSE_IDEAS_en.md`)
 - Chinese version: `filename_cn.md` (e.g., `COURSE_IDEAS_cn.md`)
 - French version: `filename_fr.md` (e.g., `COURSE_IDEAS_fr.md`)
 
-**Synchronization rule**: When the Chinese version is modified, the corresponding French version must be updated accordingly.
+**Synchronization rule**: When any version is modified, the corresponding versions in the other two languages must be updated accordingly.
 
 Example file structure:
+- `COURSE_IDEAS_en.md` (English version)
 - `COURSE_IDEAS_cn.md` (Chinese version)
 - `COURSE_IDEAS_fr.md` (French version)
+- `exercises/TP1-GitHub-Claude-Code-Setup_en.md` (English version)
 - `exercises/TP1-GitHub-Claude-Code-Setup_cn.md` (Chinese version)
 - `exercises/TP1-GitHub-Claude-Code-Setup_fr.md` (French version)
 
