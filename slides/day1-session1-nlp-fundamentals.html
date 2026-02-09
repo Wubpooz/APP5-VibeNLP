@@ -1,0 +1,1236 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NLP Fundamentals: From Linguistics to Large Language Models</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/moon.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --r-heading-font: 'Helvetica Neue', Arial, sans-serif;
+            --r-main-font: 'Helvetica Neue', Arial, sans-serif;
+        }
+        .reveal { font-size: 32px; }
+        .reveal h1 { font-size: 2.2em; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.2em; color: #7ec8e3; }
+        .reveal ul { text-align: left; }
+        .reveal li { margin-bottom: 0.4em; }
+
+        /* Big stat numbers */
+        .stat-big {
+            font-size: 3.5em;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin: 0.2em 0;
+        }
+        .stat-label {
+            font-size: 0.6em;
+            color: #93a1a1;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1em;
+        }
+        .stat-box {
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+        }
+        .stat-box .stat-big {
+            font-size: 2.8em;
+        }
+
+        /* Quote styling */
+        .quote-slide blockquote {
+            font-style: italic;
+            font-size: 1.2em;
+            border-left: 4px solid #7ec8e3;
+            padding-left: 1em;
+            margin: 1em auto;
+            max-width: 80%;
+            text-align: left;
+        }
+        .quote-slide .attribution {
+            text-align: right;
+            color: #93a1a1;
+            font-size: 0.7em;
+            margin-right: 10%;
+        }
+
+        /* Discussion slides */
+        .discussion-slide {
+            background: rgba(126, 200, 227, 0.08) !important;
+        }
+        .discussion-slide h2 {
+            color: #7ec8e3;
+        }
+
+        /* Two column layout */
+        .two-column {
+            display: flex;
+            gap: 2em;
+            align-items: flex-start;
+        }
+        .two-column > div {
+            flex: 1;
+        }
+
+        /* Timeline */
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1em 0;
+            position: relative;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            right: 5%;
+            height: 3px;
+            background: #7ec8e3;
+            z-index: 0;
+        }
+        .timeline .era {
+            text-align: center;
+            z-index: 1;
+            background: #002b36;
+            padding: 0.5em;
+            border-radius: 8px;
+            border: 2px solid #7ec8e3;
+            min-width: 120px;
+        }
+        .timeline .era .year {
+            font-size: 0.7em;
+            color: #93a1a1;
+        }
+        .timeline .era .label {
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+
+        /* Pipeline diagram */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3em;
+            flex-wrap: wrap;
+        }
+        .pipeline .step {
+            background: rgba(126, 200, 227, 0.15);
+            border: 2px solid #7ec8e3;
+            border-radius: 8px;
+            padding: 0.6em 1em;
+            text-align: center;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .pipeline .arrow {
+            font-size: 1.5em;
+            color: #7ec8e3;
+        }
+
+        /* Venn diagram */
+        .venn {
+            position: relative;
+            width: 450px;
+            height: 350px;
+            margin: 0 auto;
+        }
+        .venn .circle {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            opacity: 0.3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.7em;
+        }
+        .venn .c1 { background: #ff6b6b; top: 0; left: 125px; }
+        .venn .c2 { background: #7ec8e3; bottom: 30px; left: 30px; }
+        .venn .c3 { background: #98c379; bottom: 30px; right: 30px; }
+        .venn .center-label {
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
+        .venn .label {
+            position: absolute;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+        .venn .l1 { top: -25px; left: 50%; transform: translateX(-50%); color: #ff6b6b; }
+        .venn .l2 { bottom: 0; left: 0; color: #7ec8e3; }
+        .venn .l3 { bottom: 0; right: 0; color: #98c379; }
+
+        /* Pyramid */
+        .pyramid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .pyramid .level {
+            padding: 0.4em 1em;
+            text-align: center;
+            font-size: 0.75em;
+            font-weight: bold;
+            border-radius: 4px;
+            color: #fff;
+        }
+
+        /* Highlight text */
+        .highlight { color: #ff6b6b; }
+        .highlight-blue { color: #7ec8e3; }
+        .highlight-green { color: #98c379; }
+        .small { font-size: 0.65em; color: #93a1a1; }
+
+        /* Section divider */
+        .section-title h2 {
+            font-size: 2em;
+            margin-bottom: 0.3em;
+        }
+        .section-title h3 {
+            font-size: 0.9em;
+            color: #93a1a1;
+            font-weight: normal;
+        }
+
+        /* Roadmap */
+        .roadmap {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.8em;
+            font-size: 0.7em;
+        }
+        .roadmap .day {
+            background: rgba(126, 200, 227, 0.1);
+            border: 1px solid #7ec8e3;
+            border-radius: 8px;
+            padding: 0.8em;
+            text-align: left;
+        }
+        .roadmap .day.active {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+        .roadmap .day .day-num {
+            font-weight: bold;
+            color: #7ec8e3;
+            font-size: 1.1em;
+        }
+        .roadmap .day.active .day-num {
+            color: #ff6b6b;
+        }
+
+        /* Model timeline */
+        .model-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3em;
+            font-size: 0.75em;
+        }
+        .model-timeline .model-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+        }
+        .model-timeline .model-year {
+            min-width: 50px;
+            color: #93a1a1;
+            font-weight: bold;
+        }
+        .model-timeline .model-name {
+            background: rgba(126, 200, 227, 0.15);
+            padding: 0.2em 0.6em;
+            border-radius: 4px;
+            border: 1px solid #7ec8e3;
+        }
+
+        /* Apps grid */
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5em;
+            font-size: 0.8em;
+        }
+        .apps-grid .app {
+            background: rgba(126, 200, 227, 0.1);
+            padding: 0.5em;
+            border-radius: 6px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ==================== SECTION 0: OPENING ==================== -->
+
+            <!-- Slide 1: Title -->
+            <section>
+                <h1>NLP Fundamentals</h1>
+                <h3>From Linguistics to Large Language Models</h3>
+                <p style="margin-top: 2em; font-size: 0.7em; color: #93a1a1;">
+                    TAL &mdash; Day 1, Session 1<br>
+                    February 10, 2026<br>
+                    ZHANG Zheng
+                </p>
+                <aside class="notes">
+                    Welcome students. This is the first session of a 6-day intensive course
+                    on Natural Language Processing. Today we build the foundation.
+                </aside>
+            </section>
+
+            <!-- Slide 2: Course Overview -->
+            <section>
+                <h2>About This Course</h2>
+                <ul>
+                    <li class="fragment"><strong>6 teaching days</strong>: Feb 10 &mdash; Mar 31, 2026</li>
+                    <li class="fragment"><strong>Topics</strong>: NLP fundamentals &rarr; Transformers &rarr; LLMs &rarr; Agents</li>
+                    <li class="fragment"><strong>Grading</strong>: Group presentations + Demo Day project</li>
+                    <li class="fragment"><strong>Tools</strong>: Claude Code, GitHub, Python, Hugging Face</li>
+                    <li class="fragment"><strong>Philosophy</strong>: Learn by building, share by teaching</li>
+                </ul>
+                <aside class="notes">
+                    Quick overview. We'll go deeper on the assessment structure later.
+                    Emphasize that this is a hands-on course.
+                </aside>
+            </section>
+
+            <!-- Slide 3: Today's Agenda -->
+            <section>
+                <h2>Today's Agenda</h2>
+                <div class="two-column">
+                    <div style="border: 2px solid #ff6b6b; border-radius: 8px; padding: 1em;">
+                        <h3 style="color: #ff6b6b;">Session 1 (Now)</h3>
+                        <p style="font-size: 0.8em;">08:15 &mdash; 10:15</p>
+                        <p><strong>NLP Fundamentals</strong></p>
+                        <p style="font-size: 0.7em;">Linguistics to LLMs overview</p>
+                    </div>
+                    <div style="border: 2px solid #7ec8e3; border-radius: 8px; padding: 1em;">
+                        <h3>Session 2 (After Break)</h3>
+                        <p style="font-size: 0.8em;">10:30 &mdash; 12:30</p>
+                        <p><strong>Word Embeddings</strong></p>
+                        <p style="font-size: 0.7em;">Word2Vec, GloVe, vector spaces</p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Set expectations. This session is the big picture; next session goes deep on embeddings.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 1: THE WORLD RIGHT NOW ==================== -->
+
+            <!-- Slide 4: Section Title -->
+            <section class="section-title">
+                <h2>February 2026</h2>
+                <h3>The State of AI</h3>
+                <aside class="notes">
+                    Transition: Before we dive into NLP theory, let's look at what's happening
+                    RIGHT NOW in the world. This context matters for understanding why NLP matters.
+                </aside>
+            </section>
+
+            <!-- Slide 5: The Scale of Investment -->
+            <section>
+                <h2>The Scale of Investment</h2>
+                <div class="stat-row">
+                    <div class="stat-box fragment">
+                        <div class="stat-big">$500B</div>
+                        <div class="stat-label">Stargate Project<br>(OpenAI + SoftBank + Oracle)</div>
+                    </div>
+                    <div class="stat-box fragment">
+                        <div class="stat-big">$602B</div>
+                        <div class="stat-label">Projected hyperscaler<br>capex in 2026</div>
+                    </div>
+                    <div class="stat-box fragment">
+                        <div class="stat-big">$2T+</div>
+                        <div class="stat-label">Planned global<br>AI infrastructure</div>
+                    </div>
+                </div>
+                <p class="fragment small" style="margin-top: 1em;">For reference: $2T &asymp; the GDP of Italy</p>
+                <aside class="notes">
+                    Let the numbers land. Stargate is OpenAI/SoftBank/Oracle joint venture announced Jan 2025.
+                    Amazon's Project Rainier is $11B just for Anthropic training alone.
+                    These numbers are unprecedented in tech history.
+                </aside>
+            </section>
+
+            <!-- Slide 6: The Energy Question -->
+            <section>
+                <h2>The Energy Question</h2>
+                <ul>
+                    <li class="fragment">Data centers projected to consume <span class="highlight">1,000 TWh</span> by 2026</li>
+                    <li class="fragment">Microsoft reviving <strong>Three Mile Island</strong> nuclear plant ($1.6B)</li>
+                    <li class="fragment">Meta signed a <strong>1.1 GW nuclear deal</strong> for AI data centers</li>
+                    <li class="fragment">SpaceX filed for <strong>orbital data center constellation</strong> (up to 1M satellites)</li>
+                    <li class="fragment">Google prototyping <strong>ML in orbit</strong> (2027 launch)</li>
+                </ul>
+                <p class="fragment" style="margin-top: 1em; color: #7ec8e3; font-style: italic;">
+                    "What kind of technology demands its own power plants and space stations?"
+                </p>
+                <aside class="notes">
+                    The answer, of course, is NLP and AI. This is the scale of what we're studying.
+                    Three Mile Island is famous for the 1979 nuclear incident — now being revived for AI.
+                </aside>
+            </section>
+
+            <!-- Slide 7: The Labor Disruption -->
+            <section>
+                <h2>The Labor Disruption</h2>
+                <div class="stat-row" style="margin-bottom: 1em;">
+                    <div class="stat-box">
+                        <div class="stat-big" style="font-size: 2.5em;">25,000</div>
+                        <div class="stat-label">Tech jobs cut in Jan 2026 alone</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-big" style="font-size: 2.5em; color: #7ec8e3;">55%</div>
+                        <div class="stat-label">of hiring managers expect<br>AI-driven layoffs</div>
+                    </div>
+                </div>
+                <ul style="font-size: 0.8em;">
+                    <li class="fragment"><strong>Most vulnerable role</strong>: software engineers</li>
+                    <li class="fragment"><strong>But also</strong>: AI companies are hiring aggressively; new roles are emerging</li>
+                    <li class="fragment"><strong>The takeaway</strong>: understanding NLP is <span class="highlight">career insurance</span></li>
+                </ul>
+                <aside class="notes">
+                    This isn't fear-mongering — it's reality. But the flip side is that people who
+                    understand these systems are in the strongest position. That's why you're here.
+                </aside>
+            </section>
+
+            <!-- Slide 8: AI Writing Its Own Code -->
+            <section>
+                <h2>AI Writing Its Own Code</h2>
+                <h3 style="color: #93a1a1; font-weight: normal;">Claude Code &mdash; Anthropic's coding agent</h3>
+                <ul>
+                    <li class="fragment"><span class="highlight">$1B</span> annual run rate, 6 months after launch</li>
+                    <li class="fragment"><span class="highlight">90%</span> of Claude Code's own code is written by itself</li>
+                    <li class="fragment"><span class="highlight">5 releases</span> per engineer per day</li>
+                </ul>
+                <p class="fragment" style="margin-top: 1em; font-size: 0.8em; color: #7ec8e3;">
+                    The tools you will use in this course are being used to build themselves.
+                </p>
+                <aside class="notes">
+                    This is the tool students will use throughout the course.
+                    The recursive nature of AI building AI is a key theme of 2026.
+                </aside>
+            </section>
+
+            <!-- Slide 9: Agents in the Wild -->
+            <section>
+                <h2>Agents in the Wild</h2>
+                <h3 style="color: #93a1a1; font-weight: normal;">OpenClaw &mdash; Open-source AI agent</h3>
+                <ul>
+                    <li class="fragment"><span class="highlight">145K+</span> GitHub stars, 20K+ forks</li>
+                    <li class="fragment">Renamed from Clawdbot &rarr; Moltbot &rarr; OpenClaw (Jan 2026)</li>
+                    <li class="fragment">Runs on <strong>Signal, Telegram, Discord, WhatsApp</strong></li>
+                    <li class="fragment">100+ preconfigured AgentSkills: shell, files, web automation</li>
+                    <li class="fragment">Spawned Moltbook &mdash; a social network <em>for AI agents</em></li>
+                </ul>
+                <p class="fragment small">You will study OpenClaw in your Group Presentation #4 (Day 5)</p>
+                <aside class="notes">
+                    Agents are no longer demos — they are products people use daily.
+                    The name changes story is entertaining and illustrates how fast things move.
+                </aside>
+            </section>
+
+            <!-- Slide 10: Discussion -->
+            <section class="discussion-slide">
+                <h2>Discussion</h2>
+                <p style="font-size: 1.1em; margin-bottom: 1.5em;">
+                    Which of these developments surprised you most?
+                </p>
+                <p class="fragment" style="font-size: 0.9em; color: #93a1a1;">
+                    What does it mean for your career as a CS student?
+                </p>
+                <p class="fragment small" style="margin-top: 2em;">3 minutes &mdash; open floor</p>
+                <aside class="notes">
+                    Let students react. This gets them engaged early. Don't spend more than 3-4 minutes.
+                    Guide toward: the importance of understanding the underlying technology, not just using it.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 2: WHAT IS NLP? ==================== -->
+
+            <!-- Slide 11: Section Title -->
+            <section class="section-title">
+                <h2>What is NLP?</h2>
+                <h3>Natural Language Processing / Traitement Automatique du Langage</h3>
+                <aside class="notes">
+                    Transition from the excitement of current events to the foundational concepts.
+                </aside>
+            </section>
+
+            <!-- Slide 12: Definition -->
+            <section>
+                <h2>NLP: The Intersection</h2>
+                <div class="venn">
+                    <div class="circle c1"></div>
+                    <div class="circle c2"></div>
+                    <div class="circle c3"></div>
+                    <span class="label l1">Artificial Intelligence</span>
+                    <span class="label l2">Computer Science</span>
+                    <span class="label l3">Linguistics</span>
+                    <span class="center-label">NLP</span>
+                </div>
+                <p style="font-size: 0.7em; margin-top: 0.5em; color: #93a1a1;">
+                    <strong>NLU</strong> (Understanding) + <strong>NLG</strong> (Generation) = <strong>NLP</strong>
+                </p>
+                <aside class="notes">
+                    NLP sits at the intersection of three fields. NLU is about comprehension,
+                    NLG is about producing language. Together they form NLP.
+                </aside>
+            </section>
+
+            <!-- Slide 13: Why Language is Hard -->
+            <section>
+                <h2>Why Language is Hard</h2>
+                <ul>
+                    <li class="fragment">
+                        <strong>Ambiguity</strong><br>
+                        <span class="small">"I saw the man with the telescope" &mdash; who has the telescope?</span>
+                    </li>
+                    <li class="fragment">
+                        <strong>Context dependence</strong><br>
+                        <span class="small">"bank" &mdash; river bank? financial bank?</span>
+                    </li>
+                    <li class="fragment">
+                        <strong>Implicit knowledge</strong><br>
+                        <span class="small">"The trophy doesn't fit in the suitcase because <em>it</em> is too big" &mdash; what is "it"?</span>
+                    </li>
+                    <li class="fragment">
+                        <strong>Sarcasm & irony</strong><br>
+                        <span class="small">"Oh great, another meeting" &mdash; positive or negative?</span>
+                    </li>
+                </ul>
+                <aside class="notes">
+                    The Winograd Schema (trophy/suitcase) is a classic AI challenge.
+                    Ask students: Can you think of other ambiguous sentences?
+                </aside>
+            </section>
+
+            <!-- Slide 14: Levels of Linguistic Analysis -->
+            <section>
+                <h2>Levels of Linguistic Analysis</h2>
+                <div class="pyramid">
+                    <div class="level fragment" data-fragment-index="5" style="width: 200px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);">Pragmatics</div>
+                    <div class="level fragment" data-fragment-index="4" style="width: 280px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);">Semantics</div>
+                    <div class="level fragment" data-fragment-index="3" style="width: 360px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);">Syntax</div>
+                    <div class="level fragment" data-fragment-index="2" style="width: 440px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);">Morphology</div>
+                    <div class="level fragment" data-fragment-index="1" style="width: 520px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);">Phonology</div>
+                </div>
+                <div class="fragment" style="margin-top: 1em; font-size: 0.65em; color: #93a1a1;">
+                    Sounds &rarr; Word structure &rarr; Sentence structure &rarr; Meaning &rarr; Context & intent
+                </div>
+                <aside class="notes">
+                    Build from concrete (bottom) to abstract (top).
+                    Example: "unbelievable" — phonology (sounds), morphology (un-believe-able),
+                    syntax (adjective role), semantics (incredulity), pragmatics (admiration or frustration?).
+                </aside>
+            </section>
+
+            <!-- Slide 15: Core NLP Tasks - Understanding -->
+            <section>
+                <h2>Core NLP Tasks: Understanding</h2>
+                <ul>
+                    <li class="fragment">
+                        <strong>Tokenization</strong> &mdash; "I love NLP" &rarr; ["I", "love", "NLP"]
+                    </li>
+                    <li class="fragment">
+                        <strong>POS Tagging</strong> &mdash; "I/PRP love/VBP NLP/NNP"
+                    </li>
+                    <li class="fragment">
+                        <strong>Named Entity Recognition</strong> &mdash; "[Paris]<sub>LOC</sub> in [March]<sub>DATE</sub>"
+                    </li>
+                    <li class="fragment">
+                        <strong>Parsing</strong> &mdash; syntactic structure (dependency trees)
+                    </li>
+                    <li class="fragment">
+                        <strong>Sentiment Analysis</strong> &mdash; "Great movie!" &rarr; Positive
+                    </li>
+                </ul>
+                <aside class="notes">
+                    These are the classic "understanding" tasks. Most were the focus of NLP
+                    for decades before generation became the hot topic.
+                </aside>
+            </section>
+
+            <!-- Slide 16: Core NLP Tasks - Generation -->
+            <section>
+                <h2>Core NLP Tasks: Generation</h2>
+                <ul>
+                    <li class="fragment">
+                        <strong>Machine Translation</strong> &mdash; "Bonjour le monde" &rarr; "Hello world"
+                    </li>
+                    <li class="fragment">
+                        <strong>Text Summarization</strong> &mdash; long article &rarr; key points
+                    </li>
+                    <li class="fragment">
+                        <strong>Question Answering</strong> &mdash; context + question &rarr; answer
+                    </li>
+                    <li class="fragment">
+                        <strong>Text Generation</strong> &mdash; prompt &rarr; full text (ChatGPT, Claude)
+                    </li>
+                    <li class="fragment">
+                        <strong>Dialogue Systems</strong> &mdash; multi-turn conversation
+                    </li>
+                </ul>
+                <aside class="notes">
+                    Generation has become the dominant paradigm thanks to LLMs.
+                    Note how ChatGPT and Claude do ALL of these tasks with a single model.
+                </aside>
+            </section>
+
+            <!-- Slide 17: NLP All Around You -->
+            <section>
+                <h2>NLP All Around You</h2>
+                <div class="apps-grid">
+                    <div class="app fragment">Google Search</div>
+                    <div class="app fragment">Email Spam Filter</div>
+                    <div class="app fragment">Voice Assistants</div>
+                    <div class="app fragment">Google Translate</div>
+                    <div class="app fragment">ChatGPT / Claude</div>
+                    <div class="app fragment">Auto-Subtitles</div>
+                    <div class="app fragment">Grammarly</div>
+                    <div class="app fragment">Code Completion</div>
+                    <div class="app fragment">Recommendation Feeds</div>
+                </div>
+                <p class="fragment" style="margin-top: 1em; font-size: 0.85em; color: #7ec8e3;">
+                    How many of these did you use today before this class?
+                </p>
+                <aside class="notes">
+                    Quick show of hands. Most students will have used 5+ of these today.
+                    The point: NLP is invisible infrastructure.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 3: FOUR ERAS OF NLP ==================== -->
+
+            <!-- Slide 18: Section Title with Timeline -->
+            <section class="section-title">
+                <h2>Four Eras of NLP</h2>
+                <div class="timeline" style="margin-top: 1.5em;">
+                    <div class="era">
+                        <div class="year">1950s&ndash;1990s</div>
+                        <div class="label">Rule-Based</div>
+                    </div>
+                    <div class="era">
+                        <div class="year">1990s&ndash;2012</div>
+                        <div class="label">Statistical</div>
+                    </div>
+                    <div class="era">
+                        <div class="year">2013&ndash;2017</div>
+                        <div class="label">Neural</div>
+                    </div>
+                    <div class="era">
+                        <div class="year">2017&ndash;Now</div>
+                        <div class="label">LLMs</div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    This is the intellectual backbone of today's lecture.
+                    Each era represents a fundamental shift in how we approach language.
+                </aside>
+            </section>
+
+            <!-- Slide 19: Era 1 - Rule-Based -->
+            <section>
+                <h2>Era 1: Rule-Based NLP</h2>
+                <h3 style="color: #93a1a1;">1950s &mdash; 1990s</h3>
+                <div class="two-column">
+                    <div>
+                        <ul style="font-size: 0.85em;">
+                            <li class="fragment">Hand-crafted rules & grammars</li>
+                            <li class="fragment">Linguists write rules; computers follow</li>
+                            <li class="fragment">Interpretable, precise for narrow domains</li>
+                            <li class="fragment"><span class="highlight">Doesn't scale</span> &mdash; language is too complex</li>
+                        </ul>
+                    </div>
+                    <div class="fragment" style="font-size: 0.7em; background: rgba(126,200,227,0.1); padding: 0.8em; border-radius: 8px;">
+                        <strong>ELIZA (1966)</strong><br>
+                        <span style="color: #93a1a1;">User:</span> I feel sad today<br>
+                        <span style="color: #7ec8e3;">ELIZA:</span> Why do you feel sad today?<br>
+                        <span style="color: #93a1a1;">User:</span> My mother doesn't like me<br>
+                        <span style="color: #7ec8e3;">ELIZA:</span> Tell me more about your family
+                    </div>
+                </div>
+                <aside class="notes">
+                    ELIZA used simple pattern matching and substitution — no real understanding.
+                    But it convinced many people it was "intelligent." First chatbot.
+                    SHRDLU (1970) could understand commands about blocks in a virtual world.
+                </aside>
+            </section>
+
+            <!-- Slide 20: Era 2 - Statistical -->
+            <section>
+                <h2>Era 2: Statistical NLP</h2>
+                <h3 style="color: #93a1a1;">1990s &mdash; 2012</h3>
+                <ul>
+                    <li class="fragment">Paradigm shift: <span class="highlight-blue">"Let the data decide"</span></li>
+                    <li class="fragment"><strong>Bag-of-Words</strong> &mdash; text as word frequency counts</li>
+                    <li class="fragment"><strong>TF-IDF</strong> &mdash; importance = frequency &times; rarity</li>
+                    <li class="fragment"><strong>n-gram models</strong> &mdash; P(word | previous n-1 words)</li>
+                    <li class="fragment"><strong>HMMs, CRFs</strong> &mdash; sequence labeling (POS, NER)</li>
+                    <li class="fragment"><strong>IBM Models</strong> &mdash; statistical machine translation</li>
+                </ul>
+                <aside class="notes">
+                    The key insight: instead of encoding linguistic rules, learn patterns from data.
+                    Bag-of-Words and TF-IDF are still used today as baselines.
+                    This era laid the groundwork for everything that followed.
+                </aside>
+            </section>
+
+            <!-- Slide 21: The Statistical Revolution - Quote -->
+            <section class="quote-slide">
+                <blockquote>
+                    "Every time I fire a linguist, the performance of the speech recognizer goes up."
+                </blockquote>
+                <p class="attribution">&mdash; Fred Jelinek, IBM (1988)</p>
+                <p class="fragment" style="margin-top: 2em; font-size: 0.85em;">
+                    The shift from <strong>modeling language</strong> to <strong>modeling data</strong><br>
+                    enabled the next 30 years of progress.
+                </p>
+                <aside class="notes">
+                    This quote is controversial but captures the paradigm shift perfectly.
+                    Ask students: Was Jelinek right? Is linguistics obsolete in the age of LLMs?
+                    The answer is nuanced — linguistic insights still inform model design.
+                </aside>
+            </section>
+
+            <!-- Slide 22: Era 3 - Neural -->
+            <section>
+                <h2>Era 3: Neural NLP</h2>
+                <h3 style="color: #93a1a1;">2013 &mdash; 2017</h3>
+                <ul>
+                    <li class="fragment"><strong>Word2Vec</strong> (Mikolov et al., 2013) &mdash; words as vectors</li>
+                    <li class="fragment"><strong>RNNs & LSTMs</strong> &mdash; modeling sequences</li>
+                    <li class="fragment"><strong>Seq2Seq</strong> (Sutskever et al., 2014) &mdash; neural machine translation</li>
+                    <li class="fragment"><strong>Attention</strong> (Bahdanau et al., 2015) &mdash; learning where to look</li>
+                </ul>
+                <p class="fragment" style="margin-top: 1em; font-size: 0.8em; color: #7ec8e3;">
+                    We will dive deep into Word2Vec in Session 2 today.
+                </p>
+                <aside class="notes">
+                    Word2Vec was the breakthrough that made everyone pay attention.
+                    The key innovation: dense, continuous representations learned from data.
+                    Attention mechanism is the direct ancestor of Transformers.
+                </aside>
+            </section>
+
+            <!-- Slide 23: The Representation Revolution -->
+            <section>
+                <h2>The Representation Revolution</h2>
+                <div class="two-column">
+                    <div class="fragment">
+                        <h3 style="color: #ff6b6b;">Before: One-Hot</h3>
+                        <pre style="font-size: 0.6em;"><code>cat  = [0, 0, 1, 0, 0, ...]
+dog  = [0, 0, 0, 1, 0, ...]
+fish = [0, 0, 0, 0, 1, ...]
+
+similarity(cat, dog) = 0 </code></pre>
+                        <p style="font-size: 0.7em; color: #93a1a1;">No notion of similarity</p>
+                    </div>
+                    <div class="fragment">
+                        <h3 style="color: #98c379;">After: Dense Vectors</h3>
+                        <pre style="font-size: 0.6em;"><code>cat  = [0.2, -0.4, 0.7, ...]
+dog  = [0.3, -0.3, 0.8, ...]
+fish = [0.8,  0.1, 0.2, ...]
+
+similarity(cat, dog) = 0.95</code></pre>
+                        <p style="font-size: 0.7em; color: #93a1a1;">Similar words are nearby</p>
+                    </div>
+                </div>
+                <p class="fragment" style="margin-top: 1em; font-size: 0.9em;">
+                    <span class="highlight-blue">king</span> &minus; <span class="highlight">man</span> + <span class="highlight-green">woman</span> &asymp; <span class="highlight-blue">queen</span>
+                </p>
+                <aside class="notes">
+                    This is THE single most important idea in modern NLP.
+                    The king-queen analogy captivated the entire field and the public.
+                    Session 2 will explore this in depth with hands-on exercises.
+                </aside>
+            </section>
+
+            <!-- Slide 24: Era 4 - Transformers & LLMs -->
+            <section>
+                <h2>Era 4: Transformers & LLMs</h2>
+                <h3 style="color: #93a1a1;">2017 &mdash; Present</h3>
+                <div class="two-column">
+                    <div>
+                        <p class="fragment" style="font-size: 0.8em;"><strong>"Attention Is All You Need"</strong><br><span class="small">Vaswani et al., 2017</span></p>
+                        <ul style="font-size: 0.75em;">
+                            <li class="fragment">Parallelizable (goodbye RNNs)</li>
+                            <li class="fragment">Better long-range dependencies</li>
+                            <li class="fragment">Pre-training + fine-tuning paradigm</li>
+                        </ul>
+                    </div>
+                    <div class="model-timeline fragment">
+                        <div class="model-row"><span class="model-year">2018</span><span class="model-name">BERT</span></div>
+                        <div class="model-row"><span class="model-year">2019</span><span class="model-name">GPT-2</span></div>
+                        <div class="model-row"><span class="model-year">2020</span><span class="model-name">GPT-3</span></div>
+                        <div class="model-row"><span class="model-year">2022</span><span class="model-name">ChatGPT</span></div>
+                        <div class="model-row"><span class="model-year">2024</span><span class="model-name">Claude 3, GPT-4o</span></div>
+                        <div class="model-row"><span class="model-year">2025</span><span class="model-name" style="border-color: #ff6b6b;">Claude 4, DeepSeek</span></div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    The Transformer paper is arguably the most impactful CS paper of the decade.
+                    Group Presentation #3 will deep-dive into this architecture on Day 4.
+                    Note the acceleration: 4 years from GPT-2 to ChatGPT, then exponential.
+                </aside>
+            </section>
+
+            <!-- Slide 25: Scaling Laws -->
+            <section>
+                <h2>Scaling Laws: The Bitter Lesson</h2>
+                <ul>
+                    <li class="fragment">
+                        <strong>Chinchilla scaling laws</strong>: performance improves predictably with compute + data
+                    </li>
+                    <li class="fragment">
+                        More parameters + more data = better performance
+                    </li>
+                    <li class="fragment">
+                        This is <em>why</em> companies invest <span class="highlight">$500B+</span>
+                    </li>
+                </ul>
+                <div class="fragment quote-slide" style="margin-top: 1em;">
+                    <blockquote style="font-size: 0.8em;">
+                        "The biggest lesson that can be read from 70 years of AI research is that general methods
+                        that leverage computation are ultimately the most effective."
+                    </blockquote>
+                    <p class="attribution">&mdash; Rich Sutton, "The Bitter Lesson" (2019)</p>
+                </div>
+                <aside class="notes">
+                    Connect back to Slide 5 — the massive investment makes sense IF scaling laws hold.
+                    The "bitter" part: hand-crafted features always lose to brute-force computation eventually.
+                    But there's debate: are we hitting diminishing returns? Inference-time scaling is the new frontier.
+                </aside>
+            </section>
+
+            <!-- Slide 26: The Current Frontier -->
+            <section>
+                <h2>The Current Frontier</h2>
+                <h3 style="color: #93a1a1;">February 2026</h3>
+                <ul>
+                    <li class="fragment"><strong>Scale</strong>: models with 1T+ parameters</li>
+                    <li class="fragment"><strong>Multimodal</strong>: text, image, audio, video in one model</li>
+                    <li class="fragment"><strong>Reasoning</strong>: chain-of-thought, planning, self-correction</li>
+                    <li class="fragment"><strong>Tool use</strong>: models calling APIs, writing code, browsing the web</li>
+                    <li class="fragment"><strong>Agents</strong>: autonomous multi-step task execution</li>
+                    <li class="fragment"><strong>Open-source rising</strong>: DeepSeek, Llama, Mistral narrowing the gap</li>
+                </ul>
+                <aside class="notes">
+                    We've gone from "can it classify spam?" to "can it autonomously build software?".
+                    The open vs closed model debate is one of the defining tensions of 2026.
+                    GPT-5.2 and Claude 4 broke 90% on MMLU-Pro — the ceiling keeps rising.
+                </aside>
+            </section>
+
+            <!-- Slide 27: Discussion -->
+            <section class="discussion-slide">
+                <h2>Discussion</h2>
+                <ol style="font-size: 0.95em;">
+                    <li class="fragment" style="margin-bottom: 0.8em;">
+                        Will we still need to learn programming in 5 years?
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.8em;">
+                        Is "general intelligence" just a matter of scale?
+                    </li>
+                    <li class="fragment">
+                        What happens when AI can do NLP research<br>better than NLP researchers?
+                    </li>
+                </ol>
+                <p class="fragment small" style="margin-top: 1.5em;">
+                    Pair discussion (2 min) &rarr; Share with class (3 min)
+                </p>
+                <aside class="notes">
+                    These are genuinely open questions. No right answers.
+                    The point is to get students thinking critically about the field they're entering.
+                    Keep the discussion to 5 minutes max.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 4: HOW MODERN NLP WORKS ==================== -->
+
+            <!-- Slide 28: Section Title -->
+            <section class="section-title">
+                <h2>How Modern NLP Works</h2>
+                <h3>A 10,000-foot view</h3>
+                <aside class="notes">
+                    Transition: Now that we know the history, let's look at HOW it works today.
+                    This is conceptual — we'll go deep in the coming sessions.
+                </aside>
+            </section>
+
+            <!-- Slide 29: The Modern Pipeline -->
+            <section>
+                <h2>The Modern NLP Pipeline</h2>
+                <div class="pipeline">
+                    <div class="step fragment">Raw Text</div>
+                    <div class="arrow fragment">&rarr;</div>
+                    <div class="step fragment">Tokenization</div>
+                    <div class="arrow fragment">&rarr;</div>
+                    <div class="step fragment">Embedding</div>
+                    <div class="arrow fragment">&rarr;</div>
+                    <div class="step fragment">Transformer</div>
+                    <div class="arrow fragment">&rarr;</div>
+                    <div class="step fragment">Output</div>
+                </div>
+                <p class="fragment" style="margin-top: 2em; font-size: 0.8em; color: #7ec8e3;">
+                    We will spend the rest of this course unpacking each of these boxes.
+                </p>
+                <aside class="notes">
+                    This is the mental model students should carry through the entire course.
+                    Each subsequent session expands on one or more of these components.
+                </aside>
+            </section>
+
+            <!-- Slide 30: Tokenization -->
+            <section>
+                <h2>Step 1: Tokenization</h2>
+                <p style="font-size: 0.85em;">Breaking text into <strong>subword units</strong></p>
+                <div class="fragment" style="background: rgba(126,200,227,0.1); padding: 1em; border-radius: 8px; margin: 1em 0;">
+                    <pre style="font-size: 0.7em; margin: 0;"><code>"unbelievable" → ["un", "believ", "able"]
+"ChatGPT"      → ["Chat", "G", "PT"]
+"NLP"          → ["N", "LP"]</code></pre>
+                </div>
+                <ul style="font-size: 0.8em;">
+                    <li class="fragment"><strong>BPE</strong> (Byte Pair Encoding) &mdash; most common approach</li>
+                    <li class="fragment">Balances character-level and word-level granularity</li>
+                    <li class="fragment">Different models use different tokenizers &mdash; and it matters</li>
+                </ul>
+                <aside class="notes">
+                    Ask students: How would you tokenize "ChatGPT"? Different models give different answers.
+                    Tokenization seems simple but has huge downstream effects.
+                </aside>
+            </section>
+
+            <!-- Slide 31: Embeddings -->
+            <section>
+                <h2>Step 2: Embeddings</h2>
+                <p style="font-size: 0.85em;">Converting tokens to <strong>dense vectors</strong></p>
+                <ul>
+                    <li class="fragment">Each token becomes a point in <strong>high-dimensional space</strong></li>
+                    <li class="fragment">Learned during training &mdash; not hand-designed</li>
+                    <li class="fragment">Similar meanings &rarr; similar vectors</li>
+                </ul>
+                <div class="fragment" style="margin-top: 1em; padding: 0.8em; border: 2px solid #7ec8e3; border-radius: 8px;">
+                    <p style="font-size: 0.85em; margin: 0; color: #7ec8e3;">
+                        Session 2 today goes deep on this
+                    </p>
+                    <p style="font-size: 0.7em; margin: 0.3em 0 0 0; color: #93a1a1;">
+                        Word2Vec, GloVe, and hands-on with vector operations
+                    </p>
+                </div>
+                <aside class="notes">
+                    Brief preview — don't go too deep here.
+                    The key idea: representation learning. Vectors capture meaning.
+                </aside>
+            </section>
+
+            <!-- Slide 32: Transformer (Conceptual) -->
+            <section>
+                <h2>Step 3: The Transformer</h2>
+                <p style="font-size: 0.85em;">The engine behind modern NLP</p>
+                <ul>
+                    <li class="fragment">
+                        <strong>Self-attention</strong>: every token looks at every other token
+                    </li>
+                    <li class="fragment">
+                        Analogy: reading a sentence while being aware of the entire paragraph
+                    </li>
+                    <li class="fragment">
+                        Stacked layers of <span class="highlight-blue">Attention</span> + <span class="highlight-green">Feed-Forward</span> networks
+                    </li>
+                </ul>
+                <div class="pipeline fragment" style="margin-top: 1em; font-size: 0.85em;">
+                    <div class="step">Input</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="border-color: #ff6b6b;">[ Attention &rarr; FFN ] &times; N</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step">Output</div>
+                </div>
+                <p class="fragment small" style="margin-top: 1em;">Day 2: we build this up piece by piece</p>
+                <aside class="notes">
+                    Keep it conceptual. The detailed math comes on Day 2.
+                    Group Presentation #3 will require students to deeply understand this.
+                </aside>
+            </section>
+
+            <!-- Slide 33: Pre-training and Fine-tuning -->
+            <section>
+                <h2>Step 4: Pre-training & Fine-tuning</h2>
+                <div class="two-column">
+                    <div class="fragment">
+                        <h3 style="color: #ff6b6b;">Pre-training</h3>
+                        <p style="font-size: 0.75em;">Learn general language knowledge from massive corpora</p>
+                        <ul style="font-size: 0.7em;">
+                            <li><strong>MLM</strong> (BERT): predict masked words</li>
+                            <li><strong>CLM</strong> (GPT): predict the next word</li>
+                        </ul>
+                    </div>
+                    <div class="fragment">
+                        <h3 style="color: #98c379;">Fine-tuning</h3>
+                        <p style="font-size: 0.75em;">Adapt to specific tasks with smaller datasets</p>
+                        <ul style="font-size: 0.7em;">
+                            <li>Task-specific training</li>
+                            <li>LoRA, adapters (PEFT)</li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="fragment" style="margin-top: 1em; font-size: 0.8em; color: #7ec8e3;">
+                    Analogy: pre-training = going to school &nbsp;|&nbsp; fine-tuning = specializing
+                </p>
+                <p class="fragment small">Day 3: full session on this topic</p>
+                <aside class="notes">
+                    Just planting the seed. This is Day 3 material.
+                    The analogy works well: pre-training gives general knowledge,
+                    fine-tuning makes you an expert in something specific.
+                </aside>
+            </section>
+
+            <!-- Slide 34: Alignment (RLHF) -->
+            <section>
+                <h2>Step 5: Alignment (RLHF)</h2>
+                <p style="font-size: 0.85em;">Making models <strong>helpful</strong>, <strong>harmless</strong>, and <strong>honest</strong></p>
+                <div class="pipeline fragment">
+                    <div class="step">Generate</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step">Humans Rank</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step">Reward Model</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step">Optimize</div>
+                </div>
+                <ul style="font-size: 0.8em; margin-top: 1em;">
+                    <li class="fragment">Raw LLMs are capable but not automatically safe or helpful</li>
+                    <li class="fragment">RLHF is what makes ChatGPT "chat" and Claude "Claude"</li>
+                </ul>
+                <p class="fragment small">Day 5: full session on RLHF, DPO, and safety</p>
+                <aside class="notes">
+                    Brief preview only. The point: there's a whole pipeline AFTER training
+                    that makes models actually useful and safe. Day 5 covers this in depth.
+                </aside>
+            </section>
+
+            <!-- Slide 35: The Full Picture -->
+            <section>
+                <h2>The Full Picture</h2>
+                <div class="pipeline" style="flex-wrap: wrap; gap: 0.5em;">
+                    <div class="step" style="font-size: 0.7em;">Data</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="font-size: 0.7em; border-color: #d19a66;">Pre-training<br><span class="small">Day 3</span></div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="font-size: 0.7em; border-color: #98c379;">Fine-tuning<br><span class="small">Day 3</span></div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="font-size: 0.7em; border-color: #c678dd;">RLHF<br><span class="small">Day 5</span></div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="font-size: 0.7em; border-color: #ff6b6b;">Deployment<br><span class="small">Demo Day</span></div>
+                </div>
+                <p style="margin-top: 2em; font-size: 0.9em;">
+                    You now have the map.<br>
+                    <span class="highlight-blue">This course fills in the details.</span>
+                </p>
+                <aside class="notes">
+                    This slide ties everything together. Students can see where each course day
+                    fits into the overall pipeline. Reference this slide in future sessions.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 5: COURSE ROADMAP ==================== -->
+
+            <!-- Slide 36: Section Title -->
+            <section class="section-title">
+                <h2>Your NLP Journey</h2>
+                <h3>6 days, from fundamentals to production</h3>
+            </section>
+
+            <!-- Slide 37: Roadmap -->
+            <section>
+                <h2>Course Roadmap</h2>
+                <div class="roadmap">
+                    <div class="day active">
+                        <div class="day-num">Day 1 &mdash; Feb 10</div>
+                        <div>NLP Fundamentals</div>
+                        <div>Word Embeddings</div>
+                    </div>
+                    <div class="day">
+                        <div class="day-num">Day 2 &mdash; Mar 9</div>
+                        <div>Attention Mechanisms</div>
+                        <div>Transformer Architecture</div>
+                    </div>
+                    <div class="day">
+                        <div class="day-num">Day 3 &mdash; Mar 13</div>
+                        <div>Pre-training</div>
+                        <div>Fine-tuning</div>
+                    </div>
+                    <div class="day">
+                        <div class="day-num">Day 4 &mdash; Mar 19</div>
+                        <div>Prompting</div>
+                        <div>RAG</div>
+                    </div>
+                    <div class="day">
+                        <div class="day-num">Day 5 &mdash; Mar 20</div>
+                        <div>Document AI & Multimodal</div>
+                        <div>RLHF</div>
+                    </div>
+                    <div class="day">
+                        <div class="day-num">Day 6 &mdash; Mar 31</div>
+                        <div>Demo Day</div>
+                        <div>Project Presentations</div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Day 1 is highlighted in red. Walk through the progression briefly.
+                    Note the 4-week gap between Day 1 and Day 2 — students should use this time.
+                </aside>
+            </section>
+
+            <!-- Slide 38: Assessments -->
+            <section>
+                <h2>Assessments</h2>
+                <div class="two-column">
+                    <div class="fragment">
+                        <h3>Group Presentations</h3>
+                        <p style="font-size: 0.7em;">Days 2&ndash;5, 20 min each</p>
+                        <ol style="font-size: 0.7em;">
+                            <li>Startup Toolbox</li>
+                            <li>Claude Code Deep Dive</li>
+                            <li>Attention Is All You Need</li>
+                            <li>OpenClaw & Agent Ecosystem</li>
+                        </ol>
+                        <p style="font-size: 0.6em; color: #93a1a1;">Knowledge Transfer 40% + Learning Process 40% + Quality 20%</p>
+                    </div>
+                    <div class="fragment">
+                        <h3>Demo Day</h3>
+                        <p style="font-size: 0.7em;">March 31 &mdash; NLP project</p>
+                        <ul style="font-size: 0.7em;">
+                            <li>Build a real NLP application</li>
+                            <li>Present to the class</li>
+                            <li>Investment-based peer scoring</li>
+                            <li>1,000,000 virtual funds per team</li>
+                        </ul>
+                        <p style="font-size: 0.6em; color: #93a1a1;">Think of it as a startup pitch day</p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Explain the investment scoring system briefly — it's unusual and engaging.
+                    Each team gets 1M to invest in OTHER teams. Anonymous, simultaneous.
+                    Emphasize: the presentations are about knowledge SHARING, not lecturing.
+                </aside>
+            </section>
+
+            <!-- Slide 39: Tools -->
+            <section>
+                <h2>Tools You Will Use</h2>
+                <ul>
+                    <li class="fragment"><strong>Claude Code</strong> &mdash; AI coding assistant (used throughout the course)</li>
+                    <li class="fragment"><strong>GitHub</strong> &mdash; version control, collaboration, project hosting</li>
+                    <li class="fragment"><strong>Python</strong> &mdash; primary programming language</li>
+                    <li class="fragment"><strong>Hugging Face</strong> &mdash; models, datasets, and tools</li>
+                    <li class="fragment"><strong>Modern AI IDEs</strong> &mdash; Cursor, Windsurf, etc.</li>
+                </ul>
+                <p class="fragment" style="margin-top: 1em; font-size: 0.85em; color: #7ec8e3;">
+                    This is a hands-on course. You will build things.
+                </p>
+                <aside class="notes">
+                    Claude Code is the main tool. Students will set it up in TP1.
+                    The combination of Claude Code + GitHub is the backbone of the course workflow.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 6: CLOSING ==================== -->
+
+            <!-- Slide 41: Key Takeaways -->
+            <section>
+                <h2>Key Takeaways</h2>
+                <ol>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        NLP is at the <strong>center of the AI revolution</strong>
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        Four eras: <span style="color: #d19a66;">Rules</span> &rarr;
+                        <span style="color: #98c379;">Statistics</span> &rarr;
+                        <span style="color: #61afef;">Neural</span> &rarr;
+                        <span style="color: #c678dd;">LLMs</span>
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        Core insight: <strong>learn representations from data, scale compute</strong>
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        We are living through the most consequential period in NLP history
+                    </li>
+                    <li class="fragment">
+                        Understanding NLP deeply is both <strong>intellectually rewarding</strong><br>
+                        and <strong>professionally essential</strong>
+                    </li>
+                </ol>
+                <aside class="notes">
+                    Recap the main ideas. Reinforce the connection between theory and career relevance.
+                </aside>
+            </section>
+
+            <!-- Slide 42: What's Next -->
+            <section>
+                <h2>What's Next</h2>
+                <div style="font-size: 1.1em; margin: 1em 0;">
+                    <p>Break: 10:15 &mdash; 10:30</p>
+                </div>
+                <div style="border: 2px solid #7ec8e3; border-radius: 8px; padding: 1em; display: inline-block;">
+                    <h3>Session 2: Word Embeddings</h3>
+                    <p style="font-size: 0.8em;">10:30 &mdash; 12:30</p>
+                    <ul style="font-size: 0.75em;">
+                        <li>Word2Vec: Skip-gram & CBOW</li>
+                        <li>GloVe: Global Vectors</li>
+                        <li>Hands-on with vector operations</li>
+                    </ul>
+                </div>
+                <p style="margin-top: 1.5em; font-size: 0.8em; color: #93a1a1;">See you in 15 minutes</p>
+                <aside class="notes">
+                    End on time. Let students take their break.
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            controlsTutorial: false,
+            progress: true,
+            center: true,
+            plugins: [RevealHighlight, RevealNotes]
+        });
+    </script>
+</body>
+</html>

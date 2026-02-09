@@ -1,0 +1,1314 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Embeddings: From One-Hot to Word2Vec & GloVe</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/moon.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --r-heading-font: 'Helvetica Neue', Arial, sans-serif;
+            --r-main-font: 'Helvetica Neue', Arial, sans-serif;
+        }
+        .reveal { font-size: 32px; }
+        .reveal h1 { font-size: 2.2em; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.2em; color: #7ec8e3; }
+        .reveal ul { text-align: left; }
+        .reveal li { margin-bottom: 0.4em; }
+
+        /* Highlight text */
+        .highlight { color: #ff6b6b; }
+        .highlight-blue { color: #7ec8e3; }
+        .highlight-green { color: #98c379; }
+        .small { font-size: 0.65em; color: #93a1a1; }
+
+        /* Two column layout */
+        .two-column {
+            display: flex;
+            gap: 2em;
+            align-items: flex-start;
+        }
+        .two-column > div { flex: 1; }
+
+        /* Code/matrix display */
+        .matrix-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 1em;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75em;
+            text-align: left;
+        }
+
+        /* Image with caption */
+        .fig {
+            text-align: center;
+        }
+        .fig img {
+            max-width: 85%;
+            max-height: 450px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .fig .caption {
+            font-size: 0.5em;
+            color: #93a1a1;
+            margin-top: 0.3em;
+        }
+
+        /* Stat numbers */
+        .stat-big {
+            font-size: 3em;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+
+        /* Section divider */
+        .section-title h2 {
+            font-size: 2em;
+            margin-bottom: 0.3em;
+        }
+        .section-title h3 {
+            font-size: 0.9em;
+            color: #93a1a1;
+            font-weight: normal;
+        }
+
+        /* Quote styling */
+        .quote-slide blockquote {
+            font-style: italic;
+            font-size: 1.1em;
+            border-left: 4px solid #7ec8e3;
+            padding-left: 1em;
+            margin: 1em auto;
+            max-width: 80%;
+            text-align: left;
+        }
+        .quote-slide .attribution {
+            text-align: right;
+            color: #93a1a1;
+            font-size: 0.7em;
+            margin-right: 10%;
+        }
+
+        /* Discussion slides */
+        .discussion-slide {
+            background: rgba(126, 200, 227, 0.08) !important;
+        }
+
+        /* Pipeline/flow diagram */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3em;
+            flex-wrap: wrap;
+        }
+        .pipeline .step {
+            background: rgba(126, 200, 227, 0.15);
+            border: 2px solid #7ec8e3;
+            border-radius: 8px;
+            padding: 0.6em 1em;
+            text-align: center;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .pipeline .arrow {
+            font-size: 1.5em;
+            color: #7ec8e3;
+        }
+
+        /* Comparison table */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7em;
+        }
+        .compare-table th {
+            background: rgba(126, 200, 227, 0.2);
+            padding: 0.5em;
+            text-align: left;
+            border-bottom: 2px solid #7ec8e3;
+        }
+        .compare-table td {
+            padding: 0.5em;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .compare-table .good { color: #98c379; }
+        .compare-table .bad { color: #ff6b6b; }
+
+        /* Vector visualization */
+        .vector-space {
+            position: relative;
+            width: 500px;
+            height: 400px;
+            margin: 0 auto;
+            border-left: 2px solid rgba(255,255,255,0.3);
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+        }
+        .vector-space .point {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .vector-space .point-label {
+            position: absolute;
+            font-size: 0.6em;
+            font-weight: bold;
+            transform: translate(-50%, -150%);
+        }
+        .vector-space .vec-arrow {
+            position: absolute;
+            height: 2px;
+            transform-origin: left center;
+        }
+
+        /* Inline formula */
+        .formula {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+            font-size: 1.1em;
+        }
+
+        /* Training step boxes */
+        .step-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 0.8em;
+            margin: 0.5em 0;
+            text-align: left;
+            font-size: 0.8em;
+        }
+        .step-box .step-num {
+            display: inline-block;
+            background: #7ec8e3;
+            color: #002b36;
+            width: 1.5em;
+            height: 1.5em;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 1.5em;
+            font-weight: bold;
+            margin-right: 0.5em;
+        }
+
+        /* Ref link */
+        .ref {
+            font-size: 0.45em;
+            color: #657b83;
+            margin-top: 0.5em;
+        }
+        .ref a { color: #657b83; text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ==================== SECTION 0: OPENING ==================== -->
+
+            <!-- Slide 1: Title -->
+            <section>
+                <h1>Word Embeddings</h1>
+                <h3>From One-Hot to Word2Vec & GloVe</h3>
+                <p style="margin-top: 2em; font-size: 0.7em; color: #93a1a1;">
+                    TAL &mdash; Day 1, Session 2<br>
+                    February 10, 2026<br>
+                    ZHANG Zheng
+                </p>
+                <aside class="notes">
+                    Welcome back from break. This session builds directly on Session 1.
+                    We go from "what is NLP?" to "how do we represent words for machines?"
+                </aside>
+            </section>
+
+            <!-- Slide 2: The Key Question -->
+            <section>
+                <h2>The Fundamental Problem</h2>
+                <p style="font-size: 1.2em; margin: 1.5em 0;">
+                    Computers work with <span class="highlight">numbers</span>.<br>
+                    Language is made of <span class="highlight-blue">words</span>.
+                </p>
+                <p class="fragment" style="font-size: 1.3em; color: #7ec8e3;">
+                    How do we represent words as numbers?
+                </p>
+                <aside class="notes">
+                    This is THE question of this session. Every NLP system needs an answer to this.
+                    The quality of the representation determines the quality of the system.
+                </aside>
+            </section>
+
+            <!-- Slide 3: Session Roadmap -->
+            <section>
+                <h2>Today's Journey</h2>
+                <div class="pipeline">
+                    <div class="step">One-Hot</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step">BoW / TF-IDF</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step">n-grams</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="border-color: #ff6b6b;">Word2Vec</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="border-color: #ff6b6b;">GloVe</div>
+                </div>
+                <p style="margin-top: 1.5em; font-size: 0.8em; color: #93a1a1;">
+                    From sparse, manual representations &rarr; dense, learned representations
+                </p>
+                <aside class="notes">
+                    Show the full journey. We start with the simplest approaches and build
+                    toward the breakthrough of dense word embeddings.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 1: CLASSICAL REPRESENTATIONS ==================== -->
+
+            <section class="section-title">
+                <h2>Classical Text Representations</h2>
+                <h3>The "pre-embedding" era</h3>
+            </section>
+
+            <!-- Slide 5: One-Hot Encoding -->
+            <section>
+                <h2>One-Hot Encoding</h2>
+                <p style="font-size: 0.85em;">Each word = a vector with a single 1, rest all 0s</p>
+                <div class="matrix-box fragment">
+<pre>Vocabulary: [cat, dog, fish, bird, tree]
+
+cat  = [1, 0, 0, 0, 0]
+dog  = [0, 1, 0, 0, 0]
+fish = [0, 0, 1, 0, 0]
+bird = [0, 0, 0, 1, 0]
+tree = [0, 0, 0, 0, 1]</pre>
+                </div>
+                <ul style="font-size: 0.8em; margin-top: 0.8em;">
+                    <li class="fragment"><span class="good highlight-green">Simple</span> and unambiguous</li>
+                    <li class="fragment"><span class="highlight">Problem 1</span>: vector size = vocabulary size (100K+ dimensions!)</li>
+                    <li class="fragment"><span class="highlight">Problem 2</span>: <strong>no notion of similarity</strong> &mdash; cos(cat, dog) = 0</li>
+                </ul>
+                <aside class="notes">
+                    This is the simplest possible representation. Used in many early ML systems.
+                    The key problem: "cat" and "dog" are just as different as "cat" and "tree".
+                    Real vocabulary sizes: English ~170K words, so vectors are huge and sparse.
+                </aside>
+            </section>
+
+            <!-- Slide 6: Bag of Words -->
+            <section>
+                <h2>Bag of Words (BoW)</h2>
+                <p style="font-size: 0.85em;">Represent a <strong>document</strong> by word frequency counts</p>
+                <div class="two-column">
+                    <div class="fragment">
+                        <div style="font-size: 0.75em; background: rgba(126,200,227,0.1); padding: 0.8em; border-radius: 8px;">
+                            <strong>Doc 1</strong>: "the cat sat on the mat"<br>
+                            <strong>Doc 2</strong>: "the dog sat on the log"
+                        </div>
+                    </div>
+                    <div class="fragment">
+                        <div class="matrix-box" style="font-size: 0.65em;">
+<pre>       cat dog sat on the mat log
+Doc 1: [1,  0,  1,  1, 2,  1,  0]
+Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
+                        </div>
+                    </div>
+                </div>
+                <ul style="font-size: 0.8em; margin-top: 1em;">
+                    <li class="fragment"><span class="highlight-green">Better</span>: we can now compare documents</li>
+                    <li class="fragment"><span class="highlight">Lost</span>: word order &mdash; "dog bites man" = "man bites dog"</li>
+                    <li class="fragment"><span class="highlight">Problem</span>: common words ("the", "is") dominate the counts</li>
+                </ul>
+                <aside class="notes">
+                    "Bag" literally means we throw away the order — just count.
+                    This is still useful as a baseline. Scikit-learn's CountVectorizer does exactly this.
+                    But "the" appearing twice doesn't tell us much about the document.
+                </aside>
+            </section>
+
+            <!-- Slide 7: TF-IDF -->
+            <section>
+                <h2>TF-IDF</h2>
+                <p style="font-size: 0.85em;"><strong>T</strong>erm <strong>F</strong>requency &times; <strong>I</strong>nverse <strong>D</strong>ocument <strong>F</strong>requency</p>
+                <div class="fragment" style="text-align: center; margin: 1em 0;">
+                    <span class="formula" style="font-size: 1.3em;">
+                        TF-IDF(t, d) = TF(t, d) &times; log( N / DF(t) )
+                    </span>
+                </div>
+                <div class="two-column fragment" style="font-size: 0.8em;">
+                    <div>
+                        <h3 style="color: #98c379;">High TF-IDF</h3>
+                        <p>Word is <strong>frequent in this doc</strong><br>but <strong>rare across all docs</strong></p>
+                        <p class="small">&rarr; discriminative, informative</p>
+                    </div>
+                    <div>
+                        <h3 style="color: #ff6b6b;">Low TF-IDF</h3>
+                        <p>Word appears <strong>everywhere</strong><br>("the", "is", "and")</p>
+                        <p class="small">&rarr; not useful for distinguishing</p>
+                    </div>
+                </div>
+                <p class="fragment small" style="margin-top: 1em;">
+                    Still widely used today: search engines, document retrieval, text classification baselines
+                </p>
+                <aside class="notes">
+                    The intuition: a word that appears a lot in one document but rarely in others
+                    is probably important for understanding what that document is about.
+                    "the" gets low weight, "quantum" in a physics paper gets high weight.
+                    TF-IDF is still the backbone of many production search systems.
+                </aside>
+            </section>
+
+            <!-- Slide 8: n-grams -->
+            <section>
+                <h2>n-grams</h2>
+                <p style="font-size: 0.85em;">Capturing <strong>local word order</strong> by looking at sequences</p>
+                <div class="fragment" style="background: rgba(126,200,227,0.1); padding: 0.8em; border-radius: 8px; font-size: 0.8em;">
+                    <p style="margin: 0;">Sentence: <strong>"I love natural language processing"</strong></p>
+                </div>
+                <div class="two-column fragment" style="margin-top: 0.8em; font-size: 0.8em;">
+                    <div>
+                        <h3>Unigrams (n=1)</h3>
+                        <p class="small">["I", "love", "natural", "language", "processing"]</p>
+                        <h3>Bigrams (n=2)</h3>
+                        <p class="small">["I love", "love natural", "natural language", "language processing"]</p>
+                    </div>
+                    <div>
+                        <h3>Trigrams (n=3)</h3>
+                        <p class="small">["I love natural", "love natural language", "natural language processing"]</p>
+                    </div>
+                </div>
+                <ul style="font-size: 0.8em; margin-top: 0.8em;">
+                    <li class="fragment"><span class="highlight-green">Captures</span>: local context, common phrases</li>
+                    <li class="fragment"><span class="highlight">Problem</span>: vocabulary explodes &mdash; V<sup>n</sup> possible n-grams</li>
+                    <li class="fragment">Foundation of <strong>n-gram language models</strong>: P(word<sub>t</sub> | word<sub>t-n+1</sub>...word<sub>t-1</sub>)</li>
+                </ul>
+                <aside class="notes">
+                    n-grams add back some of the word order that Bag-of-Words loses.
+                    But the vocabulary grows explosively. If V=100K, bigrams = 10 billion possible pairs.
+                    This is a data sparsity problem: most n-grams never appear in your training data.
+                </aside>
+            </section>
+
+            <!-- Slide 9: The Limits of Sparse Representations -->
+            <section>
+                <h2>The Problem with Sparse Representations</h2>
+                <table class="compare-table">
+                    <tr>
+                        <th>Method</th>
+                        <th>Captures similarity?</th>
+                        <th>Word order?</th>
+                        <th>Dimensionality</th>
+                    </tr>
+                    <tr class="fragment">
+                        <td>One-Hot</td>
+                        <td class="bad">No</td>
+                        <td class="bad">No</td>
+                        <td class="bad">|V| (huge)</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>BoW</td>
+                        <td class="bad">No</td>
+                        <td class="bad">No</td>
+                        <td class="bad">|V|</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>TF-IDF</td>
+                        <td class="bad">No</td>
+                        <td class="bad">No</td>
+                        <td class="bad">|V|</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>n-grams</td>
+                        <td class="bad">No</td>
+                        <td class="good">Partial</td>
+                        <td class="bad">|V|<sup>n</sup></td>
+                    </tr>
+                    <tr class="fragment" style="background: rgba(126,200,227,0.15);">
+                        <td><strong>Word Embeddings</strong></td>
+                        <td class="good">Yes!</td>
+                        <td class="good">Yes (contextual)</td>
+                        <td class="good">50&ndash;300 (compact)</td>
+                    </tr>
+                </table>
+                <p class="fragment" style="margin-top: 1em; font-size: 0.85em; color: #7ec8e3;">
+                    We need: <strong>dense</strong>, <strong>low-dimensional</strong>, <strong>meaning-aware</strong> representations
+                </p>
+                <aside class="notes">
+                    This table summarizes everything we've seen so far.
+                    The last row is where we're heading. Word embeddings solve all these problems.
+                    This is the breakthrough that changed NLP forever.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 2: DISTRIBUTIONAL HYPOTHESIS ==================== -->
+
+            <section class="section-title">
+                <h2>The Key Insight</h2>
+                <h3>Distributional Semantics</h3>
+            </section>
+
+            <!-- Slide 11: Distributional Hypothesis -->
+            <section class="quote-slide">
+                <blockquote>
+                    "You shall know a word by the company it keeps."
+                </blockquote>
+                <p class="attribution">&mdash; J.R. Firth (1957)</p>
+                <div class="fragment" style="margin-top: 2em; font-size: 0.85em;">
+                    <p><strong>The Distributional Hypothesis</strong>:</p>
+                    <p>Words that appear in similar <span class="highlight-blue">contexts</span><br>
+                    tend to have similar <span class="highlight-green">meanings</span>.</p>
+                </div>
+                <div class="fragment" style="margin-top: 1em; font-size: 0.75em; background: rgba(255,255,255,0.05); padding: 0.8em; border-radius: 8px;">
+                    <p style="margin: 0;">"I adopted a <strong>___</strong> from the shelter"</p>
+                    <p style="margin: 0.2em 0 0; color: #93a1a1;">cat? dog? rabbit? &rarr; these words must be related!</p>
+                </div>
+                <aside class="notes">
+                    This is the most important idea in this entire session.
+                    Firth's insight from 1957 is the foundation of ALL modern word embeddings.
+                    Word2Vec, GloVe, and even BERT are all built on this principle.
+                </aside>
+            </section>
+
+            <!-- Slide 12: Context Windows -->
+            <section>
+                <h2>Context Windows</h2>
+                <p style="font-size: 0.85em;">A <strong>sliding window</strong> captures which words appear near each other</p>
+                <div class="fig fragment">
+                    <img src="https://jalammar.github.io/images/word2vec/wikipedia-sliding-window.png"
+                         alt="Sliding window over text">
+                    <p class="caption">
+                        Source: Jay Alammar, "The Illustrated Word2Vec"
+                        &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
+                    </p>
+                </div>
+                <p class="fragment" style="font-size: 0.8em;">
+                    Window size (typically 2&ndash;10) controls how much context we consider
+                </p>
+                <aside class="notes">
+                    The sliding window moves through the text, one word at a time.
+                    For each position, we look at the center word and its neighbors.
+                    This is how we build the training data for Word2Vec.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 3: WORD2VEC ==================== -->
+
+            <section class="section-title">
+                <h2>Word2Vec</h2>
+                <h3>Mikolov et al., 2013 &mdash; Google</h3>
+            </section>
+
+            <!-- Slide 14: Word2Vec Overview -->
+            <section>
+                <h2>Word2Vec: The Breakthrough</h2>
+                <ul>
+                    <li class="fragment">Published by <strong>Tomas Mikolov et al.</strong> at Google (2013)</li>
+                    <li class="fragment">Learn <strong>dense vector representations</strong> (50&ndash;300 dimensions)</li>
+                    <li class="fragment">Trained on <strong>context prediction</strong> &mdash; the distributional hypothesis in action</li>
+                    <li class="fragment">Two architectures:
+                        <span class="highlight-blue">Skip-gram</span> and
+                        <span class="highlight-green">CBOW</span>
+                    </li>
+                </ul>
+                <p class="fragment" style="margin-top: 1em; font-size: 0.8em; color: #7ec8e3;">
+                    Key idea: words are not just symbols &mdash; they live in a <strong>continuous vector space</strong>
+                </p>
+                <p class="ref">Mikolov, T. et al. (2013). "Efficient Estimation of Word Representations in Vector Space." arXiv:1301.3781</p>
+                <aside class="notes">
+                    Word2Vec is arguably the most influential NLP paper of the 2010s.
+                    It made word embeddings practical and accessible.
+                    The key insight: you don't need labeled data — just raw text.
+                </aside>
+            </section>
+
+            <!-- Slide 15: Skip-gram -->
+            <section>
+                <h2>Skip-gram</h2>
+                <p style="font-size: 0.85em;">Given a <span class="highlight">center word</span>, predict the <span class="highlight-blue">context words</span></p>
+                <div class="fig fragment">
+                    <img src="https://jalammar.github.io/images/word2vec/skipgram-sliding-window-samples.png"
+                         alt="Skip-gram training samples">
+                    <p class="caption">
+                        Source: Jay Alammar, "The Illustrated Word2Vec"
+                        &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
+                    </p>
+                </div>
+                <p class="fragment" style="font-size: 0.8em;">
+                    Input: <span class="highlight">"sat"</span> &rarr; Output: <span class="highlight-blue">["the", "cat", "on", "the"]</span>
+                </p>
+                <aside class="notes">
+                    Skip-gram is like a fill-in-the-blanks game in reverse:
+                    given the answer, predict the surrounding clues.
+                    Works better for rare words because each word gets more training signal.
+                </aside>
+            </section>
+
+            <!-- Slide 16: CBOW -->
+            <section>
+                <h2>CBOW</h2>
+                <p style="font-size: 0.85em;"><strong>C</strong>ontinuous <strong>B</strong>ag <strong>o</strong>f <strong>W</strong>ords: given <span class="highlight-blue">context</span>, predict the <span class="highlight">center word</span></p>
+                <div class="fig fragment">
+                    <img src="https://jalammar.github.io/images/word2vec/continuous-bag-of-words-example.png"
+                         alt="CBOW example">
+                    <p class="caption">
+                        Source: Jay Alammar, "The Illustrated Word2Vec"
+                        &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
+                    </p>
+                </div>
+                <p class="fragment" style="font-size: 0.8em;">
+                    Input: <span class="highlight-blue">["the", "cat", "on", "the"]</span> &rarr; Output: <span class="highlight">"sat"</span>
+                </p>
+                <aside class="notes">
+                    CBOW is the intuitive direction: fill in the blank.
+                    "The cat ___ on the mat" — predict "sat".
+                    Faster to train, slightly better for frequent words.
+                </aside>
+            </section>
+
+            <!-- Slide 17: Skip-gram vs CBOW -->
+            <section>
+                <h2>Skip-gram vs CBOW</h2>
+                <div class="fig">
+                    <img src="https://jalammar.github.io/images/word2vec/skipgram-sliding-window.png"
+                         alt="Skip-gram and CBOW comparison"
+                         style="max-height: 280px;">
+                    <p class="caption">
+                        Source: Jay Alammar, "The Illustrated Word2Vec"
+                        &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
+                    </p>
+                </div>
+                <table class="compare-table fragment" style="margin-top: 0.5em;">
+                    <tr>
+                        <th></th>
+                        <th>Skip-gram</th>
+                        <th>CBOW</th>
+                    </tr>
+                    <tr>
+                        <td>Direction</td>
+                        <td>Center &rarr; Context</td>
+                        <td>Context &rarr; Center</td>
+                    </tr>
+                    <tr>
+                        <td>Speed</td>
+                        <td>Slower</td>
+                        <td class="good">Faster</td>
+                    </tr>
+                    <tr>
+                        <td>Rare words</td>
+                        <td class="good">Better</td>
+                        <td>Worse</td>
+                    </tr>
+                    <tr>
+                        <td>Common words</td>
+                        <td>Good</td>
+                        <td class="good">Slightly better</td>
+                    </tr>
+                </table>
+                <aside class="notes">
+                    In practice, Skip-gram with negative sampling (SGNS) is the most widely used.
+                    Same architecture, different objective — just swap input and output.
+                </aside>
+            </section>
+
+            <!-- Slide 18: How Training Works -->
+            <section>
+                <h2>Training Word2Vec</h2>
+                <p style="font-size: 0.85em;">A shallow neural network learns embeddings as a <strong>side effect</strong></p>
+                <div class="fig fragment">
+                    <img src="https://jalammar.github.io/images/word2vec/word2vec-training-example.png"
+                         alt="Word2Vec training example">
+                    <p class="caption">
+                        Source: Jay Alammar, "The Illustrated Word2Vec"
+                        &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
+                    </p>
+                </div>
+                <p class="fragment" style="font-size: 0.8em;">
+                    The goal is not the predictions &mdash; it's the <span class="highlight-blue">weight matrix</span> (the embeddings!)
+                </p>
+                <aside class="notes">
+                    This is a crucial insight: we don't care about the model's predictions.
+                    We care about the learned weight matrix — those ARE the word embeddings.
+                    After training, throw away the model, keep the weights.
+                </aside>
+            </section>
+
+            <!-- Slide 19: Negative Sampling -->
+            <section>
+                <h2>Negative Sampling</h2>
+                <p style="font-size: 0.85em;">The trick that makes Word2Vec practical</p>
+                <div class="fig fragment">
+                    <img src="https://jalammar.github.io/images/word2vec/word2vec-negative-sampling.png"
+                         alt="Negative sampling">
+                    <p class="caption">
+                        Source: Jay Alammar, "The Illustrated Word2Vec"
+                        &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
+                    </p>
+                </div>
+                <ul style="font-size: 0.75em;">
+                    <li class="fragment"><strong>Problem</strong>: softmax over 100K+ words is too expensive</li>
+                    <li class="fragment"><strong>Solution</strong>: binary classification &mdash; is this a real pair or a random one?</li>
+                    <li class="fragment">For each positive pair, sample 5&ndash;20 <span class="highlight">negative</span> (random) pairs</li>
+                </ul>
+                <aside class="notes">
+                    Without negative sampling, training would be impractically slow.
+                    Instead of asking "which word is it?" (100K-way classification),
+                    we ask "is this a real pair?" (binary classification). Much faster.
+                </aside>
+            </section>
+
+            <!-- Slide 20: Training Process Step by Step -->
+            <section>
+                <h2>Training Process</h2>
+                <div class="fig">
+                    <img src="https://jalammar.github.io/images/word2vec/word2vec-training-update.png"
+                         alt="Word2Vec training weight update"
+                         style="max-height: 300px;">
+                    <p class="caption">
+                        Source: Jay Alammar, "The Illustrated Word2Vec"
+                        &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
+                    </p>
+                </div>
+                <div class="step-box fragment">
+                    <span class="step-num">1</span> Look up embeddings for input word and context word
+                </div>
+                <div class="step-box fragment">
+                    <span class="step-num">2</span> Compute dot product &rarr; sigmoid &rarr; prediction
+                </div>
+                <div class="step-box fragment">
+                    <span class="step-num">3</span> Compare with label (1 = real pair, 0 = negative) &rarr; error
+                </div>
+                <div class="step-box fragment">
+                    <span class="step-num">4</span> Update embeddings via backpropagation
+                </div>
+                <aside class="notes">
+                    Repeat millions of times over the training corpus.
+                    Words that frequently appear together get pulled closer in vector space.
+                    Words that don't appear together get pushed apart.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 4: WHAT WORD2VEC LEARNS ==================== -->
+
+            <section class="section-title">
+                <h2>What Word2Vec Learns</h2>
+                <h3>The magic of the vector space</h3>
+            </section>
+
+            <!-- Slide 22: Embedding Space -->
+            <section>
+                <h2>Words in Vector Space</h2>
+                <div class="fig">
+                    <img src="https://jalammar.github.io/images/word2vec/king-colored-embedding.png"
+                         alt="Word embedding dimensions"
+                         style="max-height: 350px;">
+                    <p class="caption">
+                        Source: Jay Alammar, "The Illustrated Word2Vec"
+                        &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
+                    </p>
+                </div>
+                <p class="fragment" style="font-size: 0.85em;">
+                    Each dimension captures some <strong>latent feature</strong> of meaning
+                </p>
+                <aside class="notes">
+                    Unlike one-hot vectors, each dimension captures something meaningful.
+                    The model discovers these features on its own — no human labels needed.
+                    Some dimensions might correlate with gender, size, formality, etc.
+                </aside>
+            </section>
+
+            <!-- Slide 23: The Famous Analogy -->
+            <section>
+                <h2>The Famous Analogy</h2>
+                <p style="font-size: 1.5em; margin: 0.8em 0;">
+                    <span class="highlight-blue">king</span> &minus;
+                    <span class="highlight">man</span> +
+                    <span class="highlight-green">woman</span> &asymp;
+                    <span class="highlight-blue">queen</span>
+                </p>
+                <div class="fig fragment">
+                    <img src="https://jalammar.github.io/images/word2vec/king-analogy-viz.png"
+                         alt="King-Queen analogy visualization"
+                         style="max-height: 300px;">
+                    <p class="caption">
+                        Source: Jay Alammar, "The Illustrated Word2Vec"
+                        &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
+                    </p>
+                </div>
+                <p class="fragment" style="font-size: 0.85em;">
+                    Vector arithmetic captures <strong>semantic relationships</strong>!
+                </p>
+                <aside class="notes">
+                    This is the result that made the world pay attention to word embeddings.
+                    The vector from "man" to "king" is approximately the same as from "woman" to "queen".
+                    The model learned the concept of "royalty" and "gender" without being told.
+                </aside>
+            </section>
+
+            <!-- Slide 24: GloVe analogy visualizations -->
+            <section>
+                <h2>Linear Relationships Everywhere</h2>
+                <div class="two-column">
+                    <div class="fig fragment">
+                        <img src="https://nlp.stanford.edu/projects/glove/images/man_woman_small.jpg"
+                             alt="Man-Woman relationships" style="max-height: 300px;">
+                        <p class="caption">Man &harr; Woman relationships</p>
+                    </div>
+                    <div class="fig fragment">
+                        <img src="https://nlp.stanford.edu/projects/glove/images/comparative_superlative_small.jpg"
+                             alt="Comparative-Superlative relationships" style="max-height: 300px;">
+                        <p class="caption">Comparative &harr; Superlative</p>
+                    </div>
+                </div>
+                <p class="ref">
+                    Source: Stanford NLP &mdash; GloVe: Global Vectors for Word Representation
+                    &mdash; <a href="https://nlp.stanford.edu/projects/glove/">nlp.stanford.edu/projects/glove</a>
+                </p>
+                <aside class="notes">
+                    These visualizations from the Stanford GloVe project show consistent patterns.
+                    Left: gender relationships form parallel lines.
+                    Right: comparative/superlative forms are systematically related.
+                    This is not hand-coded — it's entirely learned from text data.
+                </aside>
+            </section>
+
+            <!-- Slide 25: More analogies from GloVe -->
+            <section>
+                <h2>Semantic & Syntactic Patterns</h2>
+                <div class="two-column">
+                    <div class="fig fragment">
+                        <img src="https://nlp.stanford.edu/projects/glove/images/company_ceo_small.jpg"
+                             alt="Company-CEO relationships" style="max-height: 300px;">
+                        <p class="caption">Company &harr; CEO</p>
+                    </div>
+                    <div class="fig fragment">
+                        <img src="https://nlp.stanford.edu/projects/glove/images/city_zip_small.jpg"
+                             alt="City-Zip code relationships" style="max-height: 300px;">
+                        <p class="caption">City &harr; Zip Code</p>
+                    </div>
+                </div>
+                <p class="fragment" style="font-size: 0.85em; margin-top: 0.8em;">
+                    The model learned real-world knowledge <strong>just from reading text</strong>
+                </p>
+                <p class="ref">
+                    Source: Stanford NLP &mdash; GloVe: Global Vectors for Word Representation
+                    &mdash; <a href="https://nlp.stanford.edu/projects/glove/">nlp.stanford.edu/projects/glove</a>
+                </p>
+                <aside class="notes">
+                    Company-CEO and City-ZIP are remarkable because these are factual relationships.
+                    The model doesn't "know" facts — it just learned statistical patterns from text.
+                    But those patterns encode real-world knowledge.
+                </aside>
+            </section>
+
+            <!-- Slide 26: Cosine Similarity -->
+            <section>
+                <h2>Measuring Similarity</h2>
+                <p style="font-size: 0.85em;"><strong>Cosine Similarity</strong>: angle between two vectors</p>
+                <div style="text-align: center; margin: 1em 0;">
+                    <span class="formula" style="font-size: 1.2em;">
+                        cos(&theta;) = (A &middot; B) / (||A|| &times; ||B||)
+                    </span>
+                </div>
+                <div class="matrix-box fragment" style="font-size: 0.8em; text-align: center;">
+<pre>cos(king, queen)   = 0.73  &larr; high similarity
+cos(king, prince)  = 0.71
+cos(king, dog)     = 0.15  &larr; low similarity
+cos(cat, dog)      = 0.76  &larr; both animals!
+cos(cat, car)      = 0.12</pre>
+                </div>
+                <ul style="font-size: 0.75em; margin-top: 0.8em;">
+                    <li class="fragment"><strong>1.0</strong> = identical direction (same meaning)</li>
+                    <li class="fragment"><strong>0.0</strong> = orthogonal (unrelated)</li>
+                    <li class="fragment"><strong>-1.0</strong> = opposite direction</li>
+                </ul>
+                <aside class="notes">
+                    Cosine similarity is the standard metric for comparing word embeddings.
+                    We use cosine instead of Euclidean distance because it's length-invariant.
+                    These numbers are illustrative — actual values depend on the model and corpus.
+                </aside>
+            </section>
+
+            <!-- Slide 27: Discussion -->
+            <section class="discussion-slide">
+                <h2>Think About It</h2>
+                <p style="font-size: 0.95em; margin-bottom: 1em;">
+                    What other analogies would you expect Word2Vec to capture?
+                </p>
+                <ul style="font-size: 0.85em;">
+                    <li class="fragment">Paris &minus; France + Japan = <span class="highlight-blue">?</span></li>
+                    <li class="fragment">Apple &minus; fruit + Samsung = <span class="highlight-blue">?</span></li>
+                    <li class="fragment">doctor &minus; man + woman = <span class="highlight-blue">?</span></li>
+                </ul>
+                <p class="fragment small" style="margin-top: 1.5em;">
+                    That last one is interesting... what does it tell us about bias in training data?
+                </p>
+                <aside class="notes">
+                    Paris - France + Japan = Tokyo. Apple is tricky — it's ambiguous.
+                    doctor - man + woman often = nurse in early models — this reveals gender bias!
+                    Good segue: embeddings learn biases present in the training data.
+                    This is an active research area: debiasing word embeddings.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 5: GLOVE ==================== -->
+
+            <section class="section-title">
+                <h2>GloVe</h2>
+                <h3>Pennington, Socher & Manning, 2014 &mdash; Stanford</h3>
+            </section>
+
+            <!-- Slide 29: GloVe Overview -->
+            <section>
+                <h2>GloVe: Global Vectors</h2>
+                <p style="font-size: 0.85em;"><strong>Glo</strong>bal <strong>Ve</strong>ctors for Word Representation</p>
+                <ul>
+                    <li class="fragment">
+                        <strong>Key difference from Word2Vec</strong>:<br>
+                        <span style="font-size: 0.85em;">uses <span class="highlight-blue">global co-occurrence statistics</span>, not just local windows</span>
+                    </li>
+                    <li class="fragment">
+                        <strong>Step 1</strong>: build a word-word <strong>co-occurrence matrix</strong> from the entire corpus
+                    </li>
+                    <li class="fragment">
+                        <strong>Step 2</strong>: learn vectors such that their <strong>dot product</strong> approximates the <strong>log co-occurrence</strong>
+                    </li>
+                </ul>
+                <div class="fragment" style="text-align: center; margin-top: 1em;">
+                    <span class="formula">w<sub>i</sub> &middot; w<sub>j</sub> &asymp; log P(i, j)</span>
+                </div>
+                <p class="ref">
+                    Pennington, J., Socher, R. & Manning, C.D. (2014). "GloVe: Global Vectors for Word Representation." EMNLP.
+                    &mdash; <a href="https://nlp.stanford.edu/projects/glove/">nlp.stanford.edu/projects/glove</a>
+                </p>
+                <aside class="notes">
+                    GloVe combines the best of two worlds:
+                    - Global matrix factorization (like LSA) — captures global statistics
+                    - Local context window (like Word2Vec) — captures local patterns
+                    The name literally means "Global Vectors".
+                </aside>
+            </section>
+
+            <!-- Slide 30: Co-occurrence Matrix -->
+            <section>
+                <h2>Co-occurrence Matrix</h2>
+                <p style="font-size: 0.85em;">Count how often words appear <strong>near each other</strong> in the corpus</p>
+                <div class="matrix-box fragment" style="text-align: center;">
+<pre>         cat   dog   sat   the   mat
+cat    [  0,    2,    5,   10,    3 ]
+dog    [  2,    0,    4,    8,    1 ]
+sat    [  5,    4,    0,   12,    6 ]
+the    [ 10,    8,   12,    0,    7 ]
+mat    [  3,    1,    6,    7,    0 ]</pre>
+                </div>
+                <ul style="font-size: 0.8em; margin-top: 0.8em;">
+                    <li class="fragment">"cat" and "sat" co-occur 5 times &rarr; they're related</li>
+                    <li class="fragment">This matrix encodes the <strong>entire corpus</strong> in one structure</li>
+                    <li class="fragment">GloVe factorizes this matrix into <strong>low-dimensional vectors</strong></li>
+                </ul>
+                <aside class="notes">
+                    Numbers are illustrative, not real.
+                    The matrix is symmetric: co-occurrence(cat, sat) = co-occurrence(sat, cat).
+                    For a real corpus, this matrix would be huge (|V| x |V|) and very sparse.
+                    GloVe learns a compact representation that preserves the important information.
+                </aside>
+            </section>
+
+            <!-- Slide 31: Word2Vec vs GloVe -->
+            <section>
+                <h2>Word2Vec vs GloVe</h2>
+                <table class="compare-table">
+                    <tr>
+                        <th></th>
+                        <th>Word2Vec</th>
+                        <th>GloVe</th>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Method</strong></td>
+                        <td>Predictive (neural network)</td>
+                        <td>Count-based (matrix factorization)</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Uses</strong></td>
+                        <td>Local context windows</td>
+                        <td>Global co-occurrence statistics</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Training</strong></td>
+                        <td>Online (iterates through text)</td>
+                        <td>Offline (pre-computes matrix)</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Performance</strong></td>
+                        <td>Similar</td>
+                        <td>Similar</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Pre-trained</strong></td>
+                        <td>Google News (3M words)</td>
+                        <td>Wikipedia + Gigaword (6B tokens)</td>
+                    </tr>
+                </table>
+                <p class="fragment" style="margin-top: 1em; font-size: 0.85em; color: #7ec8e3;">
+                    In practice, both produce high-quality embeddings &mdash; GloVe is often slightly faster to train
+                </p>
+                <aside class="notes">
+                    The debate "which is better?" has largely been settled: they're comparable.
+                    GloVe tends to be preferred in academic research partly because of Stanford's influence.
+                    Word2Vec with negative sampling is very popular in industry.
+                    Both are available as pre-trained models you can download and use immediately.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 6: PROPERTIES & LIMITATIONS ==================== -->
+
+            <section class="section-title">
+                <h2>Properties & Limitations</h2>
+                <h3>What static embeddings can and cannot do</h3>
+            </section>
+
+            <!-- Slide 33: Window Size Effect -->
+            <section>
+                <h2>Window Size Matters</h2>
+                <div class="fig">
+                    <img src="https://jalammar.github.io/images/word2vec/word2vec-window-size.png"
+                         alt="Effect of window size"
+                         style="max-height: 300px;">
+                    <p class="caption">
+                        Source: Jay Alammar, "The Illustrated Word2Vec"
+                        &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
+                    </p>
+                </div>
+                <div class="two-column fragment" style="font-size: 0.8em;">
+                    <div>
+                        <h3>Small window (2&ndash;3)</h3>
+                        <p>Captures <strong>syntactic</strong> similarity<br>
+                        <span class="small">"big" &harr; "large" &harr; "huge"</span></p>
+                    </div>
+                    <div>
+                        <h3>Large window (8&ndash;10)</h3>
+                        <p>Captures <strong>semantic/topical</strong> similarity<br>
+                        <span class="small">"dog" &harr; "puppy" &harr; "veterinarian"</span></p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    This is a practical consideration when training embeddings.
+                    Small windows: words that can replace each other (synonyms, same POS).
+                    Large windows: words that appear in the same topic or domain.
+                </aside>
+            </section>
+
+            <!-- Slide 34: Bias in Embeddings -->
+            <section>
+                <h2>Bias in Embeddings</h2>
+                <p style="font-size: 0.85em;">Embeddings learn the <strong>biases present in the training data</strong></p>
+                <div class="matrix-box fragment" style="text-align: center; font-size: 0.85em;">
+<pre>man &rarr; computer programmer
+woman &rarr; homemaker
+
+doctor &minus; man + woman &asymp; nurse</pre>
+                </div>
+                <ul style="font-size: 0.8em; margin-top: 1em;">
+                    <li class="fragment">These reflect <strong>historical stereotypes</strong> in training text</li>
+                    <li class="fragment">Active research area: <strong>debiasing word embeddings</strong>
+                        <span class="small">(Bolukbasi et al., 2016)</span>
+                    </li>
+                    <li class="fragment">Important lesson: <span class="highlight">data is not neutral</span></li>
+                </ul>
+                <aside class="notes">
+                    This is a crucial topic for responsible AI.
+                    The model isn't "sexist" — it's reflecting patterns in the text it was trained on.
+                    But when deployed in hiring systems, recommendations, etc., these biases cause real harm.
+                    Bolukbasi et al. paper: "Man is to Computer Programmer as Woman is to Homemaker?"
+                </aside>
+            </section>
+
+            <!-- Slide 35: The Polysemy Problem -->
+            <section>
+                <h2>The Polysemy Problem</h2>
+                <p style="font-size: 0.85em;"><strong>Static embeddings</strong>: one vector per word, regardless of context</p>
+                <div class="fragment" style="background: rgba(255,255,255,0.05); padding: 1em; border-radius: 8px; font-size: 0.85em;">
+                    <p style="margin: 0 0 0.5em;">
+                        "I went to the <span class="highlight">bank</span> to deposit money"
+                    </p>
+                    <p style="margin: 0;">
+                        "I sat on the <span class="highlight">bank</span> of the river"
+                    </p>
+                </div>
+                <p class="fragment" style="margin-top: 1em; font-size: 0.85em;">
+                    Word2Vec / GloVe: same vector for both!
+                </p>
+                <div class="fragment" style="margin-top: 1em;">
+                    <p style="font-size: 0.85em; color: #7ec8e3;">
+                        Solution &rarr; <strong>Contextual embeddings</strong> (ELMo, BERT, GPT)
+                    </p>
+                    <p class="small">Different vector for each usage of the word &mdash; Day 2 & 3 material</p>
+                </div>
+                <aside class="notes">
+                    This is THE fundamental limitation of Word2Vec and GloVe.
+                    Static = one vector forever. But words have multiple meanings.
+                    The solution came in 2018 with ELMo and BERT: contextual embeddings
+                    where the vector depends on the surrounding context.
+                    This is the bridge to Transformers — covered on Day 2.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 7: PRACTICAL USAGE ==================== -->
+
+            <section class="section-title">
+                <h2>Using Embeddings in Practice</h2>
+                <h3>From theory to code</h3>
+            </section>
+
+            <!-- Slide 37: Pre-trained Models -->
+            <section>
+                <h2>Pre-trained Embeddings</h2>
+                <p style="font-size: 0.85em;">You don't need to train from scratch &mdash; <strong>download and use</strong></p>
+                <table class="compare-table">
+                    <tr>
+                        <th>Model</th>
+                        <th>Corpus</th>
+                        <th>Vocabulary</th>
+                        <th>Dimensions</th>
+                    </tr>
+                    <tr class="fragment">
+                        <td>Word2Vec</td>
+                        <td>Google News</td>
+                        <td>3M words</td>
+                        <td>300</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>GloVe</td>
+                        <td>Wikipedia + Gigaword</td>
+                        <td>400K words</td>
+                        <td>50, 100, 200, 300</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>GloVe (large)</td>
+                        <td>Common Crawl</td>
+                        <td>2.2M words</td>
+                        <td>300</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>FastText</td>
+                        <td>Wikipedia</td>
+                        <td>1M words</td>
+                        <td>300</td>
+                    </tr>
+                </table>
+                <aside class="notes">
+                    In practice, you almost always start with pre-trained embeddings.
+                    Training from scratch requires massive corpora and compute.
+                    GloVe 6B (Wikipedia) is a great starting point for experiments.
+                    FastText is worth mentioning — it handles subwords, useful for rare words.
+                </aside>
+            </section>
+
+            <!-- Slide 38: Code Example -->
+            <section>
+                <h2>Using Word2Vec in Python</h2>
+                <pre style="font-size: 0.55em;"><code class="python">import gensim.downloader as api
+
+# Load pre-trained Word2Vec (Google News, 300d)
+model = api.load("word2vec-google-news-300")
+
+# Find similar words
+model.most_similar("python")
+# [('pythons', 0.71), ('snake', 0.65), ('lizard', 0.58), ...]
+
+# Word analogy: king - man + woman = ?
+model.most_similar(positive=["king", "woman"],
+                   negative=["man"], topn=1)
+# [('queen', 0.71)]
+
+# Cosine similarity
+model.similarity("cat", "dog")     # 0.76
+model.similarity("cat", "car")     # 0.12</code></pre>
+                <p class="fragment small" style="margin-top: 0.5em;">
+                    Library: <strong>gensim</strong> &mdash; pip install gensim
+                </p>
+                <aside class="notes">
+                    Live demo opportunity: run this code in front of students.
+                    Let them suggest words and analogies to try.
+                    gensim is the standard library for Word2Vec in Python.
+                </aside>
+            </section>
+
+            <!-- Slide 39: Applications -->
+            <section>
+                <h2>Where Embeddings Are Used</h2>
+                <ul>
+                    <li class="fragment">
+                        <strong>Text Classification</strong> &mdash; embeddings as input features
+                    </li>
+                    <li class="fragment">
+                        <strong>Search & Information Retrieval</strong> &mdash; semantic search beyond keywords
+                    </li>
+                    <li class="fragment">
+                        <strong>Recommendation Systems</strong>
+                        <span class="small">&mdash; Spotify, Airbnb use embedding-based recommendations</span>
+                    </li>
+                    <li class="fragment">
+                        <strong>Transfer Learning</strong> &mdash; pre-trained embeddings boost downstream tasks
+                    </li>
+                    <li class="fragment">
+                        <strong>Foundation for Transformers</strong> &mdash; BERT, GPT start with embeddings
+                    </li>
+                </ul>
+                <aside class="notes">
+                    Embeddings are not just an academic exercise — they're everywhere in production.
+                    Spotify's "Word2Vec for music" treats songs as words and playlists as sentences.
+                    Airbnb uses listing embeddings for search ranking.
+                    And of course, every LLM starts by embedding input tokens.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 8: SUMMARY & PREVIEW ==================== -->
+
+            <section class="section-title">
+                <h2>Summary</h2>
+                <h3>What we learned today</h3>
+            </section>
+
+            <!-- Slide 41: The Evolution -->
+            <section>
+                <h2>The Evolution of Text Representation</h2>
+                <div class="pipeline" style="flex-direction: column; gap: 0.5em;">
+                    <div style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 180px; border-color: #93a1a1;">One-Hot</div>
+                        <span style="font-size: 0.7em; color: #93a1a1;">sparse, no similarity</span>
+                    </div>
+                    <div class="arrow" style="font-size: 1.2em;">&darr;</div>
+                    <div style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 180px; border-color: #93a1a1;">BoW / TF-IDF</div>
+                        <span style="font-size: 0.7em; color: #93a1a1;">document-level, word importance</span>
+                    </div>
+                    <div class="arrow" style="font-size: 1.2em;">&darr;</div>
+                    <div style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 180px; border-color: #93a1a1;">n-grams</div>
+                        <span style="font-size: 0.7em; color: #93a1a1;">local order, but combinatorial explosion</span>
+                    </div>
+                    <div class="arrow" style="font-size: 1.2em;">&darr;</div>
+                    <div style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 180px; border-color: #ff6b6b;">Word2Vec / GloVe</div>
+                        <span style="font-size: 0.7em; color: #ff6b6b;">dense, semantic, learned</span>
+                    </div>
+                    <div class="arrow" style="font-size: 1.2em;">&darr;</div>
+                    <div style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 180px; border-color: #7ec8e3;">Contextual (BERT, GPT)</div>
+                        <span style="font-size: 0.7em; color: #7ec8e3;">Day 2 & 3</span>
+                    </div>
+                </div>
+                <aside class="notes">
+                    This is the full story of today's session in one slide.
+                    Each step solved a problem that the previous approach couldn't handle.
+                    Next time (Day 2): contextual embeddings and the Transformer architecture.
+                </aside>
+            </section>
+
+            <!-- Slide 42: Key Takeaways -->
+            <section>
+                <h2>Key Takeaways</h2>
+                <ol>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        Words need <strong>numerical representations</strong> for machines to process them
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        <strong>Distributional hypothesis</strong>: meaning comes from context
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        <strong>Word2Vec & GloVe</strong>: dense vectors that capture semantic relationships
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        Vector arithmetic reveals <strong>latent structure</strong> in language
+                    </li>
+                    <li class="fragment">
+                        <strong>Limitation</strong>: static embeddings can't handle polysemy &rarr; next: contextual embeddings
+                    </li>
+                </ol>
+                <aside class="notes">
+                    Recap the five core ideas from today's session.
+                </aside>
+            </section>
+
+            <!-- Slide 43: References & Resources -->
+            <section>
+                <h2>References & Further Reading</h2>
+                <ul style="font-size: 0.65em;">
+                    <li>
+                        Mikolov et al. (2013). <em>"Efficient Estimation of Word Representations in Vector Space"</em>
+                        <span style="color: #93a1a1;">&mdash; The Word2Vec paper</span>
+                    </li>
+                    <li>
+                        Pennington, Socher & Manning (2014). <em>"GloVe: Global Vectors for Word Representation"</em>
+                        <span style="color: #93a1a1;">&mdash; The GloVe paper</span>
+                    </li>
+                    <li>
+                        Jay Alammar. <em>"The Illustrated Word2Vec"</em>
+                        <span style="color: #93a1a1;">&mdash;
+                        <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #7ec8e3;">jalammar.github.io</a></span>
+                    </li>
+                    <li>
+                        Stanford CS224N. <em>"Natural Language Processing with Deep Learning"</em>
+                        <span style="color: #93a1a1;">&mdash;
+                        <a href="https://web.stanford.edu/class/cs224n/" style="color: #7ec8e3;">web.stanford.edu/class/cs224n</a></span>
+                    </li>
+                    <li>
+                        Jurafsky & Martin. <em>"Speech and Language Processing"</em> Ch. 6
+                        <span style="color: #93a1a1;">&mdash;
+                        <a href="https://web.stanford.edu/~jurafsky/slp3/" style="color: #7ec8e3;">web.stanford.edu/~jurafsky/slp3</a></span>
+                    </li>
+                </ul>
+                <aside class="notes">
+                    Encourage students to read the Jay Alammar post — it's the best visual introduction.
+                    CS224N lecture videos are freely available on YouTube.
+                    Jurafsky & Martin is the classic NLP textbook — Chapter 6 covers embeddings.
+                </aside>
+            </section>
+
+            <!-- Slide 44: What's Next -->
+            <section>
+                <h2>What's Next</h2>
+                <div style="border: 2px solid #7ec8e3; border-radius: 8px; padding: 1.2em; display: inline-block;">
+                    <h3>Day 2: Attention & Transformers</h3>
+                    <p style="font-size: 0.8em;">March 9, 2026</p>
+                    <ul style="font-size: 0.75em;">
+                        <li>From static to contextual embeddings</li>
+                        <li>Attention mechanism: learning where to look</li>
+                        <li>The Transformer architecture</li>
+                    </ul>
+                </div>
+                <p style="margin-top: 1.5em; font-size: 0.85em;">
+                    Thank you!
+                </p>
+                <aside class="notes">
+                    End of Day 1. Students have a month until Day 2.
+                    Encourage them to explore the references and play with gensim.
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            controlsTutorial: false,
+            progress: true,
+            center: true,
+            plugins: [RevealHighlight, RevealNotes]
+        });
+    </script>
+</body>
+</html>
