@@ -23,20 +23,47 @@
 
 ## Plan pédagogique
 
-| N° | Date | Horaire | Sujet | Contenu |
-|----|------|---------|-------|---------|
-| 1 | 10/02 | 08:15 - 10:15 | Fondamentaux NLP | Introduction de la linguistique aux LLM |
-| 2 | 10/02 | 10:30 - 12:30 | Word Embedding | Évolution des méthodes statistiques au ML vers word2vec |
-| 3 | 09/03 | 13:30 - 15:30 | Présentation de groupe #1 | Boîte à outils startup : gestion de projet, API LLM gratuites, Vibe Coding, déploiement et hébergement |
-| 4 | 09/03 | 15:45 - 17:45 | | |
-| 5 | 13/03 | 08:15 - 10:15 | Présentation de groupe #2 | Claude Code en profondeur : MCP, Skills, ingénierie de prompts et chaîne d'outils |
-| 6 | 13/03 | 10:30 - 12:30 | | |
-| 7 | 19/03 | 13:30 - 15:30 | Présentation de groupe #3 | Attention Is All You Need |
-| 8 | 19/03 | 15:45 - 17:45 | | |
-| 9 | 20/03 | 13:30 - 15:30 | Présentation de groupe #4 | OpenClaw : configuration, écosystème de plateformes et tendances Agent-to-Agent |
-| 10 | 20/03 | 15:45 - 17:45 | | |
-| 11 | 31/03 | 13:30 - 15:30 | **Demo Day** | Présentations de projets NLP (première partie) |
-| 12 | 31/03 | 15:45 - 17:45 | **Demo Day** | Présentations de projets NLP (deuxième partie) + notation par investissement |
+### Jour 1 - 10 février 2026 (mardi)
+
+| Horaire | Sujet | Contenu | Présentation de groupe |
+|---------|-------|---------|------------------------|
+| 08:15 - 10:15 | Fondamentaux NLP | Introduction de la linguistique aux LLM | |
+| 10:30 - 12:30 | Word Embeddings | Évolution des méthodes statistiques au ML vers word2vec | |
+
+### Jour 2 - 9 mars 2026 (lundi)
+
+| Horaire | Sujet | Contenu | Présentation de groupe |
+|---------|-------|---------|------------------------|
+| 13:30 - 15:30 | Mécanismes d'Attention | Limites des RNN, mécanisme d'Attention, Self-Attention | Présentation #1 (Boîte à outils startup) |
+| 15:45 - 17:45 | Architecture Transformer | Encoder-Decoder, Multi-head Attention, Position Encoding | |
+
+### Jour 3 - 13 mars 2026 (vendredi)
+
+| Horaire | Sujet | Contenu | Présentation de groupe |
+|---------|-------|---------|------------------------|
+| 08:15 - 10:15 | Pre-training | Tâches de pré-entraînement, modèles de langage, lois d'échelle, objectifs (MLM/CLM) | Présentation #2 (IDE IA modernes : Cursor vs Windsurf vs Cline) |
+| 10:30 - 12:30 | Fine-tuning | Techniques de fine-tuning, Instruction Tuning, méthodes PEFT (LoRA, Adapter) | |
+
+### Jour 4 - 19 mars 2026 (jeudi)
+
+| Horaire | Sujet | Contenu | Présentation de groupe |
+|---------|-------|---------|------------------------|
+| 13:30 - 15:30 | Prompting | Zero/Few-shot, ingénierie de prompts, principes ICL, Chain-of-Thought | Présentation #3 (Utilisation de Claude Code : MCP, ingénierie de prompts et pratique) |
+| 15:45 - 17:45 | RAG | Génération augmentée par récupération, bases vectorielles, architecture RAG, cas pratiques | |
+
+### Jour 5 - 20 mars 2026 (vendredi)
+
+| Horaire | Sujet | Contenu | Présentation de groupe |
+|---------|-------|---------|------------------------|
+| 13:30 - 15:30 | Document AI & Multimodal | Analyse PDF, compréhension documentaire, modèles Vision-Language, applications multimodales | Présentation #4 (OpenClaw & Agent-to-Agent) |
+| 15:45 - 17:45 | RLHF | Bases de l'apprentissage par renforcement, pipeline RLHF, méthodes d'alignement (DPO/PPO), sécurité | |
+
+### Jour 6 - 31 mars 2026 (mardi) - Demo Day
+
+| Horaire | Sujet | Contenu | Présentation de groupe |
+|---------|-------|---------|------------------------|
+| 13:30 - 15:30 | **Demo Day (Première partie)** | Présentations de projets NLP (première partie) | |
+| 15:45 - 17:45 | **Demo Day (Deuxième partie)** | Présentations de projets NLP (deuxième partie) + notation par investissement | |
 
 ---
 

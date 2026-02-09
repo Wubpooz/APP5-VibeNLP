@@ -23,20 +23,47 @@
 
 ## Teaching Plan
 
-| # | Date | Time | Topic | Summary |
-|---|------|------|-------|---------|
-| 1 | 10/02 | 08:15 - 10:15 | NLP Fundamentals | Basic introduction from linguistics to LLM |
-| 2 | 10/02 | 10:30 - 12:30 | Word Embedding | Evolution from statistical methods to ML to word2vec |
-| 3 | 09/03 | 13:30 - 15:30 | Group Presentation #1 | Startup Toolbox: project management, free LLM API, Vibe Coding, deployment & hosting |
-| 4 | 09/03 | 15:45 - 17:45 | | |
-| 5 | 13/03 | 08:15 - 10:15 | Group Presentation #2 | Claude Code Deep Dive: MCP, Skills, Prompt Engineering & Toolchain |
-| 6 | 13/03 | 10:30 - 12:30 | | |
-| 7 | 19/03 | 13:30 - 15:30 | Group Presentation #3 | Attention Is All You Need |
-| 8 | 19/03 | 15:45 - 17:45 | | |
-| 9 | 20/03 | 13:30 - 15:30 | Group Presentation #4 | OpenClaw: configuration, platform ecosystem & Agent-to-Agent trends |
-| 10 | 20/03 | 15:45 - 17:45 | | |
-| 11 | 31/03 | 13:30 - 15:30 | **Demo Day** | NLP project presentations (first half) |
-| 12 | 31/03 | 15:45 - 17:45 | **Demo Day** | NLP project presentations (second half) + investment scoring |
+### Day 1 - February 10, 2026 (Tuesday)
+
+| Time | Topic | Summary | Group Presentation |
+|------|-------|---------|-------------------|
+| 08:15 - 10:15 | NLP Fundamentals | Basic introduction from linguistics to LLM | |
+| 10:30 - 12:30 | Word Embeddings | Evolution from statistical methods to ML to word2vec | |
+
+### Day 2 - March 9, 2026 (Monday)
+
+| Time | Topic | Summary | Group Presentation |
+|------|-------|---------|-------------------|
+| 13:30 - 15:30 | Attention Mechanisms | RNN limitations, Attention mechanism, Self-Attention | Group Presentation #1 (Startup Toolbox) |
+| 15:45 - 17:45 | Transformer Architecture | Encoder-Decoder, Multi-head Attention, Position Encoding | |
+
+### Day 3 - March 13, 2026 (Friday)
+
+| Time | Topic | Summary | Group Presentation |
+|------|-------|---------|-------------------|
+| 08:15 - 10:15 | Pre-training | Pre-training tasks, language models, scaling laws, training objectives (MLM/CLM) | Group Presentation #2 (Modern AI IDEs: Cursor vs Windsurf vs Cline) |
+| 10:30 - 12:30 | Fine-tuning | Fine-tuning techniques, Instruction Tuning, PEFT methods (LoRA, Adapter) | |
+
+### Day 4 - March 19, 2026 (Thursday)
+
+| Time | Topic | Summary | Group Presentation |
+|------|-------|---------|-------------------|
+| 13:30 - 15:30 | Prompting | Zero/Few-shot, Prompt engineering, ICL principles, Chain-of-Thought | Group Presentation #3 (Claude Code Usage: MCP, Prompt Engineering & Practice) |
+| 15:45 - 17:45 | RAG | Retrieval-Augmented Generation, vector databases, RAG architecture, practical cases | |
+
+### Day 5 - March 20, 2026 (Friday)
+
+| Time | Topic | Summary | Group Presentation |
+|------|-------|---------|-------------------|
+| 13:30 - 15:30 | Document AI & Multimodal | PDF parsing, document understanding, Vision-Language models, multimodal applications | Group Presentation #4 (OpenClaw & Agent-to-Agent) |
+| 15:45 - 17:45 | RLHF | RL basics, RLHF pipeline, alignment methods (DPO/PPO), safety | |
+
+### Day 6 - March 31, 2026 (Tuesday) - Demo Day
+
+| Time | Topic | Summary | Group Presentation |
+|------|-------|---------|-------------------|
+| 13:30 - 15:30 | **Demo Day (First Half)** | NLP project presentations (first half) | |
+| 15:45 - 17:45 | **Demo Day (Second Half)** | NLP project presentations (second half) + investment scoring | |
 
 ---
 
