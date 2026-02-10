@@ -662,6 +662,34 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
                 </aside>
             </section>
 
+            <!-- Slide 19b: Interactive Demo - wevi -->
+            <section>
+                <h2>🎮 Interactive Demo: Watch Training Live</h2>
+                <p style="font-size: 0.85em;"><strong>wevi</strong>: Word Embedding Visual Inspector</p>
+                <div class="fig">
+                    <a href="http://ronxin.github.io/wevi/" target="_blank" style="text-decoration: none;">
+                        <div style="background: rgba(126,200,227,0.15); border: 2px solid #7ec8e3; border-radius: 12px; padding: 1.5em; display: inline-block;">
+                            <p style="font-size: 1.2em; margin: 0;">🔗 ronxin.github.io/wevi</p>
+                            <p style="font-size: 0.7em; color: #93a1a1; margin: 0.5em 0 0;">Click to open (works best in Chrome)</p>
+                        </div>
+                    </a>
+                </div>
+                <ul style="font-size: 0.75em; margin-top: 1em;">
+                    <li class="fragment">Watch <span class="highlight-blue">weight matrices</span> update in real-time</li>
+                    <li class="fragment">See how input/output vectors <span class="highlight-green">converge</span> during training</li>
+                    <li class="fragment">Visualize the effect of <span class="highlight">window size</span> and learning rate</li>
+                    <li class="fragment">Compare <strong>CBOW vs Skip-gram</strong> training dynamics</li>
+                </ul>
+                <p class="ref">
+                    By Xin Rong, author of "word2vec Parameter Learning Explained" (arXiv:1411.2738)
+                </p>
+                <aside class="notes">
+                    This is the best interactive visualization of Word2Vec training.
+                    Students should try it during the break or at home.
+                    Key insight: watch how similar words cluster together as training progresses.
+                </aside>
+            </section>
+
             <!-- Slide 20: Training Process Step by Step -->
             <section>
                 <h2>Training Process</h2>
@@ -894,6 +922,88 @@ cos(cat, car)      = 0.12</pre>
                 </aside>
             </section>
 
+            <!-- Slide 29b: The Key Insight - Co-occurrence Ratios -->
+            <section>
+                <h2>The Key Insight: Co-occurrence Ratios</h2>
+                <p style="font-size: 0.85em;">What really encodes meaning? <strong>Not raw counts, but ratios!</strong></p>
+                <table class="compare-table fragment" style="font-size: 0.7em;">
+                    <tr>
+                        <th>Probe word k</th>
+                        <th>P(k|ice)</th>
+                        <th>P(k|steam)</th>
+                        <th>P(k|ice) / P(k|steam)</th>
+                    </tr>
+                    <tr>
+                        <td>solid</td>
+                        <td>1.9 × 10⁻⁴</td>
+                        <td>2.2 × 10⁻⁵</td>
+                        <td class="highlight-blue">8.9</td>
+                    </tr>
+                    <tr>
+                        <td>gas</td>
+                        <td>6.6 × 10⁻⁵</td>
+                        <td>7.8 × 10⁻⁴</td>
+                        <td class="highlight">0.085</td>
+                    </tr>
+                    <tr>
+                        <td>water</td>
+                        <td>3.0 × 10⁻³</td>
+                        <td>2.2 × 10⁻³</td>
+                        <td>1.36</td>
+                    </tr>
+                    <tr>
+                        <td>fashion</td>
+                        <td>1.7 × 10⁻⁵</td>
+                        <td>1.8 × 10⁻⁵</td>
+                        <td>0.96</td>
+                    </tr>
+                </table>
+                <ul style="font-size: 0.75em; margin-top: 0.8em;">
+                    <li class="fragment"><span class="highlight-blue">Large ratio</span>: "solid" strongly associated with "ice" vs "steam"</li>
+                    <li class="fragment"><span class="highlight">Small ratio</span>: "gas" strongly associated with "steam" vs "ice"</li>
+                    <li class="fragment"><span style="color: #93a1a1;">Ratio ≈ 1</span>: "water" and "fashion" neutral (or irrelevant)</li>
+                </ul>
+                <p class="ref">Table from the original GloVe paper (Pennington et al., 2014)</p>
+                <aside class="notes">
+                    This table is the heart of the GloVe paper.
+                    The ratios encode semantic relationships in a way raw counts don't.
+                    GloVe's objective: learn vectors whose dot products capture these ratios.
+                </aside>
+            </section>
+
+            <!-- Slide 29c: Deriving the GloVe Objective -->
+            <section>
+                <h2>Why Dot Products = Log Counts?</h2>
+                <p style="font-size: 0.85em;">The derivation follows from a simple requirement</p>
+                <div class="step-box fragment">
+                    <span class="step-num">1</span>
+                    <strong>Goal</strong>: find F such that F(w<sub>i</sub>, w<sub>j</sub>, w̃<sub>k</sub>) = P<sub>ik</sub> / P<sub>jk</sub>
+                </div>
+                <div class="step-box fragment">
+                    <span class="step-num">2</span>
+                    Ratios come from <strong>differences</strong>: F((w<sub>i</sub> - w<sub>j</sub>) · w̃<sub>k</sub>) = ratio
+                </div>
+                <div class="step-box fragment">
+                    <span class="step-num">3</span>
+                    What converts <strong>differences → ratios</strong>? The <span class="highlight-blue">exponential</span>!
+                    <div style="margin-top: 0.3em; font-size: 0.9em;">
+                        <span class="formula">exp(a - b) = exp(a) / exp(b)</span>
+                    </div>
+                </div>
+                <div class="step-box fragment">
+                    <span class="step-num">4</span>
+                    Take log of both sides → <strong>w<sub>i</sub> · w̃<sub>k</sub> = log(X<sub>ik</sub>) + biases</strong>
+                </div>
+                <p class="fragment" style="font-size: 0.8em; color: #7ec8e3; margin-top: 1em;">
+                    The objective function isn't arbitrary &mdash; it's <strong>mathematically inevitable</strong>!
+                </p>
+                <aside class="notes">
+                    This derivation is what makes GloVe elegant.
+                    Each step is forced by mathematical constraints.
+                    The exponential is the ONLY function that converts addition to multiplication.
+                </aside>
+            </section>
+
             <!-- Slide 30: Co-occurrence Matrix -->
             <section>
                 <h2>Co-occurrence Matrix</h2>
@@ -916,6 +1026,74 @@ mat    [  3,    1,    6,    7,    0 ]</pre>
                     The matrix is symmetric: co-occurrence(cat, sat) = co-occurrence(sat, cat).
                     For a real corpus, this matrix would be huge (|V| x |V|) and very sparse.
                     GloVe learns a compact representation that preserves the important information.
+                </aside>
+            </section>
+
+            <!-- Slide 30b: The GloVe Objective Function -->
+            <section>
+                <h2>The GloVe Objective Function</h2>
+                <p style="font-size: 0.85em;">Minimize the <strong>weighted squared error</strong> of dot products vs log counts</p>
+                <div style="text-align: center; margin: 1em 0; background: rgba(255,255,255,0.05); padding: 1em; border-radius: 8px;">
+                    <span class="formula" style="font-size: 1.1em;">
+                        J = Σ<sub>i,j</sub> f(X<sub>ij</sub>) (w<sub>i</sub> · w̃<sub>j</sub> + b<sub>i</sub> + b̃<sub>j</sub> - log X<sub>ij</sub>)²
+                    </span>
+                </div>
+                <div class="two-column fragment" style="font-size: 0.75em;">
+                    <div>
+                        <h3>Key Components</h3>
+                        <ul>
+                            <li><strong>w<sub>i</sub> · w̃<sub>j</sub></strong>: dot product of word vectors</li>
+                            <li><strong>b<sub>i</sub>, b̃<sub>j</sub></strong>: bias terms</li>
+                            <li><strong>log X<sub>ij</sub></strong>: target (log co-occurrence)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Weighting Function f(x)</h3>
+                        <ul>
+                            <li><strong>f(0) = 0</strong>: ignore zero counts</li>
+                            <li><strong>Non-decreasing</strong>: more co-occurrences → more weight</li>
+                            <li><strong>Capped</strong>: don't over-weight "the", "a"</li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="fragment" style="font-size: 0.75em; margin-top: 0.8em; color: #93a1a1;">
+                    f(x) = (x/x<sub>max</sub>)<sup>α</sup> if x < x<sub>max</sub>, else 1 &nbsp;&nbsp;(typically α = 0.75, x<sub>max</sub> = 100)
+                </p>
+                <aside class="notes">
+                    The weighting function f is crucial.
+                    Without it, common words like "the" would dominate the objective.
+                    The 0.75 exponent was found empirically to work best.
+                </aside>
+            </section>
+
+            <!-- Slide 30c: The Deep Connection -->
+            <section>
+                <h2>The Deep Connection</h2>
+                <p style="font-size: 0.85em;">Word2Vec and GloVe are <strong>more similar than they appear</strong></p>
+                <div class="fragment" style="background: rgba(255,107,107,0.1); padding: 1em; border-radius: 8px; border-left: 4px solid #ff6b6b;">
+                    <p style="margin: 0; font-size: 0.85em;">
+                        <strong>Levy & Goldberg (2014)</strong> proved that Word2Vec Skip-gram with Negative Sampling
+                        is <strong>implicitly factorizing a shifted PMI matrix</strong>!
+                    </p>
+                </div>
+                <div class="fragment" style="text-align: center; margin: 1em 0;">
+                    <span class="formula" style="font-size: 1em;">
+                        w<sub>i</sub> · w̃<sub>j</sub> = PMI(i, j) - log k
+                    </span>
+                    <p style="font-size: 0.65em; color: #93a1a1;">where k = number of negative samples</p>
+                </div>
+                <ul style="font-size: 0.75em; margin-top: 0.8em;">
+                    <li class="fragment"><strong>Word2Vec</strong>: learns this factorization <em>implicitly</em> via SGD</li>
+                    <li class="fragment"><strong>GloVe</strong>: learns this factorization <em>explicitly</em> via matrix objective</li>
+                    <li class="fragment">Both capture the same underlying semantic structure!</li>
+                </ul>
+                <p class="ref">
+                    Levy, O. & Goldberg, Y. (2014). "Neural Word Embedding as Implicit Matrix Factorization." NeurIPS.
+                </p>
+                <aside class="notes">
+                    This is a landmark paper in understanding word embeddings.
+                    It unified the "prediction-based" and "count-based" views.
+                    PMI = Pointwise Mutual Information, a classic measure from information theory.
                 </aside>
             </section>
 
@@ -1236,6 +1414,52 @@ model.similarity("cat", "car")     # 0.12</code></pre>
                 </aside>
             </section>
 
+            <!-- Slide 42b: Interactive Resources -->
+            <section>
+                <h2>🎮 Interactive Resources to Explore</h2>
+                <table class="compare-table" style="font-size: 0.65em;">
+                    <tr>
+                        <th>Tool</th>
+                        <th>What it does</th>
+                        <th>Link</th>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>wevi</strong></td>
+                        <td>Watch Word2Vec weights update live during training</td>
+                        <td><a href="http://ronxin.github.io/wevi/" style="color: #7ec8e3;">ronxin.github.io/wevi</a></td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Imperial Demo</strong></td>
+                        <td>Train your own Word2Vec, see PCA clustering</td>
+                        <td><a href="https://www.doc.ic.ac.uk/~nuric/word2vec_demo.html" style="color: #7ec8e3;">doc.ic.ac.uk/~nuric</a></td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>TensorFlow Projector</strong></td>
+                        <td>Explore pre-trained embeddings in 3D</td>
+                        <td><a href="https://projector.tensorflow.org/" style="color: #7ec8e3;">projector.tensorflow.org</a></td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Lena Voita's Course</strong></td>
+                        <td>Best mathematical explanations with animations</td>
+                        <td><a href="https://lena-voita.github.io/nlp_course/word_embeddings.html" style="color: #7ec8e3;">lena-voita.github.io</a></td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Dive into DL</strong></td>
+                        <td>Interactive textbook with runnable code</td>
+                        <td><a href="https://d2l.ai/chapter_natural-language-processing-pretraining/word2vec.html" style="color: #7ec8e3;">d2l.ai</a></td>
+                    </tr>
+                </table>
+                <p class="fragment" style="font-size: 0.75em; margin-top: 1em; color: #7ec8e3;">
+                    💡 Homework: try <strong>wevi</strong> and watch how "king" and "queen" vectors evolve!
+                </p>
+                <aside class="notes">
+                    These are carefully curated resources — each offers something unique.
+                    wevi is the best for understanding the training dynamics.
+                    Lena Voita's course has the clearest mathematical explanations.
+                    TensorFlow Projector is great for exploring relationships in 3D.
+                </aside>
+            </section>
+
             <!-- Slide 43: References & Resources -->
             <section>
                 <h2>References & Further Reading</h2>
@@ -1249,9 +1473,18 @@ model.similarity("cat", "car")     # 0.12</code></pre>
                         <span style="color: #93a1a1;">&mdash; The GloVe paper</span>
                     </li>
                     <li>
+                        <span class="highlight-blue">Levy & Goldberg (2014)</span>. <em>"Neural Word Embedding as Implicit Matrix Factorization"</em>
+                        <span style="color: #93a1a1;">&mdash; The unifying theory</span>
+                    </li>
+                    <li>
                         Jay Alammar. <em>"The Illustrated Word2Vec"</em>
                         <span style="color: #93a1a1;">&mdash;
                         <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #7ec8e3;">jalammar.github.io</a></span>
+                    </li>
+                    <li>
+                        <span class="highlight-green">Xin Rong (2014)</span>. <em>"word2vec Parameter Learning Explained"</em>
+                        <span style="color: #93a1a1;">&mdash;
+                        <a href="https://arxiv.org/abs/1411.2738" style="color: #7ec8e3;">arXiv:1411.2738</a></span>
                     </li>
                     <li>
                         Stanford CS224N. <em>"Natural Language Processing with Deep Learning"</em>
@@ -1265,9 +1498,10 @@ model.similarity("cat", "car")     # 0.12</code></pre>
                     </li>
                 </ul>
                 <aside class="notes">
+                    Added Levy & Goldberg for the unified theory view.
+                    Xin Rong's paper is the clearest explanation of Word2Vec math.
                     Encourage students to read the Jay Alammar post — it's the best visual introduction.
                     CS224N lecture videos are freely available on YouTube.
-                    Jurafsky & Martin is the classic NLP textbook — Chapter 6 covers embeddings.
                 </aside>
             </section>
 
