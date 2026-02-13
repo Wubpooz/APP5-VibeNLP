@@ -1,0 +1,43 @@
+title: "VibeNLP"
+description: "NLP Course - TAL"
+baseurl: "/VibeNLP"
+url: ""
+permalink: pretty
+
+exclude:
+  - CLAUDE.md
+  - COURSE_IDEAS_en.md
+  - COURSE_IDEAS_cn.md
+  - COURSE_IDEAS_fr.md
+  - calendar_en.md
+  - calendar_cn.md
+  - calendar_fr.md
+  - PRESENTATION_en.md
+  - PRESENTATION_cn.md
+  - PRESENTATION_fr.md
+  - DEMO_DAY_en.md
+  - DEMO_DAY_cn.md
+  - DEMO_DAY_fr.md
+  - exercises/
+  - planning.png
+  - .conductor/
+  - Gemfile
+  - Gemfile.lock
+  - .claude/
+
+defaults:
+  - scope:
+      path: "en"
+    values:
+      lang: "en"
+      layout: "page"
+  - scope:
+      path: "cn"
+    values:
+      lang: "cn"
+      layout: "page"
+  - scope:
+      path: "fr"
+    values:
+      lang: "fr"
+      layout: "page"

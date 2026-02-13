@@ -1,0 +1,14 @@
+{% assign pages = site.pages | where: "ref", page.ref %}
+<div class="lang-switcher">
+  {% for p in pages %}
+    {% if p.lang == "en" %}
+      <a href="{{ p.url | prepend: site.baseurl }}" class="lang-btn {% if page.lang == 'en' %}active{% endif %}">EN</a>
+    {% endif %}
+    {% if p.lang == "cn" %}
+      <a href="{{ p.url | prepend: site.baseurl }}" class="lang-btn {% if page.lang == 'cn' %}active{% endif %}">中</a>
+    {% endif %}
+    {% if p.lang == "fr" %}
+      <a href="{{ p.url | prepend: site.baseurl }}" class="lang-btn {% if page.lang == 'fr' %}active{% endif %}">FR</a>
+    {% endif %}
+  {% endfor %}
+</div>

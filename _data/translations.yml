@@ -1,0 +1,29 @@
+en:
+  site_title: "VibeNLP - TAL Course"
+  site_subtitle: "NLP Course | Feb - Mar 2026"
+  nav_home: "Calendar"
+  nav_slides: "Slides"
+  nav_exercises: "Exercises"
+  nav_presentation: "Presentations"
+  nav_demo_day: "Demo Day"
+  footer_text: "VibeNLP - ZHANG Zheng - 2026"
+
+cn:
+  site_title: "VibeNLP - TAL课程"
+  site_subtitle: "自然语言处理课程 | 2026年2-3月"
+  nav_home: "课程日历"
+  nav_slides: "课件"
+  nav_exercises: "练习"
+  nav_presentation: "报告"
+  nav_demo_day: "Demo Day"
+  footer_text: "VibeNLP - ZHANG Zheng - 2026"
+
+fr:
+  site_title: "VibeNLP - Cours TAL"
+  site_subtitle: "Cours TAL | Fév - Mars 2026"
+  nav_home: "Calendrier"
+  nav_slides: "Diapositives"
+  nav_exercises: "Exercices"
+  nav_presentation: "Présentations"
+  nav_demo_day: "Demo Day"
+  footer_text: "VibeNLP - ZHANG Zheng - 2026"

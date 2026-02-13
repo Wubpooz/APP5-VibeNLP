@@ -1,0 +1,16 @@
+{% assign t = site.data.translations[page.lang] %}
+<header class="site-header">
+  <div class="header-inner">
+    <a href="{{ site.baseurl }}/{{ page.lang }}/" class="site-title">{{ t.site_title }}</a>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
+    <nav class="site-nav">
+      <a href="{{ site.baseurl }}/{{ page.lang }}/" {% if page.ref == 'calendar' %}class="active"{% endif %}>{{ t.nav_home }}</a>
+      <a href="{{ site.baseurl }}/{{ page.lang }}/slides/" {% if page.ref == 'slides' %}class="active"{% endif %}>{{ t.nav_slides }}</a>
+      <a href="{{ site.baseurl }}/{{ page.lang }}/exercises/" {% if page.ref == 'exercises' or page.ref contains 'tp' %}class="active"{% endif %}>{{ t.nav_exercises }}</a>
+      <a href="{{ site.baseurl }}/{{ page.lang }}/presentation/" {% if page.ref == 'presentation' %}class="active"{% endif %}>{{ t.nav_presentation }}</a>
+      <a href="{{ site.baseurl }}/{{ page.lang }}/demo-day/" {% if page.ref == 'demo-day' %}class="active"{% endif %}>{{ t.nav_demo_day }}</a>
+      {% include lang-switcher.html %}
+    </nav>
+  </div>
+</header>

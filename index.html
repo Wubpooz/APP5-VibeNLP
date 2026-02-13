@@ -1,0 +1,19 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="refresh" content="0; url={{ site.baseurl }}/en/">
+  <script>
+    var lang = (navigator.language || '').substring(0, 2);
+    if (lang === 'zh') window.location.href = '{{ site.baseurl }}/cn/';
+    else if (lang === 'fr') window.location.href = '{{ site.baseurl }}/fr/';
+    else window.location.href = '{{ site.baseurl }}/en/';
+  </script>
+</head>
+<body>
+  <p>Redirecting...</p>
+</body>
+</html>
