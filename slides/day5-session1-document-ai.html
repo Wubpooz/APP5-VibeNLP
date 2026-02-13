@@ -1,0 +1,1261 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document AI & Multimodal - TAL Day 5 Session 1</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/moon.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --r-heading-font: 'Helvetica Neue', Arial, sans-serif;
+            --r-main-font: 'Helvetica Neue', Arial, sans-serif;
+        }
+        .reveal { font-size: 32px; }
+        .reveal h1 { font-size: 2.2em; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.2em; color: #7ec8e3; }
+        .reveal ul { text-align: left; }
+        .reveal li { margin-bottom: 0.4em; }
+
+        /* Highlight text */
+        .highlight { color: #ff6b6b; }
+        .highlight-blue { color: #7ec8e3; }
+        .highlight-green { color: #98c379; }
+        .highlight-yellow { color: #e5c07b; }
+        .highlight-purple { color: #c678dd; }
+        .small { font-size: 0.65em; color: #93a1a1; }
+
+        /* Two column layout */
+        .two-column {
+            display: flex;
+            gap: 2em;
+            align-items: flex-start;
+        }
+        .two-column > div { flex: 1; }
+
+        /* Stat numbers */
+        .stat-big {
+            font-size: 3em;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1em;
+        }
+        .stat-box {
+            text-align: center;
+            flex: 1;
+            min-width: 180px;
+        }
+        .stat-box .stat-big {
+            font-size: 2.8em;
+        }
+        .stat-label {
+            font-size: 0.6em;
+            color: #93a1a1;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Section divider */
+        .section-title h2 {
+            font-size: 2em;
+            margin-bottom: 0.3em;
+        }
+        .section-title h3 {
+            font-size: 0.9em;
+            color: #93a1a1;
+            font-weight: normal;
+        }
+
+        /* Quote styling */
+        .quote-slide blockquote {
+            font-style: italic;
+            font-size: 1.1em;
+            border-left: 4px solid #7ec8e3;
+            padding-left: 1em;
+            margin: 1em auto;
+            max-width: 80%;
+            text-align: left;
+        }
+        .quote-slide .attribution {
+            text-align: right;
+            color: #93a1a1;
+            font-size: 0.7em;
+            margin-right: 10%;
+        }
+
+        /* Discussion slides */
+        .discussion-slide {
+            background: rgba(126, 200, 227, 0.08) !important;
+        }
+        .discussion-slide h2 {
+            color: #7ec8e3;
+        }
+
+        /* Pipeline/flow diagram */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3em;
+            flex-wrap: wrap;
+        }
+        .pipeline .step {
+            background: rgba(126, 200, 227, 0.15);
+            border: 2px solid #7ec8e3;
+            border-radius: 8px;
+            padding: 0.6em 1em;
+            text-align: center;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .pipeline .arrow {
+            font-size: 1.5em;
+            color: #7ec8e3;
+        }
+
+        /* Comparison table */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7em;
+        }
+        .compare-table th {
+            background: rgba(126, 200, 227, 0.2);
+            padding: 0.5em;
+            text-align: left;
+            border-bottom: 2px solid #7ec8e3;
+        }
+        .compare-table td {
+            padding: 0.5em;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .compare-table .good { color: #98c379; }
+        .compare-table .bad { color: #ff6b6b; }
+
+        /* Architecture diagram */
+        .arch-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5em;
+        }
+        .arch-box {
+            border-radius: 8px;
+            padding: 0.5em 1.5em;
+            text-align: center;
+            font-size: 0.75em;
+            font-weight: bold;
+            min-width: 200px;
+        }
+        .arch-box.encoder-text {
+            background: rgba(126, 200, 227, 0.15);
+            border: 2px solid #7ec8e3;
+        }
+        .arch-box.encoder-image {
+            background: rgba(152, 195, 121, 0.15);
+            border: 2px solid #98c379;
+        }
+        .arch-box.shared {
+            background: rgba(198, 120, 221, 0.15);
+            border: 2px solid #c678dd;
+        }
+        .arch-box.output {
+            background: rgba(255, 107, 107, 0.15);
+            border: 2px solid #ff6b6b;
+        }
+        .arch-arrow {
+            font-size: 1.3em;
+            color: #93a1a1;
+        }
+
+        /* Dual encoder diagram for CLIP */
+        .dual-encoder {
+            display: flex;
+            justify-content: center;
+            gap: 3em;
+            align-items: stretch;
+        }
+        .encoder-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.4em;
+            flex: 1;
+            max-width: 250px;
+        }
+        .encoder-column .layer {
+            border-radius: 8px;
+            padding: 0.4em 1em;
+            text-align: center;
+            font-size: 0.7em;
+            font-weight: bold;
+            width: 100%;
+        }
+        .contrastive-zone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5em;
+            font-size: 0.7em;
+        }
+        .contrastive-zone .match-line {
+            width: 100%;
+            height: 2px;
+            background: #e5c07b;
+            margin: 0.3em 0;
+        }
+
+        /* Model card grid */
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.8em;
+        }
+        .model-card {
+            background: rgba(126, 200, 227, 0.08);
+            border: 2px solid rgba(126, 200, 227, 0.3);
+            border-radius: 10px;
+            padding: 0.7em;
+            text-align: center;
+            font-size: 0.65em;
+        }
+        .model-card .model-name {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 0.3em;
+        }
+        .model-card .model-org {
+            color: #93a1a1;
+            font-size: 0.85em;
+            margin-bottom: 0.3em;
+        }
+        .model-card.open-source {
+            border-color: #98c379;
+        }
+        .model-card.proprietary {
+            border-color: #c678dd;
+        }
+
+        /* Task cards */
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8em;
+        }
+        .task-card {
+            background: rgba(126, 200, 227, 0.08);
+            border: 2px solid rgba(126, 200, 227, 0.25);
+            border-radius: 10px;
+            padding: 0.7em;
+            text-align: left;
+            font-size: 0.65em;
+        }
+        .task-card .task-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 0.3em;
+            color: #7ec8e3;
+        }
+
+        /* Use case cards */
+        .usecase-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.8em;
+        }
+        .usecase-card {
+            background: rgba(152, 195, 121, 0.08);
+            border: 2px solid rgba(152, 195, 121, 0.3);
+            border-radius: 10px;
+            padding: 0.8em;
+            text-align: center;
+            font-size: 0.65em;
+        }
+        .usecase-card .usecase-icon {
+            font-size: 2em;
+            margin-bottom: 0.3em;
+        }
+        .usecase-card .usecase-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 0.3em;
+        }
+
+        /* Evolution arrow */
+        .evolution {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.2em;
+            flex-wrap: wrap;
+        }
+        .evolution .era {
+            text-align: center;
+            padding: 0.5em 0.8em;
+            border-radius: 8px;
+            font-size: 0.65em;
+            min-width: 100px;
+        }
+        .evolution .era .year {
+            font-size: 0.8em;
+            color: #93a1a1;
+        }
+        .evolution .era .label {
+            font-weight: bold;
+        }
+        .evolution .era-arrow {
+            font-size: 1.3em;
+            color: #7ec8e3;
+        }
+
+        /* Code block tweaks */
+        .reveal pre {
+            width: 100%;
+            font-size: 0.5em;
+        }
+        .reveal pre code {
+            max-height: 450px;
+            padding: 1em;
+        }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ============================================================ -->
+<!-- SLIDE 1: Title -->
+<!-- ============================================================ -->
+<section>
+    <h1>Document AI &<br>Multimodal</h1>
+    <h3>From PDF Parsing to Vision-Language Models</h3>
+    <p style="margin-top: 1.5em;">
+        <span class="highlight-blue">TAL</span> &mdash; Day 5, Session 1<br>
+        <span class="small">March 20, 2026 &bull; 13:30 - 15:30 &bull; Instructor: ZHANG Zheng</span>
+    </p>
+    <aside class="notes">
+        Welcome to Day 5. Today we move beyond pure text NLP into the world of Document AI and multimodal models. This session bridges what you've learned about Transformers, fine-tuning, and RAG with the reality that most enterprise data lives in documents -- PDFs, images, forms, contracts. We'll cover the full spectrum from simple PDF parsing to state-of-the-art vision-language models.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 2: Agenda -->
+<!-- ============================================================ -->
+<section>
+    <h2>Session Agenda</h2>
+    <div style="text-align: left; max-width: 700px; margin: 0 auto;">
+        <ol style="font-size: 0.85em;">
+            <li class="fragment"><span class="highlight">Document AI: What & Why?</span> <span class="small">(15 min)</span></li>
+            <li class="fragment"><span class="highlight-blue">PDF Parsing Techniques</span> <span class="small">(25 min)</span></li>
+            <li class="fragment"><span class="highlight-green">Document Understanding</span> <span class="small">(20 min)</span></li>
+            <li class="fragment"><span class="highlight-yellow">Transition to Multimodal</span> <span class="small">(5 min)</span></li>
+            <li class="fragment"><span class="highlight-purple">Vision-Language Models</span> <span class="small">(30 min)</span></li>
+            <li class="fragment"><span class="highlight-blue">Multimodal Applications</span> <span class="small">(15 min)</span></li>
+            <li class="fragment"><span class="highlight">Demo Day Use Cases</span> <span class="small">(10 min)</span></li>
+        </ol>
+    </div>
+    <aside class="notes">
+        Here's our roadmap for the next two hours. We start with the problem space -- why Document AI matters -- then go hands-on with PDF parsing tools. We'll explore document understanding tasks, then make the transition into multimodal territory with CLIP, GPT-4V, Claude Vision, Gemini, and LLaVA. We end with practical applications for your Demo Day projects.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 3: Section - Document AI -->
+<!-- ============================================================ -->
+<section class="section-title">
+    <h2><span class="highlight">Part 1</span></h2>
+    <h2>Document AI: What & Why?</h2>
+    <h3>The trillion-dollar problem of unstructured data</h3>
+    <aside class="notes">
+        Let's start with the fundamental problem. Why do we need Document AI in the first place? The answer is simple: most of the world's information is trapped in documents that machines can't easily read.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 4: The Problem -->
+<!-- ============================================================ -->
+<section>
+    <h2>The Unstructured Data Problem</h2>
+    <div class="stat-row" style="margin: 1em 0;">
+        <div class="stat-box fragment">
+            <div class="stat-big">80%</div>
+            <div class="stat-label">of enterprise data<br>is unstructured</div>
+        </div>
+        <div class="stat-box fragment">
+            <div class="stat-big" style="color: #7ec8e3;">2.5T</div>
+            <div class="stat-label">PDF documents<br>exist worldwide</div>
+        </div>
+        <div class="stat-box fragment">
+            <div class="stat-big" style="color: #98c379;">$12B</div>
+            <div class="stat-label">document processing<br>market by 2027</div>
+        </div>
+    </div>
+    <p class="fragment small" style="text-align: center;">PDFs, invoices, forms, contracts, medical records, legal filings, research papers...</p>
+    <aside class="notes">
+        These numbers are staggering. 80% of enterprise data is unstructured -- meaning it's in PDFs, emails, images, and documents that don't fit neatly into databases. There are an estimated 2.5 trillion PDF documents in the world. The intelligent document processing market is projected to reach 12 billion dollars by 2027. This is a massive, real-world problem that your NLP skills can directly solve.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 5: What is Document AI -->
+<!-- ============================================================ -->
+<section>
+    <h2>What is Document AI?</h2>
+    <div class="pipeline" style="margin: 1em 0;">
+        <div class="step fragment" style="border-color: #ff6b6b;">Unstructured<br>Document</div>
+        <div class="arrow fragment">&rarr;</div>
+        <div class="step fragment" style="border-color: #e5c07b;">Parse &<br>Understand</div>
+        <div class="arrow fragment">&rarr;</div>
+        <div class="step fragment" style="border-color: #98c379;">Structured<br>Data</div>
+    </div>
+    <div class="fragment" style="margin-top: 1.5em;">
+        <p><span class="highlight-blue">Document AI</span> = applying AI/ML techniques to:</p>
+        <ul style="font-size: 0.8em;">
+            <li class="fragment"><span class="highlight-green">Extract</span> key information from documents</li>
+            <li class="fragment"><span class="highlight-yellow">Classify</span> and categorize documents</li>
+            <li class="fragment"><span class="highlight-purple">Understand</span> document layout, structure, and semantics</li>
+            <li class="fragment"><span class="highlight">Answer questions</span> about document content</li>
+        </ul>
+    </div>
+    <aside class="notes">
+        Document AI is the umbrella term for using AI to go from unstructured documents to structured, actionable data. It combines computer vision (for layout and images), NLP (for text understanding), and increasingly multimodal models that handle both simultaneously. The key tasks are extraction, classification, understanding, and question answering.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 6: Real-world examples -->
+<!-- ============================================================ -->
+<section>
+    <h2>Real-World Document AI</h2>
+    <div class="task-grid">
+        <div class="task-card fragment">
+            <div class="task-name">Invoice Processing</div>
+            Extract vendor, amount, line items, dates from millions of invoices automatically
+        </div>
+        <div class="task-card fragment">
+            <div class="task-name">Contract Analysis</div>
+            Identify clauses, obligations, risks, and key terms across legal documents
+        </div>
+        <div class="task-card fragment">
+            <div class="task-name">Medical Records</div>
+            Parse patient data, diagnoses, prescriptions from handwritten and printed forms
+        </div>
+        <div class="task-card fragment">
+            <div class="task-name">KYC / Compliance</div>
+            Verify identity documents, extract data from passports, driver's licenses, bank statements
+        </div>
+    </div>
+    <aside class="notes">
+        Let me give you concrete examples. Invoice processing is one of the biggest use cases -- companies process millions of invoices and want to automatically extract vendor names, amounts, and line items. Contract analysis helps legal teams find risky clauses in thousands of documents. Medical records digitization improves patient care. KYC -- Know Your Customer -- is mandatory in banking and requires processing identity documents at scale. These are all problems your students can build solutions for.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 7: Section - PDF Parsing -->
+<!-- ============================================================ -->
+<section class="section-title">
+    <h2><span class="highlight-blue">Part 2</span></h2>
+    <h2>PDF Parsing Techniques</h2>
+    <h3>From rule-based to LLM-powered extraction</h3>
+    <aside class="notes">
+        Now let's get practical. PDF parsing is the foundation of Document AI. The approaches range from simple text extraction to sophisticated layout-aware models. Understanding this spectrum is critical for choosing the right tool for your project.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 8: Evolution of PDF Parsing -->
+<!-- ============================================================ -->
+<section>
+    <h2>Evolution of PDF Parsing</h2>
+    <div class="evolution" style="margin: 1.5em 0;">
+        <div class="era fragment" style="border: 2px solid #ff6b6b; background: rgba(255,107,107,0.1);">
+            <div class="year">~2000s</div>
+            <div class="label" style="color: #ff6b6b;">Rule-Based</div>
+            <div style="font-size: 0.8em;">PyPDF, pdfplumber</div>
+        </div>
+        <div class="era-arrow fragment">&rarr;</div>
+        <div class="era fragment" style="border: 2px solid #e5c07b; background: rgba(229,192,123,0.1);">
+            <div class="year">~2010s</div>
+            <div class="label" style="color: #e5c07b;">OCR-Based</div>
+            <div style="font-size: 0.8em;">Tesseract, PaddleOCR</div>
+        </div>
+        <div class="era-arrow fragment">&rarr;</div>
+        <div class="era fragment" style="border: 2px solid #98c379; background: rgba(152,195,121,0.1);">
+            <div class="year">2020+</div>
+            <div class="label" style="color: #98c379;">Layout-Aware</div>
+            <div style="font-size: 0.8em;">LayoutLM, Donut</div>
+        </div>
+        <div class="era-arrow fragment">&rarr;</div>
+        <div class="era fragment" style="border: 2px solid #c678dd; background: rgba(198,120,221,0.1);">
+            <div class="year">2023+</div>
+            <div class="label" style="color: #c678dd;">LLM-Powered</div>
+            <div style="font-size: 0.8em;">GPT-4V, Claude</div>
+        </div>
+    </div>
+    <p class="fragment small" style="text-align: center;">Each generation builds on the previous -- you often need multiple techniques in one pipeline.</p>
+    <aside class="notes">
+        PDF parsing has evolved through four major generations. Rule-based tools like PyPDF extract text from digital PDFs but can't handle scanned documents or complex layouts. OCR tools like Tesseract can read scanned documents but lose structural information. Layout-aware models like LayoutLM understand that position matters -- a number next to "Total" means something different than next to "Date". And now LLMs can directly process document images. In practice, you'll often combine multiple techniques.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 9: Rule-based Extraction -->
+<!-- ============================================================ -->
+<section>
+    <h2>Rule-Based Extraction</h2>
+    <div class="two-column">
+        <div>
+            <h3>PyPDF2 / pypdf</h3>
+            <pre><code class="language-python"># Simple text extraction
+from pypdf import PdfReader
+
+reader = PdfReader("invoice.pdf")
+for page in reader.pages:
+    text = page.extract_text()
+    print(text)</code></pre>
+            <p class="small fragment">Good for: digital-born PDFs with simple layouts</p>
+        </div>
+        <div>
+            <h3>pdfplumber</h3>
+            <pre><code class="language-python"># Table-aware extraction
+import pdfplumber
+
+with pdfplumber.open("invoice.pdf") as pdf:
+    page = pdf.pages[0]
+    # Extract tables as lists
+    tables = page.extract_tables()
+    # Get text with position info
+    words = page.extract_words()</code></pre>
+            <p class="small fragment">Good for: tables, forms with consistent structure</p>
+        </div>
+    </div>
+    <div class="fragment" style="margin-top: 0.5em;">
+        <p style="font-size: 0.75em;"><span class="highlight">Limitation:</span> cannot handle scanned documents, complex multi-column layouts, or handwriting</p>
+    </div>
+    <aside class="notes">
+        Let's start with the simplest tools. PyPDF extracts raw text from digital PDFs -- those created by software, not scanned. pdfplumber goes further: it can extract tables by detecting cell boundaries and gives you word-level position information. These tools are fast, lightweight, and perfect for simple documents. But they fail completely on scanned documents, handwriting, or complex layouts. Use them as your first line of attack, then fall back to more sophisticated methods when needed.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 10: OCR-based Extraction -->
+<!-- ============================================================ -->
+<section>
+    <h2>OCR-Based Extraction</h2>
+    <div class="two-column">
+        <div>
+            <h3>Tesseract OCR</h3>
+            <pre><code class="language-python">import pytesseract
+from PIL import Image
+
+# Basic OCR
+text = pytesseract.image_to_string(
+    Image.open("scan.png"),
+    lang='eng+fra'  # multilingual
+)
+
+# With bounding boxes
+data = pytesseract.image_to_data(
+    Image.open("scan.png"),
+    output_type=pytesseract.Output.DICT
+)</code></pre>
+            <p class="small fragment">Open source, 100+ languages, Google-maintained</p>
+        </div>
+        <div>
+            <h3>PaddleOCR</h3>
+            <pre><code class="language-python">from paddleocr import PaddleOCR
+
+ocr = PaddleOCR(
+    use_angle_cls=True,
+    lang='en'
+)
+
+result = ocr.ocr("document.jpg")
+for line in result[0]:
+    bbox, (text, conf) = line
+    print(f"{text} ({conf:.2f})")</code></pre>
+            <p class="small fragment">Fast, accurate for CJK, angle detection built-in</p>
+        </div>
+    </div>
+    <div class="fragment" style="margin-top: 0.5em;">
+        <p style="font-size: 0.75em;"><span class="highlight-yellow">Key advance:</span> OCR gives you text + position, but <span class="highlight">no semantic understanding</span> of document structure</p>
+    </div>
+    <aside class="notes">
+        When documents are scanned images, you need OCR -- Optical Character Recognition. Tesseract is the gold standard open-source OCR engine, maintained by Google, supporting over 100 languages. PaddleOCR from Baidu is particularly strong for Chinese, Japanese, and Korean text, and it includes angle detection which handles rotated text. Both give you text plus bounding box positions. The key limitation is that OCR extracts characters but doesn't understand what they mean or how the document is structured. It sees "1,500.00" and "Total Due" as separate text blocks without knowing they're related.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 11: Layout-aware Models -->
+<!-- ============================================================ -->
+<section>
+    <h2>Layout-Aware Models: LayoutLM</h2>
+    <div class="arch-diagram" style="margin: 0.5em 0;">
+        <div style="display: flex; gap: 1em; justify-content: center;">
+            <div class="arch-box encoder-text fragment" style="min-width: 140px;">Text<br>Tokens</div>
+            <div class="arch-box fragment" style="border: 2px solid #e5c07b; background: rgba(229,192,123,0.15); min-width: 140px;">2D Position<br>Embeddings</div>
+            <div class="arch-box encoder-image fragment" style="min-width: 140px;">Image<br>Features</div>
+        </div>
+        <div class="arch-arrow fragment">&darr; concatenate</div>
+        <div class="arch-box shared fragment" style="min-width: 400px;">Transformer Encoder<br><span style="font-size: 0.8em;">(pre-trained on 11M documents)</span></div>
+        <div class="arch-arrow fragment">&darr;</div>
+        <div class="arch-box output fragment" style="min-width: 400px;">Token Classification / Sequence Labeling / QA</div>
+    </div>
+    <div class="fragment" style="margin-top: 0.5em;">
+        <p style="font-size: 0.7em;">
+            <span class="highlight-blue">LayoutLM</span> (2020) &rarr;
+            <span class="highlight-green">LayoutLMv2</span> (2021, adds image features) &rarr;
+            <span class="highlight-purple">LayoutLMv3</span> (2022, unified multimodal)
+        </p>
+    </div>
+    <p class="small fragment">Microsoft Research &bull; Pre-trained on IIT-CDIP (11M document images) &bull; Fine-tune for your task</p>
+    <aside class="notes">
+        This is where things get really interesting. LayoutLM from Microsoft Research was a breakthrough. The key insight: position matters in documents. A number in the top-right corner of an invoice is probably the invoice number. The same number at the bottom is probably the total. LayoutLM combines three types of information: text tokens from OCR, 2D position embeddings that encode where text appears on the page, and visual features from the document image. It's pre-trained on 11 million documents and can be fine-tuned for specific tasks. LayoutLMv2 added deeper image integration, and v3 unified all three modalities from the start.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 12: LLM-based Extraction -->
+<!-- ============================================================ -->
+<section>
+    <h2>Modern Approach: LLM-Based Extraction</h2>
+    <pre><code class="language-python">from anthropic import Anthropic
+import base64
+
+client = Anthropic()
+
+# Read the PDF/image
+with open("invoice.pdf", "rb") as f:
+    data = base64.standard_b64encode(f.read()).decode()
+
+response = client.messages.create(
+    model="claude-sonnet-4-20250514",
+    max_tokens=1024,
+    messages=[{
+        "role": "user",
+        "content": [
+            {"type": "image", "source": {"type": "base64",
+                "media_type": "application/pdf", "data": data}},
+            {"type": "text", "text": """Extract these fields as JSON:
+            - invoice_number, date, vendor_name
+            - line_items: [{description, quantity, unit_price, total}]
+            - subtotal, tax, total_due"""}
+        ]
+    }]
+)</code></pre>
+    <p class="fragment small" style="text-align: center;">No training data needed. No fine-tuning. Works out of the box on any document format.</p>
+    <aside class="notes">
+        And here's the modern approach that's changing everything. Instead of building OCR pipelines and fine-tuning LayoutLM, you can send a document image directly to a vision-language model like Claude and ask it to extract structured data. This code sends a PDF to Claude and asks for structured JSON output. No training data. No fine-tuning. No OCR pipeline. It handles complex layouts, multiple languages, handwriting, and even charts. The tradeoff is cost and latency -- processing thousands of documents this way can be expensive. But for many use cases, the simplicity and accuracy make it the best choice.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 13: Comparison Table -->
+<!-- ============================================================ -->
+<section>
+    <h2>PDF Parsing: Choosing Your Tool</h2>
+    <table class="compare-table">
+        <thead>
+            <tr>
+                <th>Approach</th>
+                <th>Best For</th>
+                <th>Accuracy</th>
+                <th>Speed</th>
+                <th>Cost</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="fragment">
+                <td><span class="highlight">Rule-based</span><br><span class="small">PyPDF, pdfplumber</span></td>
+                <td>Digital PDFs, simple tables</td>
+                <td class="bad">Low-Med</td>
+                <td class="good">Very Fast</td>
+                <td class="good">Free</td>
+            </tr>
+            <tr class="fragment">
+                <td><span class="highlight-yellow">OCR</span><br><span class="small">Tesseract, PaddleOCR</span></td>
+                <td>Scanned docs, images</td>
+                <td>Medium</td>
+                <td>Medium</td>
+                <td class="good">Free</td>
+            </tr>
+            <tr class="fragment">
+                <td><span class="highlight-green">Layout-aware</span><br><span class="small">LayoutLM, Donut</span></td>
+                <td>Forms, invoices (trained)</td>
+                <td class="good">High</td>
+                <td>Medium</td>
+                <td>GPU needed</td>
+            </tr>
+            <tr class="fragment">
+                <td><span class="highlight-purple">LLM-based</span><br><span class="small">GPT-4V, Claude</span></td>
+                <td>Any document, zero-shot</td>
+                <td class="good">Very High</td>
+                <td class="bad">Slow</td>
+                <td class="bad">$$-$$$</td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="fragment small" style="text-align: center; margin-top: 0.5em;">Pro tip: use rule-based for easy docs, LLM for complex ones &mdash; hybrid pipelines win.</p>
+    <aside class="notes">
+        Here's a decision matrix. Rule-based tools are fast and free but only work on simple digital PDFs. OCR handles scanned documents but doesn't understand structure. Layout-aware models like LayoutLM give high accuracy on trained document types but require GPU and training data. LLM-based extraction works on anything with zero training but is slow and expensive. In practice, the best systems are hybrids: use pdfplumber first, fall back to OCR for scanned pages, and use an LLM for complex or unusual documents. This tiered approach optimizes both cost and accuracy.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 14: Section - Document Understanding -->
+<!-- ============================================================ -->
+<section class="section-title">
+    <h2><span class="highlight-green">Part 3</span></h2>
+    <h2>Document Understanding</h2>
+    <h3>Beyond extraction: classification, NER, tables</h3>
+    <aside class="notes">
+        Now that we can extract text from documents, the next challenge is understanding what the text means. Document understanding encompasses several key tasks that go beyond simple extraction.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 15: Document Understanding Tasks -->
+<!-- ============================================================ -->
+<section>
+    <h2>Document Understanding Tasks</h2>
+    <div class="task-grid">
+        <div class="task-card fragment">
+            <div class="task-name">Key Information Extraction (KIE)</div>
+            Extract specific fields: invoice number, date, amount, vendor. Structured output from unstructured input.
+            <br><span class="small">Tools: LayoutLM + fine-tuning, LLM prompting</span>
+        </div>
+        <div class="task-card fragment">
+            <div class="task-name">Document Classification</div>
+            Categorize: invoice vs. contract vs. receipt vs. report. Route documents in processing pipelines.
+            <br><span class="small">Tools: BERT/LayoutLM classifier, zero-shot LLM</span>
+        </div>
+        <div class="task-card fragment">
+            <div class="task-name">Table Extraction</div>
+            Detect table boundaries, parse rows/columns, handle merged cells and spanning headers.
+            <br><span class="small">Tools: pdfplumber, Camelot, Table Transformer</span>
+        </div>
+        <div class="task-card fragment">
+            <div class="task-name">Document NER</div>
+            Named Entity Recognition adapted for documents: dates, monetary values, addresses, legal entities.
+            <br><span class="small">Tools: spaCy, LayoutLM token classification</span>
+        </div>
+    </div>
+    <aside class="notes">
+        Four core tasks. KIE is about extracting specific fields -- "What is the invoice number? What is the total?" Document classification routes documents -- is this a contract or an invoice? Table extraction is notoriously difficult because tables come in infinite formats with merged cells and spanning headers. Document NER adapts the Named Entity Recognition you learned in Day 1 to handle document-specific entities like monetary amounts, dates in various formats, and addresses. Each task has specialized tools and can also be handled by general-purpose LLMs.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 16: KIE Pipeline Example -->
+<!-- ============================================================ -->
+<section>
+    <h2>KIE Pipeline: Invoice Processing</h2>
+    <div class="pipeline" style="margin: 1em 0;">
+        <div class="step" style="border-color: #ff6b6b; font-size: 0.7em;">PDF<br>Input</div>
+        <div class="arrow">&rarr;</div>
+        <div class="step" style="border-color: #e5c07b; font-size: 0.7em;">OCR /<br>Parse</div>
+        <div class="arrow">&rarr;</div>
+        <div class="step" style="border-color: #7ec8e3; font-size: 0.7em;">Layout<br>Analysis</div>
+        <div class="arrow">&rarr;</div>
+        <div class="step" style="border-color: #98c379; font-size: 0.7em;">Field<br>Extraction</div>
+        <div class="arrow">&rarr;</div>
+        <div class="step" style="border-color: #c678dd; font-size: 0.7em;">Validation<br>& Output</div>
+    </div>
+    <pre class="fragment"><code class="language-python"># Example: extract fields with structured output
+from pydantic import BaseModel
+from anthropic import Anthropic
+
+class Invoice(BaseModel):
+    invoice_number: str
+    date: str
+    vendor: str
+    line_items: list[dict]
+    total: float
+
+# Use LLM with structured output schema
+response = client.messages.create(
+    model="claude-sonnet-4-20250514",
+    messages=[{"role": "user", "content": [
+        {"type": "image", "source": {...}},  # document image
+        {"type": "text", "text": f"Extract invoice data matching: {Invoice.schema_json()}"}
+    ]}]
+)
+invoice = Invoice.model_validate_json(response.content[0].text)</code></pre>
+    <aside class="notes">
+        Here's what a real KIE pipeline looks like. The document goes through OCR or text extraction, layout analysis to understand structure, field extraction to pull out specific values, and validation to ensure the output is correct. The code example shows how to combine an LLM with Pydantic for structured output. You define an Invoice schema, send the document image to Claude, and parse the response into a validated Python object. This pattern -- LLM plus Pydantic -- is extremely powerful for building production document processing systems.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 17: Section - Transition to Multimodal -->
+<!-- ============================================================ -->
+<section class="section-title" data-background="rgba(126, 200, 227, 0.05)">
+    <h2><span class="highlight-yellow">Part 4</span></h2>
+    <h2>Beyond Text: The Multimodal Shift</h2>
+    <h3>Why NLP alone is not enough</h3>
+    <aside class="notes">
+        Now let's zoom out. Document AI naturally leads us to multimodal AI because documents contain more than text -- they have images, charts, tables, and visual layouts. This transition from text-only NLP to multimodal understanding is one of the most important trends in AI right now.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 18: Why Multimodal -->
+<!-- ============================================================ -->
+<section class="quote-slide">
+    <h2>Why Multimodal?</h2>
+    <blockquote class="fragment">
+        "The world is not just text. Humans understand through sight, sound, and language simultaneously. AI must do the same."
+    </blockquote>
+    <div class="attribution fragment">&mdash; Yann LeCun, 2023</div>
+    <div class="fragment" style="margin-top: 1.5em;">
+        <div class="two-column" style="font-size: 0.8em;">
+            <div>
+                <h3 style="color: #ff6b6b;">Text-Only NLP Limits</h3>
+                <ul>
+                    <li>Can't read charts or graphs</li>
+                    <li>Misses visual layout cues</li>
+                    <li>No understanding of images</li>
+                    <li>Ignores spatial relationships</li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="color: #98c379;">Multimodal Enables</h3>
+                <ul>
+                    <li>Document visual understanding</li>
+                    <li>Image + text reasoning</li>
+                    <li>Chart and diagram analysis</li>
+                    <li>Real-world grounded AI</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <aside class="notes">
+        Why multimodal? Because the real world is multimodal. When you look at a document, you don't just read the text -- you see the layout, the logos, the charts. Text-only NLP literally can't see these things. It can't read a bar chart, understand a photo in a news article, or parse the visual structure of a form. Multimodal AI closes this gap. And as we saw with Document AI, some of the hardest problems -- like understanding complex document layouts -- are fundamentally visual problems.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 19: Section - Vision-Language Models -->
+<!-- ============================================================ -->
+<section class="section-title">
+    <h2><span class="highlight-purple">Part 5</span></h2>
+    <h2>Vision-Language Models</h2>
+    <h3>CLIP, GPT-4V, Claude Vision, Gemini, LLaVA</h3>
+    <aside class="notes">
+        Now we dive into vision-language models -- the architectures that connect visual understanding with language. We'll start with CLIP, the foundational model, then cover the latest commercial and open-source options.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 20: CLIP Architecture -->
+<!-- ============================================================ -->
+<section>
+    <h2>CLIP: Contrastive Language-Image Pre-training</h2>
+    <p class="small">Radford et al., OpenAI, 2021 &bull; "Learning Transferable Visual Models From Natural Language Supervision"</p>
+    <div class="dual-encoder" style="margin: 1em 0;">
+        <div class="encoder-column fragment">
+            <div class="layer" style="border: 2px solid #98c379; background: rgba(152,195,121,0.15);">Input Image</div>
+            <div style="color: #93a1a1;">&darr;</div>
+            <div class="layer" style="border: 2px solid #98c379; background: rgba(152,195,121,0.1);">Vision Transformer<br>(ViT)</div>
+            <div style="color: #93a1a1;">&darr;</div>
+            <div class="layer" style="border: 2px solid #98c379; background: rgba(152,195,121,0.2);">Image<br>Embedding</div>
+        </div>
+        <div class="contrastive-zone fragment">
+            <div style="font-size: 1.5em; color: #e5c07b;">&#x2194;</div>
+            <div style="color: #e5c07b; font-weight: bold;">Contrastive<br>Loss</div>
+            <div class="match-line"></div>
+            <div style="font-size: 0.8em; color: #93a1a1;">maximize similarity<br>for matching pairs</div>
+        </div>
+        <div class="encoder-column fragment">
+            <div class="layer" style="border: 2px solid #7ec8e3; background: rgba(126,200,227,0.15);">Input Text</div>
+            <div style="color: #93a1a1;">&darr;</div>
+            <div class="layer" style="border: 2px solid #7ec8e3; background: rgba(126,200,227,0.1);">Text Transformer<br>(GPT-like)</div>
+            <div style="color: #93a1a1;">&darr;</div>
+            <div class="layer" style="border: 2px solid #7ec8e3; background: rgba(126,200,227,0.2);">Text<br>Embedding</div>
+        </div>
+    </div>
+    <p class="fragment" style="font-size: 0.7em; text-align: center;">Trained on <span class="highlight">400M image-text pairs</span> from the internet</p>
+    <aside class="notes">
+        CLIP is the foundational model that connected vision and language. The architecture is elegant: two separate encoders -- a Vision Transformer for images and a text Transformer for captions. During training, CLIP processes batches of image-text pairs and learns to maximize the similarity between matching pairs while minimizing similarity for non-matching pairs. This is contrastive learning. It was trained on 400 million image-text pairs scraped from the internet. The result is a shared embedding space where images and text with similar meaning end up close together.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 21: CLIP Applications -->
+<!-- ============================================================ -->
+<section>
+    <h2>CLIP: What Can You Do With It?</h2>
+    <div class="two-column">
+        <div>
+            <h3 style="color: #98c379;">Zero-Shot Classification</h3>
+            <pre><code class="language-python">from transformers import CLIPProcessor, CLIPModel
+
+model = CLIPModel.from_pretrained(
+    "openai/clip-vit-base-patch32"
+)
+processor = CLIPProcessor.from_pretrained(
+    "openai/clip-vit-base-patch32"
+)
+
+# Classify without training!
+labels = ["invoice", "contract",
+          "receipt", "letter"]
+inputs = processor(
+    text=labels,
+    images=image,
+    return_tensors="pt"
+)
+outputs = model(**inputs)
+probs = outputs.logits_per_image.softmax(dim=-1)</code></pre>
+        </div>
+        <div class="fragment">
+            <h3 style="color: #7ec8e3;">Semantic Image Search</h3>
+            <pre><code class="language-python"># Index images
+image_embeddings = []
+for img in document_images:
+    inputs = processor(images=img,
+                       return_tensors="pt")
+    emb = model.get_image_features(**inputs)
+    image_embeddings.append(emb)
+
+# Search with text query
+query = "graph showing revenue growth"
+text_inputs = processor(text=query,
+                        return_tensors="pt")
+text_emb = model.get_text_features(**text_inputs)
+
+# Find most similar images
+similarities = [cosine_sim(text_emb, img_emb)
+                for img_emb in image_embeddings]</code></pre>
+        </div>
+    </div>
+    <p class="fragment small" style="text-align: center;">CLIP's shared embedding space enables text&harr;image matching without task-specific training</p>
+    <aside class="notes">
+        CLIP enables two killer applications. First, zero-shot image classification: you describe categories in natural language, and CLIP matches images to the best description -- no training data needed. The code on the left classifies a document image as invoice, contract, receipt, or letter without any labeled examples. Second, semantic image search: you embed all your images with CLIP's vision encoder, then search using natural language queries. The code on the right finds images matching "graph showing revenue growth" by computing cosine similarity in the shared embedding space. Both of these are directly useful for Document AI.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 22: VLM Landscape -->
+<!-- ============================================================ -->
+<section>
+    <h2>Vision-Language Model Landscape (2024-2026)</h2>
+    <div class="model-grid">
+        <div class="model-card proprietary fragment">
+            <div class="model-name" style="color: #c678dd;">GPT-4V / GPT-4o</div>
+            <div class="model-org">OpenAI</div>
+            Text + image input, strong reasoning, function calling with images
+        </div>
+        <div class="model-card proprietary fragment">
+            <div class="model-name" style="color: #c678dd;">Claude 3+ Vision</div>
+            <div class="model-org">Anthropic</div>
+            Excellent document understanding, chart reading, long-context with images
+        </div>
+        <div class="model-card proprietary fragment">
+            <div class="model-name" style="color: #c678dd;">Gemini</div>
+            <div class="model-org">Google DeepMind</div>
+            Natively multimodal (text, image, audio, video), 1M+ token context
+        </div>
+        <div class="model-card open-source fragment">
+            <div class="model-name" style="color: #98c379;">LLaVA 1.5/1.6</div>
+            <div class="model-org">Open Source</div>
+            CLIP + Vicuna, visual instruction tuning, runs locally
+        </div>
+        <div class="model-card open-source fragment">
+            <div class="model-name" style="color: #98c379;">Qwen2-VL</div>
+            <div class="model-org">Alibaba (Open Source)</div>
+            Strong multilingual vision-language, excellent for CJK documents
+        </div>
+        <div class="model-card open-source fragment">
+            <div class="model-name" style="color: #98c379;">InternVL 2.5</div>
+            <div class="model-org">Shanghai AI Lab (Open)</div>
+            Competitive with GPT-4V on benchmarks, fully open weights
+        </div>
+    </div>
+    <p class="fragment small" style="text-align: center;">
+        <span class="highlight-purple">Purple</span> = proprietary API &nbsp;&bull;&nbsp;
+        <span class="highlight-green">Green</span> = open source / open weights
+    </p>
+    <aside class="notes">
+        Here's the current landscape. On the proprietary side, GPT-4V and GPT-4o from OpenAI were the first to mainstream vision-language capabilities. Claude 3 and later versions from Anthropic are particularly strong at document understanding and chart reading. Gemini from Google is natively multimodal, meaning it was trained from the start on text, images, audio, and video with massive context windows. On the open source side, LLaVA was the pioneer -- it combines CLIP's vision encoder with a language model like Vicuna. Qwen2-VL from Alibaba is excellent for multilingual work, especially CJK documents. InternVL is competitive with GPT-4V on benchmarks with fully open weights. For your projects, I recommend starting with Claude or GPT-4o for prototyping, then evaluating open-source options if you need to self-host.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 23: LLaVA Architecture -->
+<!-- ============================================================ -->
+<section>
+    <h2>LLaVA: Open-Source VLM</h2>
+    <p class="small">Liu et al., 2023 &bull; "Visual Instruction Tuning"</p>
+    <div class="arch-diagram" style="margin: 0.8em 0;">
+        <div style="display: flex; gap: 2em; justify-content: center; align-items: flex-end;">
+            <div class="fragment" style="text-align: center;">
+                <div class="arch-box encoder-image" style="min-width: 160px;">Image</div>
+                <div class="arch-arrow">&darr;</div>
+                <div class="arch-box encoder-image" style="min-width: 160px;">CLIP ViT-L<br><span style="font-size: 0.8em;">Vision Encoder</span></div>
+                <div class="arch-arrow">&darr;</div>
+                <div class="arch-box" style="border: 2px solid #e5c07b; background: rgba(229,192,123,0.15); min-width: 160px;">Projection Layer<br><span style="font-size: 0.8em;">(MLP)</span></div>
+            </div>
+            <div class="fragment" style="text-align: center; align-self: flex-end;">
+                <div class="arch-box encoder-text" style="min-width: 160px;">User Question<br><span style="font-size: 0.8em;">(Text Tokens)</span></div>
+            </div>
+        </div>
+        <div class="arch-arrow fragment">&darr; concatenate visual + text tokens</div>
+        <div class="arch-box shared fragment" style="min-width: 450px;">LLM (Vicuna / LLaMA)<br><span style="font-size: 0.8em;">Autoregressive generation</span></div>
+        <div class="arch-arrow fragment">&darr;</div>
+        <div class="arch-box output fragment" style="min-width: 450px;">Response: description, answer, analysis</div>
+    </div>
+    <p class="fragment small" style="text-align: center;">Key idea: <span class="highlight-yellow">visual instruction tuning</span> &mdash; train on GPT-4-generated visual Q&A data</p>
+    <aside class="notes">
+        LLaVA's architecture is beautifully simple. It takes CLIP's vision encoder, adds a projection layer to map image features into the language model's token space, and feeds them alongside text tokens into a language model like Vicuna or LLaMA. The key innovation is visual instruction tuning: they used GPT-4 to generate high-quality visual question-answer pairs, then fine-tuned the model on this data. The result is an open-source model that can understand images and answer questions about them. You can run this on a single GPU -- making it practical for research and privacy-sensitive applications where you can't send data to external APIs.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 24: Section - Multimodal Applications -->
+<!-- ============================================================ -->
+<section class="section-title">
+    <h2><span class="highlight-blue">Part 6</span></h2>
+    <h2>Multimodal Applications for NLP</h2>
+    <h3>VQA, captioning, document VQA, multimodal RAG</h3>
+    <aside class="notes">
+        Now let's look at the applications that combine vision and language. These are the tasks you can build into your Demo Day projects.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 25: Multimodal Application Tasks -->
+<!-- ============================================================ -->
+<section>
+    <h2>Key Multimodal Applications</h2>
+    <div class="task-grid">
+        <div class="task-card fragment">
+            <div class="task-name">Visual Question Answering (VQA)</div>
+            Ask natural language questions about images. "What color is the car?" "How many people are in the photo?"
+            <br><span class="small">Benchmark: VQAv2, OK-VQA</span>
+        </div>
+        <div class="task-card fragment">
+            <div class="task-name">Image Captioning</div>
+            Generate natural language descriptions of images. Foundation for accessibility, search, and content management.
+            <br><span class="small">Models: BLIP-2, CoCa, LLaVA</span>
+        </div>
+        <div class="task-card fragment">
+            <div class="task-name">Document VQA</div>
+            Answer questions about documents: read charts, parse tables, understand forms. Combines OCR + reasoning.
+            <br><span class="small">Benchmark: DocVQA, InfographicVQA, ChartQA</span>
+        </div>
+        <div class="task-card fragment">
+            <div class="task-name">Multimodal RAG</div>
+            Retrieve and reason over both text and images. Index figures, diagrams, and charts alongside text for complete answers.
+            <br><span class="small">Tools: CLIP embeddings + text embeddings in vector DB</span>
+        </div>
+    </div>
+    <aside class="notes">
+        Four major application areas. VQA is the classic task -- asking questions about images. Image captioning generates descriptions -- essential for accessibility and search. Document VQA is the intersection of Document AI and multimodal -- answering questions about documents by reading charts, tables, and forms. And multimodal RAG extends the RAG pattern you learned on Day 4 to include images. Instead of just retrieving text chunks, you also retrieve relevant figures, diagrams, and screenshots, and feed them to a VLM for comprehensive answers.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 26: Multimodal RAG -->
+<!-- ============================================================ -->
+<section>
+    <h2>Multimodal RAG Architecture</h2>
+    <div class="arch-diagram" style="margin: 0.5em 0;">
+        <div style="display: flex; gap: 1.5em; justify-content: center;">
+            <div class="fragment" style="text-align: center;">
+                <div class="arch-box encoder-text" style="min-width: 160px; font-size: 0.7em;">Text Chunks</div>
+                <div style="font-size: 0.8em; color: #93a1a1;">&darr; embed</div>
+                <div class="arch-box encoder-text" style="min-width: 160px; font-size: 0.7em;">Text Embeddings<br><span style="font-size: 0.8em;">(e.g., OpenAI, Cohere)</span></div>
+            </div>
+            <div class="fragment" style="text-align: center;">
+                <div class="arch-box encoder-image" style="min-width: 160px; font-size: 0.7em;">Images / Charts</div>
+                <div style="font-size: 0.8em; color: #93a1a1;">&darr; embed</div>
+                <div class="arch-box encoder-image" style="min-width: 160px; font-size: 0.7em;">Image Embeddings<br><span style="font-size: 0.8em;">(CLIP, SigLIP)</span></div>
+            </div>
+        </div>
+        <div class="arch-arrow fragment">&darr; store in vector database</div>
+        <div class="arch-box shared fragment" style="min-width: 400px; font-size: 0.75em;">Vector DB (Qdrant, Weaviate, Pinecone)<br>unified text + image index</div>
+        <div class="arch-arrow fragment">&darr; query retrieves text + images</div>
+        <div class="arch-box output fragment" style="min-width: 400px; font-size: 0.75em;">VLM (Claude, GPT-4o) generates answer<br>using retrieved text + images as context</div>
+    </div>
+    <p class="fragment small" style="text-align: center;">Enables answering questions like: "According to the Q3 report chart, what was the revenue trend?"</p>
+    <aside class="notes">
+        Here's how multimodal RAG works. You index both text chunks and images into a vector database. Text gets embedded with a text embedding model, images with CLIP or SigLIP. When a user asks a question, you retrieve both relevant text and relevant images, then pass everything to a VLM that can reason over both modalities. This is incredibly powerful for enterprise applications. Imagine a financial analyst asking about a quarterly report -- the system retrieves the relevant text paragraphs AND the revenue chart, then the VLM synthesizes a complete answer. This is the future of document intelligence.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 27: Practical Tools Summary -->
+<!-- ============================================================ -->
+<section>
+    <h2>Your Multimodal Toolkit</h2>
+    <table class="compare-table">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Tool / Library</th>
+                <th>Use Case</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="fragment">
+                <td rowspan="2"><span class="highlight">PDF Parsing</span></td>
+                <td>pypdf, pdfplumber</td>
+                <td>Text & table extraction from digital PDFs</td>
+            </tr>
+            <tr class="fragment">
+                <td>Tesseract, PaddleOCR</td>
+                <td>OCR for scanned documents</td>
+            </tr>
+            <tr class="fragment">
+                <td rowspan="2"><span class="highlight-blue">Document AI</span></td>
+                <td>LayoutLM (HuggingFace)</td>
+                <td>Layout-aware extraction & classification</td>
+            </tr>
+            <tr class="fragment">
+                <td>Donut, Nougat</td>
+                <td>End-to-end document understanding (no OCR)</td>
+            </tr>
+            <tr class="fragment">
+                <td rowspan="2"><span class="highlight-purple">VLMs</span></td>
+                <td>Claude Vision, GPT-4o</td>
+                <td>Best quality, API-based</td>
+            </tr>
+            <tr class="fragment">
+                <td>LLaVA, Qwen2-VL</td>
+                <td>Open source, self-hosted</td>
+            </tr>
+            <tr class="fragment">
+                <td><span class="highlight-green">Embeddings</span></td>
+                <td>CLIP, SigLIP</td>
+                <td>Image-text matching, multimodal search</td>
+            </tr>
+            <tr class="fragment">
+                <td><span class="highlight-yellow">Vector DB</span></td>
+                <td>Qdrant, Weaviate, Chroma</td>
+                <td>Store & retrieve multimodal embeddings</td>
+            </tr>
+        </tbody>
+    </table>
+    <aside class="notes">
+        Here's your practical toolkit summary. For PDF parsing, start with pypdf and pdfplumber for digital documents, Tesseract or PaddleOCR for scanned ones. For Document AI, LayoutLM from HuggingFace for layout-aware extraction, and Donut or Nougat for end-to-end processing that skips the OCR step entirely. For VLMs, Claude Vision and GPT-4o give the best quality through APIs, while LLaVA and Qwen2-VL can be self-hosted. For embeddings, CLIP and SigLIP connect text and images. And for vector storage, Qdrant, Weaviate, or Chroma handle multimodal embeddings. Write these down -- you'll need them for your projects.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 28: Section - Demo Day -->
+<!-- ============================================================ -->
+<section class="section-title">
+    <h2><span class="highlight">Part 7</span></h2>
+    <h2>Demo Day Project Ideas</h2>
+    <h3>Practical use cases you can build</h3>
+    <aside class="notes">
+        Let's close with concrete project ideas that combine everything we've covered today. These are realistic scopes for your Demo Day presentations.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 29: Demo Day Use Cases -->
+<!-- ============================================================ -->
+<section>
+    <h2>Demo Day: What Can You Build?</h2>
+    <div class="usecase-grid">
+        <div class="usecase-card fragment">
+            <div class="usecase-icon">&#x1F4C4;</div>
+            <div class="usecase-name">Document Processing Pipeline</div>
+            <p>Upload PDFs &rarr; classify document type &rarr; extract key fields &rarr; store structured data</p>
+            <p style="color: #7ec8e3; font-size: 0.9em; margin-top: 0.5em;">Stack: pdfplumber + Claude Vision + Pydantic + PostgreSQL</p>
+        </div>
+        <div class="usecase-card fragment">
+            <div class="usecase-icon">&#x1F916;</div>
+            <div class="usecase-name">Multimodal Chatbot</div>
+            <p>Chat with documents: upload images, PDFs, charts and ask questions in natural language</p>
+            <p style="color: #7ec8e3; font-size: 0.9em; margin-top: 0.5em;">Stack: Streamlit + Claude/GPT-4o + multimodal RAG</p>
+        </div>
+        <div class="usecase-card fragment">
+            <div class="usecase-icon">&#x1F4CA;</div>
+            <div class="usecase-name">Visual Data Extraction</div>
+            <p>Extract data from charts, infographics, and dashboards into structured tables automatically</p>
+            <p style="color: #7ec8e3; font-size: 0.9em; margin-top: 0.5em;">Stack: CLIP search + VLM extraction + pandas export</p>
+        </div>
+    </div>
+    <aside class="notes">
+        Three project ideas at different complexity levels. First, a document processing pipeline: users upload PDFs, the system classifies them, extracts key fields, and stores structured data. Use pdfplumber for simple docs, fall back to Claude Vision for complex ones, validate with Pydantic, store in PostgreSQL. Second, a multimodal chatbot: users upload documents, images, or charts and ask questions. Combine Streamlit for the UI, a VLM for understanding, and multimodal RAG for retrieval. Third, visual data extraction: automatically read charts and infographics and turn them into structured data tables. Use CLIP to find relevant charts, a VLM to extract the data, and pandas for export. All three are buildable in a few days with the tools we've covered.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 30: Discussion -->
+<!-- ============================================================ -->
+<section class="discussion-slide">
+    <h2>Discussion & Questions</h2>
+    <div style="text-align: left; max-width: 700px; margin: 1em auto;">
+        <p style="font-size: 0.85em;">Think about your Demo Day project:</p>
+        <ul style="font-size: 0.8em;">
+            <li class="fragment">What types of documents will you process?</li>
+            <li class="fragment">Do you need OCR, or are your documents digital-born?</li>
+            <li class="fragment">API-based VLM or self-hosted open source?</li>
+            <li class="fragment">How will you handle multimodal retrieval?</li>
+        </ul>
+    </div>
+    <div class="fragment" style="margin-top: 1.5em;">
+        <h3>Key Papers to Read</h3>
+        <ul class="small" style="font-size: 0.6em;">
+            <li><span class="highlight-blue">CLIP</span> &mdash; Radford et al., 2021 &mdash; "Learning Transferable Visual Models From Natural Language Supervision"</li>
+            <li><span class="highlight-green">LayoutLMv3</span> &mdash; Huang et al., 2022 &mdash; "LayoutLMv3: Pre-training for Document AI with Unified Text and Image Masking"</li>
+            <li><span class="highlight-purple">LLaVA</span> &mdash; Liu et al., 2023 &mdash; "Visual Instruction Tuning"</li>
+            <li><span class="highlight-yellow">Donut</span> &mdash; Kim et al., 2022 &mdash; "OCR-free Document Understanding Transformer"</li>
+        </ul>
+    </div>
+    <aside class="notes">
+        Let's take some time for discussion. Think about your specific project and which tools and approaches would work best. The four papers listed here are essential reading if you want to go deeper: CLIP for the foundational vision-language approach, LayoutLMv3 for layout-aware document understanding, LLaVA for open-source VLMs, and Donut for OCR-free document understanding. In Session 2, we'll get hands-on with these tools in a practical exercise.
+    </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 31: Summary -->
+<!-- ============================================================ -->
+<section>
+    <h2>Session Summary</h2>
+    <div style="text-align: left; max-width: 750px; margin: 0 auto; font-size: 0.8em;">
+        <p class="fragment"><span class="highlight">1.</span> <strong>Document AI</strong> solves the 80% unstructured data problem using NLP + vision</p>
+        <p class="fragment"><span class="highlight-blue">2.</span> <strong>PDF parsing</strong> evolved from rule-based &rarr; OCR &rarr; layout-aware &rarr; LLM-powered</p>
+        <p class="fragment"><span class="highlight-green">3.</span> <strong>Document understanding</strong> = KIE + classification + table extraction + NER</p>
+        <p class="fragment"><span class="highlight-purple">4.</span> <strong>CLIP</strong> created the shared vision-language embedding space (contrastive learning)</p>
+        <p class="fragment"><span class="highlight-yellow">5.</span> <strong>Modern VLMs</strong> (GPT-4o, Claude, Gemini, LLaVA) can directly understand documents</p>
+        <p class="fragment"><span class="highlight-blue">6.</span> <strong>Multimodal RAG</strong> = text + image retrieval + VLM generation</p>
+    </div>
+    <div class="fragment" style="margin-top: 1.5em;">
+        <p style="font-size: 0.85em;"><span class="highlight-green">Up Next:</span> Session 2 &mdash; Hands-on with Document AI & Multimodal tools</p>
+    </div>
+    <aside class="notes">
+        Let's recap. Document AI addresses the massive problem of unstructured enterprise data. PDF parsing has evolved through four generations, and modern LLM-based approaches often give the best results with the least effort. Document understanding encompasses extraction, classification, table parsing, and NER. CLIP pioneered the shared vision-language space through contrastive learning. Modern VLMs can directly understand documents, images, charts, and more. And multimodal RAG extends retrieval-augmented generation to include visual data. In Session 2, you'll get hands-on experience building with these tools. Take a 10-minute break and come back ready to code.
+    </aside>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        slideNumber: 'c/t',
+        transition: 'slide',
+        plugins: [RevealHighlight, RevealNotes]
+    });
+</script>
+</body>
+</html>

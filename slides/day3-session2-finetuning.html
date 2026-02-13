@@ -1,0 +1,1395 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fine-tuning: From Pre-trained Models to Task-Specific Solutions</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/moon.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --r-heading-font: 'Helvetica Neue', Arial, sans-serif;
+            --r-main-font: 'Helvetica Neue', Arial, sans-serif;
+        }
+        .reveal { font-size: 32px; }
+        .reveal h1 { font-size: 2.2em; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.2em; color: #7ec8e3; }
+        .reveal ul { text-align: left; }
+        .reveal li { margin-bottom: 0.4em; }
+
+        /* Highlight text */
+        .highlight { color: #ff6b6b; }
+        .highlight-blue { color: #7ec8e3; }
+        .highlight-green { color: #98c379; }
+        .highlight-yellow { color: #e5c07b; }
+        .highlight-purple { color: #c678dd; }
+        .small { font-size: 0.65em; color: #93a1a1; }
+
+        /* Two column layout */
+        .two-column {
+            display: flex;
+            gap: 2em;
+            align-items: flex-start;
+        }
+        .two-column > div { flex: 1; }
+
+        /* Code/matrix display */
+        .matrix-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 1em;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75em;
+            text-align: left;
+        }
+
+        /* Stat numbers */
+        .stat-big {
+            font-size: 3em;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+
+        /* Section divider */
+        .section-title h2 {
+            font-size: 2em;
+            margin-bottom: 0.3em;
+        }
+        .section-title h3 {
+            font-size: 0.9em;
+            color: #93a1a1;
+            font-weight: normal;
+        }
+
+        /* Quote styling */
+        .quote-slide blockquote {
+            font-style: italic;
+            font-size: 1.1em;
+            border-left: 4px solid #7ec8e3;
+            padding-left: 1em;
+            margin: 1em auto;
+            max-width: 80%;
+            text-align: left;
+        }
+        .quote-slide .attribution {
+            text-align: right;
+            color: #93a1a1;
+            font-size: 0.7em;
+            margin-right: 10%;
+        }
+
+        /* Discussion slides */
+        .discussion-slide {
+            background: rgba(126, 200, 227, 0.08) !important;
+        }
+
+        /* Pipeline/flow diagram */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3em;
+            flex-wrap: wrap;
+        }
+        .pipeline .step {
+            background: rgba(126, 200, 227, 0.15);
+            border: 2px solid #7ec8e3;
+            border-radius: 8px;
+            padding: 0.6em 1em;
+            text-align: center;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .pipeline .arrow {
+            font-size: 1.5em;
+            color: #7ec8e3;
+        }
+
+        /* Comparison table */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7em;
+        }
+        .compare-table th {
+            background: rgba(126, 200, 227, 0.2);
+            padding: 0.5em;
+            text-align: left;
+            border-bottom: 2px solid #7ec8e3;
+        }
+        .compare-table td {
+            padding: 0.5em;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .compare-table .good { color: #98c379; }
+        .compare-table .bad { color: #ff6b6b; }
+
+        /* LoRA architecture diagram */
+        .lora-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2em;
+            margin: 1em 0;
+        }
+        .lora-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5em;
+        }
+        .lora-matrix {
+            border: 2px solid;
+            border-radius: 6px;
+            padding: 0.5em 1em;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+        .lora-matrix.frozen {
+            border-color: #93a1a1;
+            background: rgba(147, 161, 161, 0.1);
+            color: #93a1a1;
+        }
+        .lora-matrix.trainable {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.15);
+            color: #ff6b6b;
+        }
+        .lora-matrix.small-rank {
+            border-color: #98c379;
+            background: rgba(152, 195, 121, 0.15);
+            color: #98c379;
+        }
+        .lora-plus {
+            font-size: 2em;
+            color: #7ec8e3;
+            font-weight: bold;
+        }
+        .lora-equals {
+            font-size: 2em;
+            color: #e5c07b;
+            font-weight: bold;
+        }
+        .lora-multiply {
+            font-size: 1.5em;
+            color: #c678dd;
+            font-weight: bold;
+        }
+
+        /* Cost card */
+        .cost-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            padding: 1em;
+            text-align: center;
+        }
+        .cost-card .cost-icon {
+            font-size: 2em;
+            margin-bottom: 0.3em;
+        }
+        .cost-card .cost-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+        .cost-card .cost-label {
+            font-size: 0.7em;
+            color: #93a1a1;
+        }
+
+        /* Instruction example box */
+        .instruction-box {
+            background: rgba(126, 200, 227, 0.08);
+            border-left: 4px solid #7ec8e3;
+            border-radius: 0 8px 8px 0;
+            padding: 0.8em 1em;
+            margin: 0.5em 0;
+            text-align: left;
+            font-size: 0.8em;
+        }
+        .instruction-box .inst-label {
+            font-weight: bold;
+            color: #7ec8e3;
+            font-size: 0.85em;
+        }
+        .instruction-box .inst-content {
+            margin-top: 0.3em;
+            color: #e8e8e8;
+        }
+
+        /* Decision box */
+        .decision-box {
+            border: 2px solid;
+            border-radius: 8px;
+            padding: 0.8em;
+            text-align: center;
+            font-size: 0.8em;
+        }
+        .decision-box.yes {
+            border-color: #98c379;
+            background: rgba(152, 195, 121, 0.1);
+        }
+        .decision-box.no {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+        .decision-box.maybe {
+            border-color: #e5c07b;
+            background: rgba(229, 192, 123, 0.1);
+        }
+
+        /* Reference style */
+        .ref {
+            font-size: 0.5em;
+            color: #93a1a1;
+            margin-top: 1em;
+        }
+        .ref a { color: #7ec8e3; }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ==================== SLIDE 1: TITLE ==================== -->
+            <section>
+                <h1 style="font-size: 1.8em;">Fine-tuning</h1>
+                <h3 style="color: #93a1a1; font-weight: normal;">From Pre-trained Models to Task-Specific Solutions</h3>
+                <p style="margin-top: 2em; font-size: 0.7em; color: #93a1a1;">
+                    TAL &mdash; Day 3, Session 2<br>
+                    March 13, 2026 &middot; 10:30 &ndash; 12:30<br>
+                    Instructor: ZHANG Zheng
+                </p>
+                <aside class="notes">
+                    Welcome to Session 2. In Session 1, we covered pre-training: how models like GPT and BERT learn general language representations from massive text corpora. Now the question is: how do we take those pre-trained models and make them useful for specific tasks? That's fine-tuning. This is arguably the most practically important topic for you as software engineers.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 2: RECAP & BRIDGE ==================== -->
+            <section>
+                <h2>Recap: The Pre-training Paradigm</h2>
+                <div class="pipeline" style="margin: 1em 0;">
+                    <div class="step" style="border-color: #93a1a1;">Massive Text Corpus</div>
+                    <span class="arrow">&rarr;</span>
+                    <div class="step" style="border-color: #7ec8e3;">Self-supervised Learning</div>
+                    <span class="arrow">&rarr;</span>
+                    <div class="step" style="border-color: #98c379;">Pre-trained Model</div>
+                </div>
+                <ul style="font-size: 0.8em; margin-top: 1em;">
+                    <li class="fragment">Pre-trained models learn <strong>general language understanding</strong></li>
+                    <li class="fragment">They know grammar, facts, reasoning patterns...</li>
+                    <li class="fragment">But they don't know <strong>your specific task</strong></li>
+                </ul>
+                <p class="fragment" style="margin-top: 1em; font-size: 0.9em; color: #ff6b6b;">
+                    How do we bridge the gap? <strong>Fine-tuning.</strong>
+                </p>
+                <aside class="notes">
+                    Quick bridge from Session 1. Pre-training gives us a model that understands language in general, but it hasn't been taught to do anything specific. It's like hiring a very well-educated person who hasn't been trained for any particular job yet. Fine-tuning is the job training.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 3: SESSION ROADMAP ==================== -->
+            <section>
+                <h2>Session Roadmap</h2>
+                <ol style="font-size: 0.85em;">
+                    <li class="fragment"><strong>What is fine-tuning?</strong> &mdash; the two-stage paradigm</li>
+                    <li class="fragment"><strong>Full fine-tuning</strong> &mdash; the classic approach and why it's expensive</li>
+                    <li class="fragment"><strong>Instruction tuning</strong> &mdash; teaching models to follow instructions</li>
+                    <li class="fragment"><strong>Parameter-efficient methods (PEFT)</strong> &mdash; LoRA, QLoRA, adapters</li>
+                    <li class="fragment"><strong>Practical fine-tuning</strong> &mdash; Hugging Face tools and code</li>
+                    <li class="fragment"><strong>When to fine-tune vs prompt vs RAG</strong> &mdash; choosing the right approach</li>
+                </ol>
+                <aside class="notes">
+                    Here's our roadmap for the next 2 hours. We'll go from the basic concept to practical code you can run. The most important section for your day-to-day work will be the PEFT methods and the decision framework at the end.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION: WHAT IS FINE-TUNING ==================== -->
+
+            <section class="section-title">
+                <h2>What Is Fine-tuning?</h2>
+                <h3>The pre-train &rarr; fine-tune paradigm</h3>
+                <aside class="notes">
+                    Let's start with the fundamental concept.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 5: THE TWO-STAGE PARADIGM ==================== -->
+            <section>
+                <h2>The Two-Stage Paradigm</h2>
+                <div class="pipeline" style="flex-direction: column; gap: 0.8em; margin-top: 1em;">
+                    <div class="fragment" style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 220px; border-color: #7ec8e3;">
+                            Stage 1: Pre-training
+                        </div>
+                        <span style="font-size: 0.75em; color: #93a1a1;">
+                            Learn language from billions of tokens (weeks on many GPUs)
+                        </span>
+                    </div>
+                    <div class="arrow" style="font-size: 1.2em;">&darr;</div>
+                    <div class="fragment" style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 220px; border-color: #ff6b6b;">
+                            Stage 2: Fine-tuning
+                        </div>
+                        <span style="font-size: 0.75em; color: #93a1a1;">
+                            Adapt to your task with a small dataset (hours on one GPU)
+                        </span>
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 1.5em; background: rgba(152, 195, 121, 0.1); border-left: 4px solid #98c379; padding: 0.8em; border-radius: 0 8px 8px 0;">
+                    <p style="margin: 0; font-size: 0.85em;">
+                        <span class="highlight-green">Key insight:</span>
+                        Fine-tuning works because pre-trained models already understand language.
+                        We just need to <strong>steer</strong> that knowledge toward our task.
+                    </p>
+                </div>
+                <aside class="notes">
+                    This is the foundational idea. Pre-training is the expensive part that happens once (done by OpenAI, Meta, Google, etc.). Fine-tuning is the cheap part that you do for your specific application. Think of it like this: pre-training builds the engine, fine-tuning adjusts the steering. The analogy with transfer learning in computer vision is exact: ImageNet pre-training, then fine-tune for your specific image classification task.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 6: ANALOGY ==================== -->
+            <section class="quote-slide">
+                <h2>An Analogy</h2>
+                <blockquote>
+                    Pre-training is like getting a university degree &mdash; broad knowledge of the world.<br><br>
+                    Fine-tuning is like job training &mdash; specialized skills for a specific role.
+                </blockquote>
+                <div class="fragment" style="margin-top: 1em; font-size: 0.8em;">
+                    <div class="two-column">
+                        <div>
+                            <h3>Pre-training teaches</h3>
+                            <ul style="font-size: 0.85em;">
+                                <li>Grammar and syntax</li>
+                                <li>World knowledge</li>
+                                <li>Reasoning patterns</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3>Fine-tuning teaches</h3>
+                            <ul style="font-size: 0.85em;">
+                                <li>Your specific format</li>
+                                <li>Your domain vocabulary</li>
+                                <li>Your task objectives</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    This analogy resonates well with engineers. You wouldn't teach a new hire to read and write -- you assume they already can. You teach them your codebase, your processes, your domain. Same idea with fine-tuning: the model already knows language, you teach it your task.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION: FULL FINE-TUNING ==================== -->
+
+            <section class="section-title">
+                <h2>Full Fine-tuning</h2>
+                <h3>The classic approach &mdash; and its costs</h3>
+                <aside class="notes">
+                    Let's start with the simplest form of fine-tuning: update everything.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 8: HOW FULL FINE-TUNING WORKS ==================== -->
+            <section>
+                <h2>Full Fine-tuning: Update All Parameters</h2>
+                <div class="pipeline" style="margin: 1em 0;">
+                    <div class="step" style="border-color: #7ec8e3;">Pre-trained<br>Model</div>
+                    <span class="arrow">&rarr;</span>
+                    <div class="step" style="border-color: #e5c07b;">Train on<br>Task Data</div>
+                    <span class="arrow">&rarr;</span>
+                    <div class="step" style="border-color: #98c379;">Fine-tuned<br>Model</div>
+                </div>
+                <ul style="font-size: 0.8em; margin-top: 1em;">
+                    <li class="fragment">
+                        Start with pre-trained weights, then run <strong>standard training</strong>
+                    </li>
+                    <li class="fragment">
+                        <strong>All parameters</strong> are updated via backpropagation
+                    </li>
+                    <li class="fragment">
+                        Use a <span class="highlight-blue">much smaller learning rate</span> than pre-training
+                        <span class="small">(e.g., 2e-5 vs 1e-4)</span>
+                    </li>
+                    <li class="fragment">
+                        Train for only <span class="highlight-green">a few epochs</span> (1&ndash;5 typically)
+                    </li>
+                </ul>
+                <aside class="notes">
+                    Full fine-tuning is conceptually simple. Take the pre-trained model, swap out the final layer for your task, and train everything. The small learning rate is critical -- you don't want to destroy the pre-trained knowledge. This was THE approach from 2018 to roughly 2022 for BERT-style models.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 9: WHY IT'S EXPENSIVE ==================== -->
+            <section>
+                <h2>Why Full Fine-tuning Is Expensive</h2>
+                <div style="display: flex; gap: 1em; justify-content: center; margin-top: 1em;">
+                    <div class="cost-card fragment">
+                        <div class="cost-value">7B</div>
+                        <div class="cost-label">Parameters in LLaMA 2</div>
+                        <div style="font-size: 0.65em; color: #93a1a1; margin-top: 0.3em;">All updated during training</div>
+                    </div>
+                    <div class="cost-card fragment">
+                        <div class="cost-value">&sim;28 GB</div>
+                        <div class="cost-label">GPU memory (FP32)</div>
+                        <div style="font-size: 0.65em; color: #93a1a1; margin-top: 0.3em;">Weights alone, not counting gradients</div>
+                    </div>
+                    <div class="cost-card fragment">
+                        <div class="cost-value">&sim;112 GB</div>
+                        <div class="cost-label">Total GPU memory</div>
+                        <div style="font-size: 0.65em; color: #93a1a1; margin-top: 0.3em;">+ optimizer states + activations</div>
+                    </div>
+                </div>
+                <ul style="font-size: 0.75em; margin-top: 1em;">
+                    <li class="fragment">Need to store <strong>full copy of model per task</strong>
+                        <span class="small">&mdash; 5 tasks = 5 x 14GB</span>
+                    </li>
+                    <li class="fragment"><span class="highlight">Catastrophic forgetting</span>: can lose pre-trained knowledge</li>
+                </ul>
+                <aside class="notes">
+                    Let's do the math. A 7B parameter model in FP32 is 7 billion x 4 bytes = 28GB just for the weights. During training, you also need gradients (28GB more), optimizer states like Adam momentum (56GB more), and activation memory. That's over 100GB -- you need multiple high-end GPUs. And if you have 5 different tasks, you need 5 complete model copies. This is why the field moved toward more efficient methods.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 10: THE STORAGE PROBLEM ==================== -->
+            <section>
+                <h2>The Multi-Task Storage Problem</h2>
+                <div style="text-align: center; margin: 1em 0;">
+                    <div style="display: inline-flex; flex-direction: column; gap: 0.5em; font-size: 0.8em;">
+                        <div class="fragment" style="display: flex; align-items: center; gap: 0.5em;">
+                            <div style="width: 300px; height: 30px; background: linear-gradient(90deg, #ff6b6b 100%, transparent 100%); border-radius: 4px;"></div>
+                            <span>Sentiment &mdash; 14 GB</span>
+                        </div>
+                        <div class="fragment" style="display: flex; align-items: center; gap: 0.5em;">
+                            <div style="width: 300px; height: 30px; background: linear-gradient(90deg, #7ec8e3 100%, transparent 100%); border-radius: 4px;"></div>
+                            <span>Summarization &mdash; 14 GB</span>
+                        </div>
+                        <div class="fragment" style="display: flex; align-items: center; gap: 0.5em;">
+                            <div style="width: 300px; height: 30px; background: linear-gradient(90deg, #98c379 100%, transparent 100%); border-radius: 4px;"></div>
+                            <span>Translation &mdash; 14 GB</span>
+                        </div>
+                        <div class="fragment" style="display: flex; align-items: center; gap: 0.5em;">
+                            <div style="width: 300px; height: 30px; background: linear-gradient(90deg, #e5c07b 100%, transparent 100%); border-radius: 4px;"></div>
+                            <span>Code Generation &mdash; 14 GB</span>
+                        </div>
+                        <div class="fragment" style="display: flex; align-items: center; gap: 0.5em;">
+                            <div style="width: 300px; height: 30px; background: linear-gradient(90deg, #c678dd 100%, transparent 100%); border-radius: 4px;"></div>
+                            <span>Q&amp;A &mdash; 14 GB</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="fragment" style="font-size: 0.9em;">
+                    <span class="highlight">5 tasks &times; 14 GB = 70 GB</span> of nearly identical model copies
+                </p>
+                <p class="fragment" style="font-size: 0.8em; color: #7ec8e3;">
+                    Can we do better? <strong>Yes.</strong> &rarr; PEFT methods later
+                </p>
+                <aside class="notes">
+                    This visual makes the problem obvious. Each bar is a full model copy. The models are 99.9% identical -- they differ only slightly in their learned weights. It's incredibly wasteful. We'll see that LoRA solves this by storing only the tiny differences (a few MB per task instead of 14GB).
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION: INSTRUCTION TUNING ==================== -->
+
+            <section class="section-title">
+                <h2>Instruction Tuning</h2>
+                <h3>Teaching models to follow instructions</h3>
+                <aside class="notes">
+                    Before we get to parameter-efficient methods, let's talk about a specific TYPE of fine-tuning that changed everything: instruction tuning. This is how ChatGPT-style models learned to be helpful.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 12: WHAT IS INSTRUCTION TUNING ==================== -->
+            <section>
+                <h2>What Is Instruction Tuning?</h2>
+                <p style="font-size: 0.85em;">Train on <span class="highlight-blue">(instruction, output)</span> pairs to make models follow commands</p>
+                <div class="instruction-box fragment">
+                    <div class="inst-label">Instruction:</div>
+                    <div class="inst-content">Summarize the following article in 3 bullet points:</div>
+                    <div class="inst-content" style="color: #93a1a1; font-style: italic;">[article text...]</div>
+                </div>
+                <div class="instruction-box fragment" style="border-left-color: #98c379;">
+                    <div class="inst-label" style="color: #98c379;">Output:</div>
+                    <div class="inst-content">&bull; First key point...<br>&bull; Second key point...<br>&bull; Third key point...</div>
+                </div>
+                <p class="fragment" style="font-size: 0.8em; margin-top: 0.8em;">
+                    <strong>Before instruction tuning:</strong> model completes text (autocomplete)<br>
+                    <strong>After instruction tuning:</strong> model <span class="highlight-green">follows instructions</span> (assistant)
+                </p>
+                <aside class="notes">
+                    This is the key insight. A raw pre-trained GPT model is an autocomplete engine. If you ask it a question, it might just generate more questions. Instruction tuning teaches it to actually answer. The training data format is simple: an instruction describing the task, and the desired output. You fine-tune the model on thousands of these pairs.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 13: KEY INSTRUCTION DATASETS ==================== -->
+            <section>
+                <h2>Key Instruction Datasets</h2>
+                <table class="compare-table">
+                    <tr>
+                        <th>Dataset</th>
+                        <th>Source</th>
+                        <th>Size</th>
+                        <th>Key Feature</th>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>FLAN</strong></td>
+                        <td>Google</td>
+                        <td>1,800+ tasks</td>
+                        <td>Converted NLP benchmarks into instruction format</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Alpaca</strong></td>
+                        <td>Stanford</td>
+                        <td>52K</td>
+                        <td>GPT-3.5 generated, self-instruct method</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Dolly</strong></td>
+                        <td>Databricks</td>
+                        <td>15K</td>
+                        <td>Human-written, commercially usable</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>OpenAssistant</strong></td>
+                        <td>LAION</td>
+                        <td>160K</td>
+                        <td>Multi-turn conversations, community-driven</td>
+                    </tr>
+                </table>
+                <p class="fragment" style="font-size: 0.75em; margin-top: 0.8em; color: #7ec8e3;">
+                    These datasets enabled the open-source ChatGPT alternatives (LLaMA-Chat, Vicuna, etc.)
+                </p>
+                <aside class="notes">
+                    FLAN was the pioneer -- Google took existing NLP datasets and reformatted them as instructions. Alpaca was remarkable because Stanford used GPT-3.5 to generate 52K instruction pairs for just $500, then fine-tuned LLaMA on them. This "self-instruct" approach showed you could create instruction-following models cheaply. Dolly from Databricks was the first high-quality, human-written, commercially licensable dataset. OpenAssistant is community-driven with multi-turn conversations.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 14: WHY INSTRUCTION TUNING MATTERS ==================== -->
+            <section>
+                <h2>Why Instruction Tuning Matters</h2>
+                <div class="two-column" style="font-size: 0.8em;">
+                    <div class="fragment">
+                        <h3 style="color: #ff6b6b;">Base Model (no instruction tuning)</h3>
+                        <div class="matrix-box" style="font-size: 0.85em;">
+                            <strong>Input:</strong> What is the capital of France?<br><br>
+                            <strong>Output:</strong> What is the capital of Germany?
+                            What is the capital of Spain?
+                            What is the capital of...
+                        </div>
+                        <p class="small" style="margin-top: 0.5em;">Just autocompletes text</p>
+                    </div>
+                    <div class="fragment">
+                        <h3 style="color: #98c379;">Instruction-tuned Model</h3>
+                        <div class="matrix-box" style="font-size: 0.85em;">
+                            <strong>Input:</strong> What is the capital of France?<br><br>
+                            <strong>Output:</strong> The capital of France is Paris. It is the largest city in France and serves as the country's political and cultural center.
+                        </div>
+                        <p class="small" style="margin-top: 0.5em;">Actually answers the question</p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    This is the most convincing example of why instruction tuning matters. The base model has all the knowledge -- it knows Paris is the capital of France. But it doesn't know that when you ask a question, it should ANSWER it. Instruction tuning teaches this format: given a question, produce an answer. This is the difference between GPT-3 (base) and ChatGPT (instruction-tuned + RLHF).
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION: PEFT ==================== -->
+
+            <section class="section-title">
+                <h2>Parameter-Efficient Fine-Tuning</h2>
+                <h3>PEFT: Train less, achieve more</h3>
+                <aside class="notes">
+                    Now for the most important section of this session. PEFT methods solve the cost problem we discussed earlier. Instead of updating all 7 billion parameters, we update only a tiny fraction.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 16: THE PEFT IDEA ==================== -->
+            <section>
+                <h2>The PEFT Idea</h2>
+                <p style="font-size: 0.85em;">
+                    <span class="highlight-blue">Freeze</span> the pre-trained model,
+                    train only a <span class="highlight">small number of new parameters</span>
+                </p>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 1.5em; margin: 1.5em 0;">
+                    <div class="fragment" style="text-align: center;">
+                        <div class="stat-big">7B</div>
+                        <div class="small">Pre-trained params<br>(frozen)</div>
+                    </div>
+                    <div style="font-size: 2em; color: #7ec8e3;">+</div>
+                    <div class="fragment" style="text-align: center;">
+                        <div class="stat-big" style="color: #98c379;">~8M</div>
+                        <div class="small">New trainable params<br>(~0.1% of total)</div>
+                    </div>
+                </div>
+                <ul style="font-size: 0.75em;">
+                    <li class="fragment"><span class="highlight-green">Less memory</span>: only store gradients for new parameters</li>
+                    <li class="fragment"><span class="highlight-green">Less storage</span>: save only the small adapter, not the full model</li>
+                    <li class="fragment"><span class="highlight-green">Less risk</span>: pre-trained knowledge stays intact (no catastrophic forgetting)</li>
+                </ul>
+                <aside class="notes">
+                    The core idea of PEFT is beautifully simple. The pre-trained model already knows a lot. We don't need to change all of it. We just add or modify a tiny number of parameters. Going from 7B trainable parameters to 8M is a 1000x reduction. This means you can fine-tune on a single consumer GPU.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 17: LoRA KEY INSIGHT ==================== -->
+            <section>
+                <h2>LoRA: The Key Insight</h2>
+                <p style="font-size: 0.85em;">
+                    <strong>Observation:</strong> Weight changes during fine-tuning have <span class="highlight">low intrinsic rank</span>
+                </p>
+                <div class="fragment" style="background: rgba(255,255,255,0.05); padding: 1em; border-radius: 8px; margin: 1em 0;">
+                    <p style="font-size: 0.85em; margin: 0;">
+                        When we fine-tune a weight matrix <strong>W</strong> (size d &times; d), the change <strong>&Delta;W</strong> can be approximated by a <span class="highlight-blue">low-rank decomposition</span>:
+                    </p>
+                    <div style="text-align: center; margin-top: 0.8em; font-size: 1.2em;">
+                        <strong>&Delta;W</strong> &approx; <strong style="color: #98c379;">A</strong> &times; <strong style="color: #c678dd;">B</strong>
+                    </div>
+                    <p style="font-size: 0.75em; color: #93a1a1; text-align: center; margin-top: 0.5em;">
+                        where A is (d &times; r) and B is (r &times; d), with r &laquo; d
+                    </p>
+                </div>
+                <div class="fragment" style="font-size: 0.8em;">
+                    <p>
+                        <strong>Example:</strong> d = 4096, r = 8<br>
+                        <span class="small">Full &Delta;W: 4096 &times; 4096 = <span class="highlight">16.7M</span> params</span><br>
+                        <span class="small">LoRA (A + B): 4096 &times; 8 + 8 &times; 4096 = <span class="highlight-green">65K</span> params &mdash; <strong>256&times; fewer!</strong></span>
+                    </p>
+                </div>
+                <p class="ref">Hu et al. (2021). "LoRA: Low-Rank Adaptation of Large Language Models" &mdash; <a href="https://arxiv.org/abs/2106.09685">arXiv:2106.09685</a></p>
+                <aside class="notes">
+                    This is the crucial insight from the LoRA paper. When you fine-tune a large model, you don't actually need to change all dimensions of the weight matrices. The updates tend to live in a low-dimensional subspace. So instead of learning the full change matrix delta-W, we decompose it into two small matrices A and B. With rank r=8, this is a 256x parameter reduction for a single 4096x4096 weight matrix. Across the whole model, the savings are enormous.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 18: LoRA ARCHITECTURE DIAGRAM ==================== -->
+            <section>
+                <h2>LoRA: How It Works</h2>
+                <div class="lora-diagram">
+                    <!-- Original path -->
+                    <div class="lora-block fragment">
+                        <div style="font-size: 0.7em; color: #93a1a1; margin-bottom: 0.3em;">Input x</div>
+                        <div style="font-size: 1.5em; color: #93a1a1;">&darr;</div>
+                        <div class="lora-matrix frozen" style="width: 120px; height: 120px; display: flex; align-items: center; justify-content: center;">
+                            W<br><span style="font-size: 0.6em;">(d &times; d)</span><br><span style="font-size: 0.55em;">FROZEN</span>
+                        </div>
+                        <div style="font-size: 1.5em; color: #93a1a1;">&darr;</div>
+                        <div style="font-size: 0.7em; color: #93a1a1;">W&middot;x</div>
+                    </div>
+
+                    <div class="lora-plus fragment">&plus;</div>
+
+                    <!-- LoRA path -->
+                    <div class="lora-block fragment">
+                        <div style="font-size: 0.7em; color: #ff6b6b; margin-bottom: 0.3em;">Input x</div>
+                        <div style="font-size: 1.5em; color: #ff6b6b;">&darr;</div>
+                        <div class="lora-matrix small-rank" style="width: 120px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                            B <span style="font-size: 0.6em;">(r &times; d)</span>
+                        </div>
+                        <div style="font-size: 1.2em; color: #c678dd;">&darr;</div>
+                        <div class="lora-matrix trainable" style="width: 120px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                            A <span style="font-size: 0.6em;">(d &times; r)</span>
+                        </div>
+                        <div style="font-size: 1.5em; color: #ff6b6b;">&darr;</div>
+                        <div style="font-size: 0.7em; color: #ff6b6b;">&Delta;W&middot;x</div>
+                    </div>
+
+                    <div class="lora-equals fragment">=</div>
+
+                    <div class="lora-block fragment">
+                        <div style="font-size: 0.7em; color: #e5c07b; margin-bottom: 0.3em;">Output</div>
+                        <div style="font-size: 1.5em; color: #e5c07b;">&uarr;</div>
+                        <div style="background: rgba(229, 192, 123, 0.15); border: 2px solid #e5c07b; border-radius: 6px; padding: 0.8em; font-size: 0.8em; color: #e5c07b; font-weight: bold;">
+                            h = W&middot;x + A&middot;B&middot;x
+                        </div>
+                    </div>
+                </div>
+                <p class="fragment" style="font-size: 0.75em; color: #7ec8e3; margin-top: 0.5em;">
+                    Only <strong style="color: #ff6b6b;">A</strong> and <strong style="color: #98c379;">B</strong> are trained.
+                    At inference, merge: W' = W + A&middot;B (zero extra latency!)
+                </p>
+                <aside class="notes">
+                    Let me walk through this diagram. On the left, the original frozen weight matrix W processes the input as usual. On the right, the LoRA path: input goes through a small down-projection B (from d dimensions to r dimensions), then an up-projection A (back to d dimensions). The outputs are added together. The beautiful part: at inference time, you can merge A*B back into W, creating W' = W + A*B. This means zero additional latency at inference -- it's as if you fine-tuned the full model.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 19: LoRA NUMBERS ==================== -->
+            <section>
+                <h2>LoRA by the Numbers</h2>
+                <table class="compare-table" style="font-size: 0.75em;">
+                    <tr>
+                        <th>Metric</th>
+                        <th>Full Fine-tuning</th>
+                        <th>LoRA (r=8)</th>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Trainable params</strong> (7B model)</td>
+                        <td class="bad">7,000,000,000</td>
+                        <td class="good">~8,000,000 (0.1%)</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>GPU memory</strong></td>
+                        <td class="bad">&sim;112 GB</td>
+                        <td class="good">&sim;16 GB</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Storage per task</strong></td>
+                        <td class="bad">14 GB</td>
+                        <td class="good">&sim;16 MB</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Inference speed</strong></td>
+                        <td>Baseline</td>
+                        <td class="good">Same (after merge)</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Task performance</strong></td>
+                        <td>100%</td>
+                        <td class="good">95&ndash;100%</td>
+                    </tr>
+                </table>
+                <p class="fragment" style="font-size: 0.8em; margin-top: 0.8em;">
+                    <span class="highlight-green">875&times;</span> less storage per task.
+                    <span class="highlight-blue">5 tasks</span> = 80 MB instead of 70 GB.
+                </p>
+                <aside class="notes">
+                    Let these numbers sink in. From 14GB per task to 16MB. From 112GB GPU memory to 16GB -- that's a single consumer GPU like an RTX 4090. And performance is nearly identical to full fine-tuning. This is why LoRA became the de facto standard for fine-tuning LLMs. The rank r is a hyperparameter: r=8 is a good default, r=16 or r=32 if you need more expressiveness.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 20: QLoRA ==================== -->
+            <section>
+                <h2>QLoRA: Even More Efficient</h2>
+                <p style="font-size: 0.85em;">Combine <span class="highlight-purple">4-bit quantization</span> of the base model with LoRA adapters</p>
+                <div class="pipeline" style="margin: 1em 0;">
+                    <div class="step fragment" style="border-color: #c678dd;">
+                        Base Model<br><span style="font-size: 0.7em;">4-bit quantized</span>
+                    </div>
+                    <span class="arrow">+</span>
+                    <div class="step fragment" style="border-color: #ff6b6b;">
+                        LoRA Adapters<br><span style="font-size: 0.7em;">FP16 / BF16</span>
+                    </div>
+                    <span class="arrow">=</span>
+                    <div class="step fragment" style="border-color: #98c379;">
+                        Fine-tuned<br><span style="font-size: 0.7em;">on 1 GPU!</span>
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 1em;">
+                    <table class="compare-table" style="font-size: 0.75em;">
+                        <tr>
+                            <th>Method</th>
+                            <th>GPU Memory (7B model)</th>
+                            <th>Hardware Needed</th>
+                        </tr>
+                        <tr>
+                            <td>Full fine-tuning (FP32)</td>
+                            <td class="bad">&sim;112 GB</td>
+                            <td>Multiple A100s</td>
+                        </tr>
+                        <tr>
+                            <td>LoRA (FP16)</td>
+                            <td style="color: #e5c07b;">&sim;16 GB</td>
+                            <td>1&times; RTX 4090</td>
+                        </tr>
+                        <tr>
+                            <td><strong>QLoRA (4-bit)</strong></td>
+                            <td class="good"><strong>&sim;6 GB</strong></td>
+                            <td><strong>1&times; RTX 3060!</strong></td>
+                        </tr>
+                    </table>
+                </div>
+                <p class="ref">Dettmers et al. (2023). "QLoRA: Efficient Finetuning of Quantized Language Models" &mdash; <a href="https://arxiv.org/abs/2305.14314">arXiv:2305.14314</a></p>
+                <aside class="notes">
+                    QLoRA pushes efficiency even further. The idea is simple: quantize the base model to 4-bit precision (so 7B params fit in about 3.5GB), then add LoRA adapters on top in higher precision. The three key innovations from the paper: 4-bit NormalFloat quantization, double quantization of quantization constants, and paged optimizers for memory spikes. The result: you can fine-tune a 7B model on a $350 GPU. This democratized LLM fine-tuning.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 21: OTHER PEFT METHODS ==================== -->
+            <section>
+                <h2>Other PEFT Methods</h2>
+                <div class="two-column" style="font-size: 0.8em;">
+                    <div>
+                        <h3 style="color: #e5c07b;">Adapters</h3>
+                        <ul class="fragment">
+                            <li>Insert small <strong>bottleneck layers</strong> between transformer layers</li>
+                            <li>Structure: down-project &rarr; nonlinearity &rarr; up-project</li>
+                            <li>Each adapter: only ~0.5&ndash;8% of model params</li>
+                            <li style="color: #ff6b6b;">Con: adds latency (extra layers at inference)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="color: #c678dd;">Prefix Tuning</h3>
+                        <ul class="fragment">
+                            <li>Prepend <strong>learnable "virtual tokens"</strong> to each layer's input</li>
+                            <li>Only the prefix embeddings are trained</li>
+                            <li>Typically 10&ndash;200 prefix tokens</li>
+                            <li style="color: #ff6b6b;">Con: reduces effective context length</li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="ref" style="margin-top: 0.5em;">
+                    Houlsby et al. (2019). "Parameter-Efficient Transfer Learning" &mdash;
+                    Li &amp; Liang (2021). "Prefix-Tuning"
+                </p>
+                <aside class="notes">
+                    Let me briefly mention two other PEFT approaches. Adapters were one of the first PEFT methods: small bottleneck modules inserted into each transformer layer. They work well but add inference latency because you have extra layers to compute through. Prefix tuning is more elegant: you prepend learnable vectors to the key-value pairs at each attention layer. No architectural changes needed. However, it uses up part of your context window and can be harder to tune. In practice, LoRA won out because it combines the best of both: no inference latency and easy to use.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 22: PEFT COMPARISON TABLE ==================== -->
+            <section>
+                <h2>PEFT Methods Comparison</h2>
+                <table class="compare-table" style="font-size: 0.65em;">
+                    <tr>
+                        <th>Method</th>
+                        <th>Trainable Params</th>
+                        <th>Inference Latency</th>
+                        <th>Memory</th>
+                        <th>Performance</th>
+                        <th>Popularity</th>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Full Fine-tuning</strong></td>
+                        <td class="bad">100%</td>
+                        <td class="good">Baseline</td>
+                        <td class="bad">Very High</td>
+                        <td class="good">Best</td>
+                        <td>Legacy</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong style="color: #ff6b6b;">LoRA</strong></td>
+                        <td class="good">0.1&ndash;1%</td>
+                        <td class="good">None (merge)</td>
+                        <td class="good">Low</td>
+                        <td class="good">Near full</td>
+                        <td class="good"><strong>Most used</strong></td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong style="color: #c678dd;">QLoRA</strong></td>
+                        <td class="good">0.1&ndash;1%</td>
+                        <td class="good">None (merge)</td>
+                        <td class="good"><strong>Very Low</strong></td>
+                        <td class="good">Near full</td>
+                        <td class="good">Very popular</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong style="color: #e5c07b;">Adapters</strong></td>
+                        <td class="good">0.5&ndash;8%</td>
+                        <td class="bad">+10&ndash;30%</td>
+                        <td style="color: #e5c07b;">Medium</td>
+                        <td class="good">Good</td>
+                        <td>Moderate</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Prefix Tuning</strong></td>
+                        <td class="good">0.1%</td>
+                        <td style="color: #e5c07b;">Slight</td>
+                        <td class="good">Low</td>
+                        <td style="color: #e5c07b;">Good*</td>
+                        <td>Niche</td>
+                    </tr>
+                </table>
+                <p class="fragment" style="font-size: 0.75em; margin-top: 0.8em; color: #7ec8e3;">
+                    <strong>Recommendation:</strong> Start with <span class="highlight">LoRA</span> (or <span class="highlight-purple">QLoRA</span> if GPU-constrained). It's the best default.
+                </p>
+                <aside class="notes">
+                    This is your reference table. If you remember one thing from this session, let it be: start with LoRA or QLoRA. LoRA has won the PEFT competition because it adds zero inference latency, requires very few parameters, and matches full fine-tuning performance. QLoRA if you're working with limited GPU memory. Adapters and prefix tuning have their niches but are less commonly used in practice today.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION: PRACTICAL FINE-TUNING ==================== -->
+
+            <section class="section-title">
+                <h2>Practical Fine-tuning</h2>
+                <h3>Hugging Face tools and code</h3>
+                <aside class="notes">
+                    Now let's get practical. How do you actually fine-tune a model? The Hugging Face ecosystem makes it remarkably straightforward.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 24: THE HF STACK ==================== -->
+            <section>
+                <h2>The Hugging Face Fine-tuning Stack</h2>
+                <div class="pipeline" style="flex-direction: column; gap: 0.6em; margin-top: 1em;">
+                    <div class="fragment" style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 220px; border-color: #e5c07b;">
+                            transformers
+                        </div>
+                        <span style="font-size: 0.75em; color: #93a1a1;">
+                            Model loading, tokenization, training loops
+                        </span>
+                    </div>
+                    <div class="fragment" style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 220px; border-color: #98c379;">
+                            peft
+                        </div>
+                        <span style="font-size: 0.75em; color: #93a1a1;">
+                            LoRA, QLoRA, adapters, prefix tuning
+                        </span>
+                    </div>
+                    <div class="fragment" style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 220px; border-color: #c678dd;">
+                            trl
+                        </div>
+                        <span style="font-size: 0.75em; color: #93a1a1;">
+                            SFTTrainer for instruction tuning, RLHF, DPO
+                        </span>
+                    </div>
+                    <div class="fragment" style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 220px; border-color: #7ec8e3;">
+                            datasets
+                        </div>
+                        <span style="font-size: 0.75em; color: #93a1a1;">
+                            Load and preprocess training data
+                        </span>
+                    </div>
+                    <div class="fragment" style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 220px; border-color: #ff6b6b;">
+                            bitsandbytes
+                        </div>
+                        <span style="font-size: 0.75em; color: #93a1a1;">
+                            4-bit / 8-bit quantization for QLoRA
+                        </span>
+                    </div>
+                </div>
+                <pre class="fragment" style="font-size: 0.5em; margin-top: 0.8em;"><code class="bash">pip install transformers peft trl datasets bitsandbytes</code></pre>
+                <aside class="notes">
+                    This is the modern fine-tuning stack. Transformers provides the models and training infrastructure. PEFT provides the parameter-efficient methods. TRL (Transformer Reinforcement Learning) provides the SFTTrainer specifically designed for instruction tuning. Datasets handles data loading. And bitsandbytes provides the quantization needed for QLoRA. One pip install and you have everything.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 25: LoRA CODE SNIPPET ==================== -->
+            <section>
+                <h2>LoRA in Practice: Configuration</h2>
+                <pre style="font-size: 0.48em;"><code class="python">from peft import LoraConfig, get_peft_model, TaskType
+from transformers import AutoModelForCausalLM
+
+# Load pre-trained model
+model = AutoModelForCausalLM.from_pretrained(
+    "meta-llama/Llama-2-7b-hf",
+    device_map="auto"
+)
+
+# Configure LoRA
+lora_config = LoraConfig(
+    task_type=TaskType.CAUSAL_LM,
+    r=8,                        # Rank: higher = more expressive, more params
+    lora_alpha=32,              # Scaling factor (alpha/r applied to updates)
+    lora_dropout=0.05,          # Dropout for regularization
+    target_modules=[            # Which layers to apply LoRA to
+        "q_proj", "v_proj",     # Attention query and value projections
+        "k_proj", "o_proj",     # Attention key and output projections
+    ],
+)
+
+# Wrap model with LoRA
+model = get_peft_model(model, lora_config)
+model.print_trainable_parameters()
+# trainable params: 4,194,304 || all params: 6,742,609,920 || trainable%: 0.0622</code></pre>
+                <aside class="notes">
+                    Here's actual code you can run. The key parameters: r is the rank -- start with 8, increase to 16 or 32 if performance isn't good enough. lora_alpha is a scaling factor -- a common rule of thumb is to set it to 2 times r. target_modules specifies which weight matrices get LoRA applied -- typically the attention projections. The last line shows the magic: only 0.06% of parameters are trainable. That's 4 million out of 6.7 billion.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 26: TRAINING CODE ==================== -->
+            <section>
+                <h2>LoRA in Practice: Training</h2>
+                <pre style="font-size: 0.48em;"><code class="python">from trl import SFTTrainer, SFTConfig
+from datasets import load_dataset
+
+# Load instruction dataset
+dataset = load_dataset("databricks/databricks-dolly-15k", split="train")
+
+# Configure training
+training_config = SFTConfig(
+    output_dir="./lora-llama2",
+    num_train_epochs=3,
+    per_device_train_batch_size=4,
+    gradient_accumulation_steps=4,   # Effective batch size: 4 * 4 = 16
+    learning_rate=2e-4,              # Higher than full fine-tuning
+    fp16=True,                       # Mixed precision
+    logging_steps=10,
+    save_strategy="epoch",
+)
+
+# Train with SFTTrainer (handles formatting, packing, etc.)
+trainer = SFTTrainer(
+    model=model,
+    train_dataset=dataset,
+    args=training_config,
+)
+
+trainer.train()
+
+# Save only the LoRA adapter (~16 MB)
+model.save_pretrained("./lora-llama2-adapter")</code></pre>
+                <aside class="notes">
+                    And here's the training code. The SFTTrainer from TRL handles all the instruction formatting for you. Notice the learning rate is 2e-4, which is higher than typical full fine-tuning because we're only updating a small number of parameters. The final save_pretrained call only saves the LoRA adapter weights -- about 16MB instead of 14GB. To use the model later, you load the base model and the adapter separately, then merge them.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 27: QLoRA CODE SNIPPET ==================== -->
+            <section>
+                <h2>QLoRA: Quantized Fine-tuning</h2>
+                <pre style="font-size: 0.48em;"><code class="python">from transformers import AutoModelForCausalLM, BitsAndBytesConfig
+
+# 4-bit quantization config
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",          # NormalFloat4 quantization
+    bnb_4bit_compute_dtype="bfloat16",   # Compute in BF16
+    bnb_4bit_use_double_quant=True,      # Quantize the quantization constants
+)
+
+# Load model in 4-bit
+model = AutoModelForCausalLM.from_pretrained(
+    "meta-llama/Llama-2-7b-hf",
+    quantization_config=bnb_config,
+    device_map="auto",
+)
+
+# Apply LoRA on top (same config as before)
+model = get_peft_model(model, lora_config)
+
+# Now fine-tune with ~6GB GPU memory instead of ~112GB!</code></pre>
+                <p class="fragment" style="font-size: 0.75em; color: #98c379; margin-top: 0.5em;">
+                    Only 3 extra lines to go from LoRA to QLoRA
+                </p>
+                <aside class="notes">
+                    The jump from LoRA to QLoRA is remarkably simple. You just add the BitsAndBytesConfig when loading the model. Three key settings: load_in_4bit enables 4-bit quantization, nf4 is the NormalFloat4 format optimized for normally distributed weights, and double quantization further reduces memory by quantizing the quantization constants themselves. Everything else stays the same. The model now fits in about 3.5GB instead of 14GB, and with LoRA adapters and training overhead, total memory is around 6GB.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION: WHEN TO FINE-TUNE ==================== -->
+
+            <section class="section-title">
+                <h2>When to Fine-tune?</h2>
+                <h3>Fine-tuning vs prompting vs RAG</h3>
+                <aside class="notes">
+                    This is the most important strategic question. Fine-tuning is powerful, but it's not always the right answer. Let's build a decision framework.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 29: THREE APPROACHES ==================== -->
+            <section>
+                <h2>Three Ways to Customize LLMs</h2>
+                <div style="display: flex; gap: 1em; justify-content: center; margin-top: 1em; font-size: 0.75em;">
+                    <div class="decision-box yes fragment" style="flex: 1;">
+                        <h3 style="color: #98c379; margin-top: 0;">Prompting</h3>
+                        <p><strong>Easiest.</strong> No training.</p>
+                        <p>Write instructions + examples in the prompt.</p>
+                        <p style="color: #93a1a1; font-size: 0.85em;">Cost: $0<br>Time: minutes</p>
+                    </div>
+                    <div class="decision-box maybe fragment" style="flex: 1;">
+                        <h3 style="color: #e5c07b; margin-top: 0;">RAG</h3>
+                        <p><strong>Add knowledge.</strong> No training.</p>
+                        <p>Retrieve relevant docs and inject into prompt.</p>
+                        <p style="color: #93a1a1; font-size: 0.85em;">Cost: low<br>Time: days</p>
+                    </div>
+                    <div class="decision-box no fragment" style="flex: 1;">
+                        <h3 style="color: #ff6b6b; margin-top: 0;">Fine-tuning</h3>
+                        <p><strong>Change behavior.</strong> Requires training.</p>
+                        <p>Modify model weights with task-specific data.</p>
+                        <p style="color: #93a1a1; font-size: 0.85em;">Cost: moderate<br>Time: hours&ndash;days</p>
+                    </div>
+                </div>
+                <p class="fragment" style="font-size: 0.8em; margin-top: 0.8em; color: #7ec8e3;">
+                    Rule of thumb: <strong>try prompting first</strong>, then RAG, then fine-tuning
+                </p>
+                <aside class="notes">
+                    This is the practical decision framework. Always start with the simplest approach. Prompting is free and takes minutes. RAG adds your own knowledge base without any training. Fine-tuning is the nuclear option -- use it when you need to change the model's fundamental behavior, not just give it information. A common mistake is jumping to fine-tuning when RAG would suffice.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 30: DECISION MATRIX ==================== -->
+            <section>
+                <h2>Choosing the Right Approach</h2>
+                <table class="compare-table" style="font-size: 0.65em;">
+                    <tr>
+                        <th>You need to...</th>
+                        <th>Best approach</th>
+                        <th>Why</th>
+                    </tr>
+                    <tr class="fragment">
+                        <td>Answer questions about your docs</td>
+                        <td class="good"><strong>RAG</strong></td>
+                        <td>Knowledge retrieval, not behavior change</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>Generate a specific output format</td>
+                        <td style="color: #e5c07b;"><strong>Prompting</strong> (or fine-tune)</td>
+                        <td>Few-shot examples often sufficient</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>Adopt a consistent tone / persona</td>
+                        <td class="bad"><strong>Fine-tuning</strong></td>
+                        <td>Deep behavioral change</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>Work in a specialized domain (legal, medical)</td>
+                        <td class="bad"><strong>Fine-tuning</strong> + RAG</td>
+                        <td>Domain vocabulary + retrieval</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>Reduce latency / cost in production</td>
+                        <td class="bad"><strong>Fine-tune smaller model</strong></td>
+                        <td>Distill capabilities into efficient model</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>Keep information up-to-date</td>
+                        <td class="good"><strong>RAG</strong></td>
+                        <td>Fine-tuned knowledge becomes stale</td>
+                    </tr>
+                </table>
+                <aside class="notes">
+                    Walk through each row with the students. RAG is best when the problem is knowledge -- the model doesn't know your company's documentation. Prompting handles formatting and simple instructions. Fine-tuning is for when you need to change HOW the model behaves, not WHAT it knows. The combination of fine-tuning plus RAG is common in production: fine-tune for behavior, RAG for knowledge.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 31: DECISION FLOWCHART ==================== -->
+            <section>
+                <h2>Decision Flowchart</h2>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5em; font-size: 0.75em; margin-top: 0.5em;">
+                    <div class="fragment" style="background: rgba(126, 200, 227, 0.15); border: 2px solid #7ec8e3; border-radius: 8px; padding: 0.5em 1.5em; font-weight: bold;">
+                        Does prompting with examples work?
+                    </div>
+                    <div style="display: flex; gap: 3em; align-items: flex-start;">
+                        <div class="fragment" style="text-align: center;">
+                            <span style="color: #98c379; font-weight: bold;">&darr; Yes</span><br>
+                            <div class="decision-box yes" style="margin-top: 0.3em; padding: 0.5em 1em;">Use prompting</div>
+                        </div>
+                        <div class="fragment" style="text-align: center;">
+                            <span style="color: #ff6b6b; font-weight: bold;">&darr; No</span><br>
+                            <div style="background: rgba(126, 200, 227, 0.15); border: 2px solid #7ec8e3; border-radius: 8px; padding: 0.5em 1em; margin-top: 0.3em; font-weight: bold;">
+                                Is the problem <em>knowledge</em>?
+                            </div>
+                            <div style="display: flex; gap: 2em; margin-top: 0.5em;">
+                                <div class="fragment" style="text-align: center;">
+                                    <span style="color: #98c379;">&darr; Yes</span><br>
+                                    <div class="decision-box maybe" style="margin-top: 0.3em; padding: 0.5em 1em;">Use RAG</div>
+                                </div>
+                                <div class="fragment" style="text-align: center;">
+                                    <span style="color: #ff6b6b;">&darr; No</span><br>
+                                    <div style="background: rgba(126, 200, 227, 0.15); border: 2px solid #7ec8e3; border-radius: 8px; padding: 0.5em 1em; margin-top: 0.3em; font-weight: bold;">
+                                        Is it <em>behavior</em>?
+                                    </div>
+                                    <div class="fragment" style="margin-top: 0.5em;">
+                                        <span style="color: #98c379;">&darr; Yes</span><br>
+                                        <div class="decision-box no" style="margin-top: 0.3em; padding: 0.5em 1em;">Fine-tune<br>(LoRA/QLoRA)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    This flowchart is your practical guide. Always start from the top: can you solve it with prompting? If yes, stop there. If prompting fails, ask: is the problem that the model doesn't know something? Then RAG. Is the problem that the model doesn't behave the way you want? Then fine-tune. In practice, you'll often combine approaches. Print this slide and pin it to your wall.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 32: PRACTICAL TIPS ==================== -->
+            <section>
+                <h2>Practical Fine-tuning Tips</h2>
+                <ol style="font-size: 0.8em;">
+                    <li class="fragment">
+                        <strong>Data quality &gt; data quantity</strong><br>
+                        <span class="small">1,000 high-quality examples often beats 100,000 noisy ones</span>
+                    </li>
+                    <li class="fragment">
+                        <strong>Start with LoRA r=8</strong>, increase if needed<br>
+                        <span class="small">r=8 for simple tasks, r=16&ndash;64 for complex tasks</span>
+                    </li>
+                    <li class="fragment">
+                        <strong>Use a validation set</strong> to detect overfitting early<br>
+                        <span class="small">Fine-tuning on small datasets overfits fast</span>
+                    </li>
+                    <li class="fragment">
+                        <strong>Evaluate on real use cases</strong>, not just benchmarks<br>
+                        <span class="small">Benchmark performance doesn't always transfer</span>
+                    </li>
+                    <li class="fragment">
+                        <strong>Version your adapters</strong> like code<br>
+                        <span class="small">They're small enough to commit to Git (16 MB)</span>
+                    </li>
+                </ol>
+                <aside class="notes">
+                    These tips come from real-world experience. Data quality matters far more than quantity -- garbage in, garbage out. LoRA rank 8 is a solid default; only increase if your evaluation shows the model isn't capturing enough of the task. Overfitting happens quickly with small datasets: always hold out data for validation. Evaluate with actual users or realistic test cases, not just academic benchmarks. And since LoRA adapters are tiny, you can and should version them with Git.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 33: COMMON MISTAKES ==================== -->
+            <section class="discussion-slide">
+                <h2>Common Mistakes to Avoid</h2>
+                <ul style="font-size: 0.8em;">
+                    <li class="fragment">
+                        <span class="highlight">Fine-tuning when prompting would work</span><br>
+                        <span class="small">Always try prompting first. Seriously.</span>
+                    </li>
+                    <li class="fragment">
+                        <span class="highlight">Using low-quality training data</span><br>
+                        <span class="small">The model will learn your mistakes too</span>
+                    </li>
+                    <li class="fragment">
+                        <span class="highlight">Training too many epochs</span><br>
+                        <span class="small">1&ndash;3 epochs is usually enough; more leads to overfitting</span>
+                    </li>
+                    <li class="fragment">
+                        <span class="highlight">Ignoring the base model choice</span><br>
+                        <span class="small">A better base model = better fine-tuned model. Start with the best you can afford.</span>
+                    </li>
+                    <li class="fragment">
+                        <span class="highlight">Not evaluating properly</span><br>
+                        <span class="small">Manual evaluation by domain experts is essential</span>
+                    </li>
+                </ul>
+                <aside class="notes">
+                    Let me share the most common mistakes I've seen. Number one is the most frequent: engineers jump to fine-tuning before trying prompting. Often, a well-crafted system prompt with examples solves the problem. Number two: bad training data produces a bad model, sometimes worse than the base model. Training too many epochs is subtle: the model starts memorizing your training examples instead of learning general patterns. Base model selection matters a lot -- a fine-tuned Llama-3 will almost always beat a fine-tuned Llama-2. And finally, you must evaluate rigorously -- have domain experts actually use the model.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION: SUMMARY ==================== -->
+
+            <section class="section-title">
+                <h2>Summary</h2>
+                <h3>What we learned in this session</h3>
+                <aside class="notes">
+                    Let's wrap up with the key takeaways.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 35: KEY TAKEAWAYS ==================== -->
+            <section>
+                <h2>Key Takeaways</h2>
+                <ol style="font-size: 0.8em;">
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        <strong>Fine-tuning</strong> adapts pre-trained models to specific tasks
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        <strong>Full fine-tuning</strong> is expensive: updates all params, needs many GPUs
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        <strong>Instruction tuning</strong> turns base models into helpful assistants
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        <strong>LoRA/QLoRA</strong> make fine-tuning accessible: 0.1% of params, 1 consumer GPU
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        <strong>Decision framework</strong>: prompting &rarr; RAG &rarr; fine-tuning (in that order)
+                    </li>
+                    <li class="fragment">
+                        <strong>Data quality</strong> matters more than anything else
+                    </li>
+                </ol>
+                <aside class="notes">
+                    Six key takeaways. The pre-train then fine-tune paradigm. Full fine-tuning is expensive. Instruction tuning is what makes models useful. LoRA democratized fine-tuning. Use the simplest approach that works. And data quality is king. If you remember these six points, you have a solid understanding of fine-tuning.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 36: THE LANDSCAPE ==================== -->
+            <section>
+                <h2>The Fine-tuning Landscape in 2026</h2>
+                <div class="pipeline" style="flex-direction: column; gap: 0.5em; font-size: 0.85em;">
+                    <div class="fragment" style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 200px; border-color: #93a1a1;">Full Fine-tuning</div>
+                        <span style="font-size: 0.75em; color: #93a1a1;">Still used for pre-training and large-scale efforts</span>
+                    </div>
+                    <div class="fragment" style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 200px; border-color: #ff6b6b;">LoRA / QLoRA</div>
+                        <span style="font-size: 0.75em; color: #ff6b6b;">The standard for task-specific fine-tuning</span>
+                    </div>
+                    <div class="fragment" style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 200px; border-color: #7ec8e3;">Instruction Tuning</div>
+                        <span style="font-size: 0.75em; color: #7ec8e3;">Essential step in any chat model pipeline</span>
+                    </div>
+                    <div class="fragment" style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 200px; border-color: #98c379;">RLHF / DPO</div>
+                        <span style="font-size: 0.75em; color: #98c379;">Alignment with human preferences (next topic!)</span>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Zooming out: this is the current state of the field. Full fine-tuning is for big labs with big budgets. LoRA/QLoRA is the practical tool for everyone else. Instruction tuning is a necessary step. And RLHF/DPO (which we'll cover next) aligns models with human preferences -- that's the final ingredient in making models like ChatGPT.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 37: REFERENCES ==================== -->
+            <section>
+                <h2>References &amp; Further Reading</h2>
+                <ul style="font-size: 0.6em;">
+                    <li>
+                        Hu et al. (2021). <em>"LoRA: Low-Rank Adaptation of Large Language Models"</em>
+                        <span style="color: #93a1a1;">&mdash; <a href="https://arxiv.org/abs/2106.09685" style="color: #7ec8e3;">arXiv:2106.09685</a></span>
+                    </li>
+                    <li>
+                        Dettmers et al. (2023). <em>"QLoRA: Efficient Finetuning of Quantized Language Models"</em>
+                        <span style="color: #93a1a1;">&mdash; <a href="https://arxiv.org/abs/2305.14314" style="color: #7ec8e3;">arXiv:2305.14314</a></span>
+                    </li>
+                    <li>
+                        Wei et al. (2022). <em>"Finetuned Language Models Are Zero-Shot Learners"</em> (FLAN)
+                        <span style="color: #93a1a1;">&mdash; <a href="https://arxiv.org/abs/2109.01652" style="color: #7ec8e3;">arXiv:2109.01652</a></span>
+                    </li>
+                    <li>
+                        Houlsby et al. (2019). <em>"Parameter-Efficient Transfer Learning for NLP"</em> (Adapters)
+                        <span style="color: #93a1a1;">&mdash; <a href="https://arxiv.org/abs/1902.00751" style="color: #7ec8e3;">arXiv:1902.00751</a></span>
+                    </li>
+                    <li>
+                        Li &amp; Liang (2021). <em>"Prefix-Tuning: Optimizing Continuous Prompts for Generation"</em>
+                        <span style="color: #93a1a1;">&mdash; <a href="https://arxiv.org/abs/2101.00190" style="color: #7ec8e3;">arXiv:2101.00190</a></span>
+                    </li>
+                    <li>
+                        Hugging Face PEFT documentation
+                        <span style="color: #93a1a1;">&mdash; <a href="https://huggingface.co/docs/peft" style="color: #7ec8e3;">huggingface.co/docs/peft</a></span>
+                    </li>
+                    <li>
+                        Sebastian Raschka. <em>"Practical Tips for Finetuning LLMs"</em>
+                        <span style="color: #93a1a1;">&mdash; <a href="https://magazine.sebastianraschka.com" style="color: #7ec8e3;">magazine.sebastianraschka.com</a></span>
+                    </li>
+                </ul>
+                <aside class="notes">
+                    Key papers for those who want to go deeper. The LoRA paper is very readable. The HuggingFace PEFT docs have excellent tutorials. Sebastian Raschka's blog posts are the best practical guides for fine-tuning LLMs. Encourage students to at least skim the LoRA paper -- it's well-written and the core idea can be understood in 15 minutes.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 38: WHAT'S NEXT ==================== -->
+            <section>
+                <h2>What's Next</h2>
+                <div style="border: 2px solid #7ec8e3; border-radius: 8px; padding: 1.2em; display: inline-block;">
+                    <h3>Day 3 &mdash; Session 3 (afternoon)</h3>
+                    <p style="font-size: 0.8em;">RLHF &amp; Alignment</p>
+                    <ul style="font-size: 0.75em;">
+                        <li>Reinforcement Learning from Human Feedback</li>
+                        <li>Direct Preference Optimization (DPO)</li>
+                        <li>How ChatGPT went from "autocomplete" to "assistant"</li>
+                    </ul>
+                </div>
+                <p style="margin-top: 1.5em; font-size: 0.85em;">
+                    Thank you! Questions?
+                </p>
+                <aside class="notes">
+                    That's a wrap on fine-tuning. The afternoon session will cover RLHF and alignment -- the final step that turns a fine-tuned model into something like ChatGPT. Take a break, and come back ready for reinforcement learning!
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            controlsTutorial: false,
+            progress: true,
+            center: true,
+            plugins: [RevealHighlight, RevealNotes]
+        });
+    </script>
+</body>
+</html>

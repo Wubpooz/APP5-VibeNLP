@@ -1,0 +1,1268 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RLHF & Alignment - TAL Day 5 Session 2</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/moon.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --r-heading-font: 'Helvetica Neue', Arial, sans-serif;
+            --r-main-font: 'Helvetica Neue', Arial, sans-serif;
+        }
+        .reveal { font-size: 32px; }
+        .reveal h1 { font-size: 2.2em; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.2em; color: #7ec8e3; }
+        .reveal ul { text-align: left; }
+        .reveal li { margin-bottom: 0.4em; }
+
+        /* Highlight text */
+        .highlight { color: #ff6b6b; }
+        .highlight-blue { color: #7ec8e3; }
+        .highlight-green { color: #98c379; }
+        .highlight-yellow { color: #e5c07b; }
+        .highlight-purple { color: #c678dd; }
+        .small { font-size: 0.65em; color: #93a1a1; }
+
+        /* Two column layout */
+        .two-column {
+            display: flex;
+            gap: 2em;
+            align-items: flex-start;
+        }
+        .two-column > div { flex: 1; }
+
+        /* Stat numbers */
+        .stat-big {
+            font-size: 3em;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+
+        /* Section divider */
+        .section-title h2 {
+            font-size: 2em;
+            margin-bottom: 0.3em;
+        }
+        .section-title h3 {
+            font-size: 0.9em;
+            color: #93a1a1;
+            font-weight: normal;
+        }
+
+        /* Quote styling */
+        .quote-slide blockquote {
+            font-style: italic;
+            font-size: 1.1em;
+            border-left: 4px solid #7ec8e3;
+            padding-left: 1em;
+            margin: 1em auto;
+            max-width: 80%;
+            text-align: left;
+        }
+        .quote-slide .attribution {
+            text-align: right;
+            color: #93a1a1;
+            font-size: 0.7em;
+            margin-right: 10%;
+        }
+
+        /* Discussion slides */
+        .discussion-slide {
+            background: rgba(126, 200, 227, 0.08) !important;
+        }
+
+        /* Pipeline/flow diagram */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3em;
+            flex-wrap: wrap;
+        }
+        .pipeline .step {
+            background: rgba(126, 200, 227, 0.15);
+            border: 2px solid #7ec8e3;
+            border-radius: 8px;
+            padding: 0.6em 1em;
+            text-align: center;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .pipeline .step.active {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.15);
+            color: #ff6b6b;
+        }
+        .pipeline .step.green {
+            border-color: #98c379;
+            background: rgba(152, 195, 121, 0.15);
+            color: #98c379;
+        }
+        .pipeline .step.purple {
+            border-color: #c678dd;
+            background: rgba(198, 120, 221, 0.15);
+            color: #c678dd;
+        }
+        .pipeline .step.yellow {
+            border-color: #e5c07b;
+            background: rgba(229, 192, 123, 0.15);
+            color: #e5c07b;
+        }
+        .pipeline .arrow {
+            font-size: 1.5em;
+            color: #7ec8e3;
+        }
+
+        /* Comparison table */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7em;
+        }
+        .compare-table th {
+            background: rgba(126, 200, 227, 0.2);
+            padding: 0.5em;
+            text-align: left;
+            border-bottom: 2px solid #7ec8e3;
+        }
+        .compare-table td {
+            padding: 0.5em;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .compare-table .good { color: #98c379; }
+        .compare-table .bad { color: #ff6b6b; }
+
+        /* RLHF diagram styles */
+        .rlhf-stage {
+            display: flex;
+            align-items: center;
+            gap: 0.8em;
+            margin: 0.6em 0;
+            padding: 0.7em 1em;
+            border-radius: 10px;
+            font-size: 0.75em;
+            text-align: left;
+        }
+        .rlhf-stage .stage-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2em;
+            height: 2em;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 1.1em;
+            flex-shrink: 0;
+        }
+        .rlhf-stage .stage-content {
+            flex: 1;
+        }
+        .rlhf-stage .stage-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 0.2em;
+        }
+        .rlhf-stage .stage-desc {
+            color: #93a1a1;
+            font-size: 0.9em;
+        }
+        .stage-sft {
+            background: rgba(126, 200, 227, 0.12);
+            border: 2px solid #7ec8e3;
+        }
+        .stage-sft .stage-num {
+            background: #7ec8e3;
+            color: #002b36;
+        }
+        .stage-rm {
+            background: rgba(229, 192, 123, 0.12);
+            border: 2px solid #e5c07b;
+        }
+        .stage-rm .stage-num {
+            background: #e5c07b;
+            color: #002b36;
+        }
+        .stage-rl {
+            background: rgba(255, 107, 107, 0.12);
+            border: 2px solid #ff6b6b;
+        }
+        .stage-rl .stage-num {
+            background: #ff6b6b;
+            color: #002b36;
+        }
+
+        /* Stage arrow between RLHF stages */
+        .stage-arrow {
+            text-align: center;
+            color: #586e75;
+            font-size: 1.2em;
+            margin: 0.1em 0;
+            line-height: 1;
+        }
+
+        /* Preference pair styling */
+        .pref-pair {
+            display: flex;
+            gap: 1em;
+            margin: 0.8em 0;
+            font-size: 0.7em;
+        }
+        .pref-pair .response {
+            flex: 1;
+            padding: 0.8em;
+            border-radius: 8px;
+            text-align: left;
+        }
+        .pref-pair .winner {
+            background: rgba(152, 195, 121, 0.15);
+            border: 2px solid #98c379;
+        }
+        .pref-pair .loser {
+            background: rgba(255, 107, 107, 0.08);
+            border: 2px solid rgba(255, 107, 107, 0.3);
+        }
+        .pref-pair .response-label {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 0.4em;
+        }
+
+        /* Math-like formula display */
+        .formula {
+            font-family: 'Courier New', monospace;
+            background: rgba(126, 200, 227, 0.1);
+            border: 1px solid rgba(126, 200, 227, 0.3);
+            border-radius: 8px;
+            padding: 0.6em 1em;
+            margin: 0.6em auto;
+            font-size: 0.75em;
+            display: inline-block;
+            text-align: center;
+        }
+
+        /* Safety card */
+        .safety-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6em;
+            padding: 0.5em 0.8em;
+            margin: 0.4em 0;
+            border-radius: 8px;
+            font-size: 0.7em;
+            text-align: left;
+        }
+        .safety-card .card-icon {
+            font-size: 1.5em;
+            flex-shrink: 0;
+        }
+        .safety-card.red {
+            background: rgba(255, 107, 107, 0.1);
+            border: 2px solid rgba(255, 107, 107, 0.4);
+        }
+        .safety-card.blue {
+            background: rgba(126, 200, 227, 0.1);
+            border: 2px solid rgba(126, 200, 227, 0.4);
+        }
+        .safety-card.green {
+            background: rgba(152, 195, 121, 0.1);
+            border: 2px solid rgba(152, 195, 121, 0.4);
+        }
+        .safety-card.yellow {
+            background: rgba(229, 192, 123, 0.1);
+            border: 2px solid rgba(229, 192, 123, 0.4);
+        }
+
+        /* Full pipeline (large, final summary) */
+        .full-pipeline {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3em;
+            align-items: center;
+        }
+        .full-pipeline .pipe-row {
+            display: flex;
+            align-items: center;
+            gap: 0.4em;
+        }
+        .full-pipeline .pipe-step {
+            border-radius: 10px;
+            padding: 0.5em 0.9em;
+            text-align: center;
+            font-size: 0.65em;
+            font-weight: bold;
+        }
+        .full-pipeline .pipe-arrow {
+            font-size: 1.3em;
+            color: #93a1a1;
+        }
+        .full-pipeline .pipe-label {
+            font-size: 0.5em;
+            color: #93a1a1;
+            margin-top: 0.1em;
+        }
+
+        /* Timeline / journey */
+        .journey {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 0;
+            margin-top: 0.5em;
+        }
+        .journey .day-card {
+            text-align: center;
+            font-size: 0.55em;
+            width: 6em;
+            padding: 0.5em 0.3em;
+        }
+        .journey .day-card .day-num {
+            font-weight: bold;
+            font-size: 1.3em;
+            margin-bottom: 0.3em;
+        }
+        .journey .day-card .day-topic {
+            color: #93a1a1;
+            font-size: 0.9em;
+        }
+        .journey .day-connector {
+            font-size: 1.2em;
+            color: #586e75;
+            padding-top: 0.6em;
+        }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 1: Title -->
+    <!-- ============================================================ -->
+    <section>
+        <h1 style="font-size:1.8em;">RLHF & Alignment</h1>
+        <h3 style="color:#93a1a1; font-weight:normal;">Teaching AI to Be <span class="highlight">Helpful</span>, <span class="highlight-green">Harmless</span>, and <span class="highlight-blue">Honest</span></h3>
+        <p style="margin-top:1.5em;">
+            <span class="highlight-blue">TAL</span> - Day 5, Session 2<br>
+            <span style="color:#93a1a1;">March 20, 2026 | 15:45 - 17:45</span>
+        </p>
+        <p style="font-size:0.6em; color:#93a1a1; margin-top:1em;">
+            Instructor: ZHANG Zheng
+        </p>
+        <aside class="notes">
+            Welcome to our final teaching session of the course. Over the past 5 days, we have covered the full NLP stack from word embeddings to transformers, fine-tuning, RAG, and multimodal models. Today we close the loop: how do we take a pre-trained model and turn it into something that actually behaves well? This is the alignment problem, and RLHF is the key technique that made ChatGPT possible.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 2: Session Roadmap -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>Session Roadmap</h2>
+        <ol style="font-size:0.8em;">
+            <li class="fragment">The Alignment Problem</li>
+            <li class="fragment">RL Basics for Software Engineers</li>
+            <li class="fragment">The RLHF Pipeline (3 Stages)</li>
+            <li class="fragment">DPO: The Simpler Alternative</li>
+            <li class="fragment">Other Alignment Methods</li>
+            <li class="fragment">Safety & Responsible Deployment</li>
+            <li class="fragment">The Full LLM Pipeline</li>
+            <li class="fragment"><span class="highlight">Course Wrap-Up: Day 1 to Day 5</span></li>
+        </ol>
+        <aside class="notes">
+            Here is our roadmap. We will start with understanding WHY alignment is necessary, learn just enough RL to understand the mechanism, walk through the full RLHF pipeline, look at modern alternatives like DPO, then discuss safety. We will finish by connecting everything from Day 1 to today. This is the capstone session.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 3: Section - The Alignment Problem -->
+    <!-- ============================================================ -->
+    <section class="section-title">
+        <h2>Part 1</h2>
+        <h3>The Alignment Problem</h3>
+        <p style="font-size:0.7em; margin-top:1em; color:#93a1a1;">Why pre-trained models are not enough</p>
+        <aside class="notes">
+            Let's start with the fundamental question: we have spent days learning how to build and train powerful language models. Why can't we just deploy them as-is?
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 4: The Gap -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>The Gap</h2>
+        <div class="two-column">
+            <div>
+                <h3 style="font-size:0.9em;">Pre-training Objective</h3>
+                <p style="font-size:0.7em;">"Predict the next token"</p>
+                <ul style="font-size:0.65em;">
+                    <li class="fragment">Learns <em>everything</em> in the data</li>
+                    <li class="fragment">Toxic content, misinformation, biases</li>
+                    <li class="fragment">No concept of "helpfulness"</li>
+                    <li class="fragment">Will happily generate harmful content</li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="font-size:0.9em;">What Users Actually Want</h3>
+                <p style="font-size:0.7em;">"Be a good assistant"</p>
+                <ul style="font-size:0.65em;">
+                    <li class="fragment"><span class="highlight-green">Helpful</span> - answer questions correctly</li>
+                    <li class="fragment"><span class="highlight-blue">Harmless</span> - refuse dangerous requests</li>
+                    <li class="fragment"><span class="highlight-yellow">Honest</span> - admit uncertainty</li>
+                    <li class="fragment"><span class="highlight-purple">Follow instructions</span> accurately</li>
+                </ul>
+            </div>
+        </div>
+        <p class="fragment" style="font-size:0.75em; margin-top:1em;">
+            This gap is the <span class="highlight">alignment problem</span>.
+        </p>
+        <aside class="notes">
+            A pre-trained model is optimized to predict the next token. That means it has learned everything in its training data - the good and the bad. It has no built-in preference for being helpful over being harmful. It will complete "How to make a bomb" just as readily as "How to make a cake." What users want is fundamentally different from what the training objective optimizes for. Bridging this gap is what alignment is all about.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 5: Real Examples of Misalignment -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>Misalignment in Practice</h2>
+        <div style="font-size:0.7em;">
+            <div class="fragment" style="margin-bottom:0.6em;">
+                <span class="highlight">Harmful outputs</span> - generating dangerous instructions, hate speech
+            </div>
+            <div class="fragment" style="margin-bottom:0.6em;">
+                <span class="highlight-yellow">Hallucination</span> - confidently stating false information
+            </div>
+            <div class="fragment" style="margin-bottom:0.6em;">
+                <span class="highlight-purple">Sycophancy</span> - agreeing with the user even when they are wrong
+            </div>
+            <div class="fragment" style="margin-bottom:0.6em;">
+                <span class="highlight-blue">Refusal to engage</span> - being overly cautious, refusing benign requests
+            </div>
+            <div class="fragment" style="margin-bottom:0.6em;">
+                <span class="highlight-green">Bias amplification</span> - reinforcing stereotypes from training data
+            </div>
+        </div>
+        <p class="fragment small" style="margin-top:0.8em;">
+            Key insight: <strong>alignment is not binary</strong> - it is a spectrum of trade-offs.
+        </p>
+        <aside class="notes">
+            These are not hypothetical problems. Every deployed LLM has faced these issues. The tricky part is that fixing one problem can create another: making a model safer can make it less helpful (the refusal problem). Making it more agreeable can make it sycophantic. Alignment is about finding the right balance, and that balance depends on the use case and the values of the organization deploying the model.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 6: Quote - InstructGPT -->
+    <!-- ============================================================ -->
+    <section class="quote-slide">
+        <blockquote>
+            "Making language models bigger does not inherently make them better at following a user's intent. [...] A 1.3B parameter InstructGPT model [is] preferred to the 175B GPT-3 model, despite having 100x fewer parameters."
+        </blockquote>
+        <p class="attribution">
+            -- Ouyang et al., "Training language models to follow instructions with human feedback" (2022)
+        </p>
+        <p class="fragment" style="font-size:0.8em; margin-top:1.5em;">
+            <span class="highlight">Alignment > Scale</span> (at least for user preference)
+        </p>
+        <aside class="notes">
+            This is one of the most striking findings from the InstructGPT paper, which laid the groundwork for ChatGPT. A small aligned model can beat a much larger unaligned model in terms of user preference. This was the moment the industry realized that alignment was not just a safety concern but a product quality concern. It is not enough to scale up; you need to align.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 7: Section - RL Basics -->
+    <!-- ============================================================ -->
+    <section class="section-title">
+        <h2>Part 2</h2>
+        <h3>RL Basics for Software Engineers</h3>
+        <p style="font-size:0.7em; margin-top:1em; color:#93a1a1;">Just enough to understand RLHF</p>
+        <aside class="notes">
+            Before diving into RLHF, we need a basic vocabulary from Reinforcement Learning. I promise to keep this minimal. We are not going to derive Bellman equations. We just need 5 core concepts.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 8: RL Core Concepts -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>RL in 5 Concepts</h2>
+        <div style="font-size:0.72em; text-align:left; max-width:85%; margin:0 auto;">
+            <div class="fragment" style="margin-bottom:0.7em;">
+                <span class="highlight-blue">Agent</span> - the decision maker (= the LLM)
+            </div>
+            <div class="fragment" style="margin-bottom:0.7em;">
+                <span class="highlight-yellow">Environment</span> - the world it interacts with (= the conversation)
+            </div>
+            <div class="fragment" style="margin-bottom:0.7em;">
+                <span class="highlight-green">State</span> - current situation (= prompt + tokens generated so far)
+            </div>
+            <div class="fragment" style="margin-bottom:0.7em;">
+                <span class="highlight">Action</span> - what the agent does (= choosing the next token)
+            </div>
+            <div class="fragment" style="margin-bottom:0.7em;">
+                <span class="highlight-purple">Reward</span> - feedback signal (= "how good was this response?")
+            </div>
+        </div>
+        <div class="fragment formula" style="margin-top:0.8em;">
+            Policy &pi;: State &rarr; Action &nbsp;&nbsp;(mapping from situations to decisions)
+        </div>
+        <aside class="notes">
+            Think of RL like training a dog. The agent (dog) takes actions (sits, stays) in an environment (your house) based on the state (your command), and receives rewards (treats). The policy is the dog's learned behavior: when you say "sit," it sits. For LLMs, the policy IS the model itself. Given a prompt (state), it chooses tokens (actions), and we want to reward it when the full response is good. The key difference from supervised learning: in RL, we do not tell the model WHAT to say, we tell it HOW GOOD what it said was.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 9: RL Analogy for Engineers -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>The Software Engineering Analogy</h2>
+        <div class="two-column" style="font-size:0.7em;">
+            <div>
+                <h3 style="font-size:1em;">Supervised Learning</h3>
+                <p>Like a <span class="highlight-blue">code review with corrections</span></p>
+                <ul style="font-size:0.9em;">
+                    <li>"Here is exactly what you should have written"</li>
+                    <li>Explicit correct answers</li>
+                    <li>Learn by imitation</li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="font-size:1em;">Reinforcement Learning</h3>
+                <p>Like a <span class="highlight">performance review with a score</span></p>
+                <ul style="font-size:0.9em;">
+                    <li>"Your code scored 8/10 this quarter"</li>
+                    <li>Only a quality signal, no corrections</li>
+                    <li>Learn by trial and error</li>
+                </ul>
+            </div>
+        </div>
+        <p class="fragment" style="font-size:0.7em; margin-top:1em;">
+            RLHF = <span class="highlight-purple">human preferences</span> provide the reward signal
+        </p>
+        <aside class="notes">
+            Here is an analogy that might resonate with software engineers. Supervised learning is like pair programming where someone shows you the right code. Reinforcement learning is like getting a performance review: nobody tells you exactly what to do, they just tell you how well you did. You have to figure out on your own what to change. RLHF is special because instead of a programmatic reward function, we use human judgments as the reward signal.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 10: Section - RLHF Pipeline -->
+    <!-- ============================================================ -->
+    <section class="section-title">
+        <h2>Part 3</h2>
+        <h3>The RLHF Pipeline</h3>
+        <p style="font-size:0.7em; margin-top:1em; color:#93a1a1;">Three stages to align a language model</p>
+        <aside class="notes">
+            Now for the main event. The RLHF pipeline, as described in the InstructGPT paper, has three distinct stages. Each builds on the previous one. Let's walk through them.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 11: RLHF Overview Diagram -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>RLHF: Three Stages</h2>
+        <div style="max-width:90%; margin:0 auto;">
+            <div class="rlhf-stage stage-sft fragment">
+                <div class="stage-num">1</div>
+                <div class="stage-content">
+                    <div class="stage-title">Supervised Fine-Tuning (SFT)</div>
+                    <div class="stage-desc">Fine-tune base model on human-written demonstrations</div>
+                </div>
+            </div>
+            <div class="stage-arrow fragment">&darr;</div>
+            <div class="rlhf-stage stage-rm fragment">
+                <div class="stage-num">2</div>
+                <div class="stage-content">
+                    <div class="stage-title">Reward Model Training</div>
+                    <div class="stage-desc">Train a model to predict which responses humans prefer</div>
+                </div>
+            </div>
+            <div class="stage-arrow fragment">&darr;</div>
+            <div class="rlhf-stage stage-rl fragment">
+                <div class="stage-num">3</div>
+                <div class="stage-content">
+                    <div class="stage-title">RL Optimization (PPO)</div>
+                    <div class="stage-desc">Optimize the LLM to maximize the reward model's scores</div>
+                </div>
+            </div>
+        </div>
+        <p class="fragment small" style="margin-top:0.6em;">
+            Ouyang et al. (2022) - "Training language models to follow instructions with human feedback"
+        </p>
+        <aside class="notes">
+            Here is the full picture. Stage 1: we fine-tune the base model on high-quality demonstrations so it learns the FORMAT of good responses. Stage 2: we train a separate reward model that can score any response based on human preferences. Stage 3: we use RL (specifically PPO) to optimize the language model to get high scores from the reward model. Each stage is essential. Let's dive into each one.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 12: Stage 1 - SFT -->
+    <!-- ============================================================ -->
+    <section>
+        <h2><span class="highlight-blue">Stage 1</span>: Supervised Fine-Tuning</h2>
+        <div class="two-column" style="font-size:0.7em;">
+            <div>
+                <h3 style="font-size:1em;">What happens</h3>
+                <ul>
+                    <li class="fragment">Collect <span class="highlight-blue">demonstration data</span></li>
+                    <li class="fragment">Human labelers write ideal responses to prompts</li>
+                    <li class="fragment">Fine-tune the pre-trained model on these examples</li>
+                    <li class="fragment">Standard cross-entropy loss</li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="font-size:1em;">Why it matters</h3>
+                <ul>
+                    <li class="fragment">Teaches the model the <span class="highlight-green">response format</span></li>
+                    <li class="fragment">Shifts distribution toward helpful behavior</li>
+                    <li class="fragment">Creates a strong starting point for RL</li>
+                    <li class="fragment">InstructGPT: ~13K demonstrations</li>
+                </ul>
+            </div>
+        </div>
+        <div class="fragment formula" style="margin-top:1em;">
+            Loss = -&sum; log P(token<sub>i</sub> | prompt, token<sub>1..i-1</sub>)
+        </div>
+        <p class="fragment small">Same fine-tuning you learned on Day 3 - nothing new here!</p>
+        <aside class="notes">
+            Stage 1 is actually something you already know: supervised fine-tuning. We collect high-quality prompt-response pairs written by human experts, and we fine-tune the base model on them. This is the same process as instruction tuning. The key insight is that SFT alone is limited: you can only teach the model to imitate the specific demonstrations you have. It cannot generalize well to the full space of desired behaviors. That is why we need stages 2 and 3.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 13: Stage 2 - Reward Model -->
+    <!-- ============================================================ -->
+    <section>
+        <h2><span class="highlight-yellow">Stage 2</span>: Reward Model Training</h2>
+        <p style="font-size:0.7em;">Instead of writing ideal responses, humans <span class="highlight-yellow">compare</span> responses</p>
+        <div class="pref-pair fragment">
+            <div class="response winner">
+                <div class="response-label" style="color:#98c379;">Response A (Winner)</div>
+                "Paris is the capital of France. It is located in the north-central part of the country along the Seine River."
+            </div>
+            <div class="response loser">
+                <div class="response-label" style="color:#ff6b6b;">Response B (Loser)</div>
+                "France's capital is probably Paris or maybe Lyon. I'm not entirely sure but it could be either one."
+            </div>
+        </div>
+        <div class="fragment" style="font-size:0.7em; margin-top:0.8em;">
+            <p><span class="highlight-yellow">Key insight</span>: comparing is <em>much easier</em> than writing</p>
+            <p class="small">InstructGPT: ~33K comparison pairs from ~40 labelers</p>
+        </div>
+        <aside class="notes">
+            This is the clever part. Instead of asking humans to write perfect responses (which is expensive and hard), we ask them a much simpler question: "Given these two responses, which one is better?" This pairwise comparison approach is cheaper, faster, and more consistent across labelers. We then train a reward model to predict these preferences, essentially learning a scoring function that captures what humans value.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 14: Bradley-Terry Model -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>Bradley-Terry Preference Model</h2>
+        <p style="font-size:0.7em;">How do we turn pairwise comparisons into a reward model?</p>
+        <div class="fragment formula" style="margin-top:1em;">
+            P(A &gt; B) = &sigma;(r(A) - r(B))
+        </div>
+        <div class="fragment" style="font-size:0.7em; margin-top:1em; text-align:left; max-width:80%; margin-left:auto; margin-right:auto;">
+            <p><span class="highlight-blue">&sigma;</span> = sigmoid function (squash to probability)</p>
+            <p><span class="highlight-yellow">r(A)</span> = reward model's score for response A</p>
+            <p><span class="highlight-yellow">r(B)</span> = reward model's score for response B</p>
+        </div>
+        <div class="fragment formula" style="margin-top:1em;">
+            Loss = -log &sigma;(r(winner) - r(loser))
+        </div>
+        <p class="fragment" style="font-size:0.65em; color:#93a1a1; margin-top:0.8em;">
+            Same idea as Elo ratings in chess: higher score = more likely to win
+        </p>
+        <aside class="notes">
+            The Bradley-Terry model is a classic statistical model for pairwise comparisons - think chess Elo ratings. The probability that response A is preferred over B is a sigmoid of the difference in their scores. The loss function simply pushes the winner's score higher and the loser's score lower. Software engineers will recognize this as essentially binary cross-entropy, where we are classifying which response is the winner. The reward model is typically initialized from the SFT model with a linear head that outputs a scalar score.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 15: Stage 3 - PPO -->
+    <!-- ============================================================ -->
+    <section>
+        <h2><span class="highlight">Stage 3</span>: RL Optimization with PPO</h2>
+        <div class="pipeline fragment" style="margin:1em 0;">
+            <div class="step">Prompt</div>
+            <div class="arrow">&rarr;</div>
+            <div class="step active">LLM generates response</div>
+            <div class="arrow">&rarr;</div>
+            <div class="step yellow">Reward Model scores it</div>
+            <div class="arrow">&rarr;</div>
+            <div class="step green">Update LLM weights</div>
+        </div>
+        <div class="fragment" style="font-size:0.7em; margin-top:1em;">
+            <p><span class="highlight-blue">PPO</span> (Proximal Policy Optimization):</p>
+            <ul style="font-size:0.9em;">
+                <li class="fragment">Repeat: generate, score, update</li>
+                <li class="fragment">Small, stable weight updates (the "proximal" part)</li>
+                <li class="fragment">Widely used in game AI (OpenAI Five, etc.)</li>
+            </ul>
+        </div>
+        <div class="fragment formula" style="margin-top:0.8em;">
+            Objective = Reward(response) - &beta; * KL(policy || SFT_model)
+        </div>
+        <aside class="notes">
+            Stage 3 is where the magic happens. We run the LLM to generate responses to prompts, score those responses with the reward model, then update the LLM weights to increase the expected reward. PPO is the specific RL algorithm used: it is designed for stability, making small controlled updates so the model does not change too dramatically in any single step. But notice the KL divergence term in the objective - that is critical.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 16: The KL Constraint -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>The KL Divergence Constraint</h2>
+        <p style="font-size:0.75em;">Why not just maximize the reward?</p>
+        <div class="two-column fragment" style="font-size:0.68em;">
+            <div>
+                <h3 style="font-size:1em; color:#ff6b6b;">Without KL penalty</h3>
+                <ul>
+                    <li>Model "hacks" the reward model</li>
+                    <li>Generates gibberish that scores high</li>
+                    <li>Reward hacking / mode collapse</li>
+                    <li>Loses language ability</li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="font-size:1em; color:#98c379;">With KL penalty</h3>
+                <ul>
+                    <li>Model stays close to SFT baseline</li>
+                    <li>Preserves language fluency</li>
+                    <li>Learns to be better, not different</li>
+                    <li>&beta; controls the trade-off</li>
+                </ul>
+            </div>
+        </div>
+        <p class="fragment" style="font-size:0.7em; margin-top:1em;">
+            Think of it as a <span class="highlight-blue">leash</span>: the model can improve, but cannot wander too far from the SFT model.
+        </p>
+        <aside class="notes">
+            This is one of the most important ideas in RLHF. If you purely maximize the reward model's score, the LLM will find exploits. Just like in game AI where agents find ridiculous glitch strategies to maximize score, the LLM can learn to produce outputs that "hack" the reward model - getting high scores while producing nonsensical text. The KL divergence penalty acts as a leash, saying "stay close to the SFT model." The beta hyperparameter controls how long this leash is. Too small beta: reward hacking. Too large beta: no improvement. Getting this right is a key engineering challenge.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 17: Section - DPO -->
+    <!-- ============================================================ -->
+    <section class="section-title">
+        <h2>Part 4</h2>
+        <h3>DPO: Direct Preference Optimization</h3>
+        <p style="font-size:0.7em; margin-top:1em; color:#93a1a1;">The simpler alternative that's changing the field</p>
+        <aside class="notes">
+            RLHF with PPO works, but it is complex and finicky. In 2023, a team from Stanford proposed a radically simpler approach that achieves similar results. Let's see how.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 18: DPO Breakthrough -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>DPO: Skip the Reward Model</h2>
+        <p style="font-size:0.7em;">Rafailov et al. (2023) - "Direct Preference Optimization"</p>
+        <div class="two-column" style="margin-top:1em;">
+            <div style="font-size:0.65em;">
+                <h3 style="font-size:1.1em; color:#ff6b6b;">RLHF (3 stages)</h3>
+                <div class="pipeline" style="flex-direction:column; gap:0.3em; align-items:stretch;">
+                    <div class="step" style="width:100%;">1. SFT</div>
+                    <div class="arrow" style="font-size:1em;">&darr;</div>
+                    <div class="step" style="width:100%; border-color:#e5c07b;">2. Train Reward Model</div>
+                    <div class="arrow" style="font-size:1em;">&darr;</div>
+                    <div class="step" style="width:100%; border-color:#ff6b6b;">3. PPO Optimization</div>
+                </div>
+            </div>
+            <div style="font-size:0.65em;">
+                <h3 style="font-size:1.1em; color:#98c379;">DPO (2 stages)</h3>
+                <div class="pipeline" style="flex-direction:column; gap:0.3em; align-items:stretch;">
+                    <div class="step" style="width:100%;">1. SFT</div>
+                    <div class="arrow" style="font-size:1em;">&darr;</div>
+                    <div class="step green" style="width:100%;">2. Direct Optimization from Preferences</div>
+                    <div style="padding:0.6em; color:#93a1a1; font-size:0.9em;">(no separate reward model!)</div>
+                </div>
+            </div>
+        </div>
+        <aside class="notes">
+            The key insight of DPO is mathematical: you can derive a closed-form solution for the optimal policy given preference data, which eliminates the need for a separate reward model AND the entire PPO RL loop. Instead of three stages, you only need two. The result is a much simpler training pipeline that can be implemented as a straightforward fine-tuning objective.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 19: DPO Intuition -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>DPO: The Intuition</h2>
+        <div style="font-size:0.72em; text-align:left; max-width:85%; margin:0 auto;">
+            <p class="fragment"><span class="highlight-blue">Key insight</span>: there is an analytical mapping between reward functions and optimal policies</p>
+            <p class="fragment" style="margin-top:0.8em;">Instead of:</p>
+            <p class="fragment" style="padding-left:1em; color:#93a1a1;">Preferences &rarr; Reward Model &rarr; RL &rarr; Better Policy</p>
+            <p class="fragment" style="margin-top:0.5em;">DPO does:</p>
+            <p class="fragment" style="padding-left:1em; color:#98c379;">Preferences &rarr; Better Policy <span style="color:#93a1a1;">(directly!)</span></p>
+        </div>
+        <div class="fragment formula" style="margin-top:1em;">
+            Loss = -log &sigma;(&beta; * (log &pi;(y<sub>w</sub>|x)/&pi;<sub>ref</sub>(y<sub>w</sub>|x) - log &pi;(y<sub>l</sub>|x)/&pi;<sub>ref</sub>(y<sub>l</sub>|x)))
+        </div>
+        <p class="fragment small" style="margin-top:0.5em;">
+            y<sub>w</sub> = winning response, y<sub>l</sub> = losing response, &pi;<sub>ref</sub> = SFT model
+        </p>
+        <aside class="notes">
+            The DPO loss function looks complicated but the idea is simple: increase the probability of the winning response relative to the reference model, and decrease the probability of the losing response. The beta parameter plays the same role as in RLHF, controlling how far the model can drift from the reference. The beauty is that this is just a classification-style loss - you can train it with standard gradient descent, no RL algorithms needed. For software engineers: think of it as a modified cross-entropy loss that operates on pairs of responses.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 20: DPO vs PPO Comparison -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>DPO vs PPO</h2>
+        <table class="compare-table">
+            <tr>
+                <th>Aspect</th>
+                <th>PPO-based RLHF</th>
+                <th>DPO</th>
+            </tr>
+            <tr class="fragment">
+                <td>Models needed</td>
+                <td class="bad">4 (policy, ref, reward, critic)</td>
+                <td class="good">2 (policy, reference)</td>
+            </tr>
+            <tr class="fragment">
+                <td>Training stability</td>
+                <td class="bad">Sensitive to hyperparameters</td>
+                <td class="good">Much more stable</td>
+            </tr>
+            <tr class="fragment">
+                <td>GPU memory</td>
+                <td class="bad">Very high (4 models)</td>
+                <td class="good">Lower (2 models)</td>
+            </tr>
+            <tr class="fragment">
+                <td>Implementation</td>
+                <td class="bad">Complex RL infrastructure</td>
+                <td class="good">Simple fine-tuning loop</td>
+            </tr>
+            <tr class="fragment">
+                <td>Online exploration</td>
+                <td class="good">Yes (generates new responses)</td>
+                <td class="bad">No (offline, fixed dataset)</td>
+            </tr>
+            <tr class="fragment">
+                <td>At scale (frontier)</td>
+                <td class="good">Proven at largest scale</td>
+                <td style="color:#e5c07b;">Increasingly adopted</td>
+            </tr>
+        </table>
+        <aside class="notes">
+            Let's compare the two approaches head-to-head. DPO wins on simplicity: fewer models, more stable training, less GPU memory, simpler implementation. PPO's advantage is online exploration - it generates new responses during training, which can help it discover better strategies. At the frontier scale of labs like OpenAI and Anthropic, PPO-style approaches still dominate because the exploration matters when you are pushing the boundary. But for most practical applications, DPO is the go-to choice. Many open-source models are now aligned using DPO.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 21: Section - Other Methods -->
+    <!-- ============================================================ -->
+    <section class="section-title">
+        <h2>Part 5</h2>
+        <h3>Other Alignment Methods</h3>
+        <p style="font-size:0.7em; margin-top:1em; color:#93a1a1;">The field is evolving rapidly</p>
+        <aside class="notes">
+            RLHF and DPO are the workhorses, but the alignment field is evolving quickly. Let's survey some other important approaches.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 22: RLAIF & Constitutional AI -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>Beyond Human Feedback</h2>
+        <div class="two-column" style="font-size:0.68em;">
+            <div>
+                <h3 style="font-size:1em;">RLAIF</h3>
+                <p><span class="highlight-blue">AI feedback</span> instead of human feedback</p>
+                <ul style="font-size:0.9em;">
+                    <li class="fragment">Use a strong LLM to evaluate responses</li>
+                    <li class="fragment">Much cheaper and faster to scale</li>
+                    <li class="fragment">Can approach human-quality feedback</li>
+                    <li class="fragment">Risk: inherits the judge model's biases</li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="font-size:1em;">Constitutional AI</h3>
+                <p><span class="highlight-purple">Self-critique</span> with principles (Bai et al. 2022)</p>
+                <ul style="font-size:0.9em;">
+                    <li class="fragment">Define a "constitution" of rules</li>
+                    <li class="fragment">Model critiques its own outputs</li>
+                    <li class="fragment">Revises based on principles</li>
+                    <li class="fragment">Used by Anthropic for Claude</li>
+                </ul>
+            </div>
+        </div>
+        <p class="fragment small" style="margin-top:0.8em;">
+            Both reduce dependence on expensive human labeling
+        </p>
+        <aside class="notes">
+            RLAIF replaces human annotators with AI evaluators. Google showed this can work surprisingly well. The key risk is that the AI judge has its own biases, which then get amplified. Constitutional AI, developed by Anthropic, is a different approach: instead of external feedback, the model critiques itself according to a set of principles (the "constitution"). For example, a principle might be "Choose the response that is less harmful" or "Choose the response that is more honest." The model generates, self-critiques, and revises. This approach was used to train Claude.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 23: Newer Methods -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>The Expanding Landscape</h2>
+        <table class="compare-table">
+            <tr>
+                <th>Method</th>
+                <th>Key Idea</th>
+                <th>Advantage</th>
+            </tr>
+            <tr class="fragment">
+                <td><span class="highlight-yellow">KTO</span></td>
+                <td>Uses thumbs up/down (not pairs)</td>
+                <td>Simpler data collection</td>
+            </tr>
+            <tr class="fragment">
+                <td><span class="highlight-purple">IPO</span></td>
+                <td>Fixes DPO's overfitting issues</td>
+                <td>Better generalization</td>
+            </tr>
+            <tr class="fragment">
+                <td><span class="highlight-green">ORPO</span></td>
+                <td>Combines SFT + preference in one step</td>
+                <td>Single-stage training</td>
+            </tr>
+            <tr class="fragment">
+                <td><span class="highlight-blue">GRPO</span></td>
+                <td>Group relative policy optimization</td>
+                <td>No critic model needed</td>
+            </tr>
+            <tr class="fragment">
+                <td><span class="highlight">Online DPO</span></td>
+                <td>DPO with online generation</td>
+                <td>Best of both worlds</td>
+            </tr>
+        </table>
+        <p class="fragment small" style="margin-top:0.6em;">
+            The trend: <strong>simpler training, less infrastructure, comparable results</strong>
+        </p>
+        <aside class="notes">
+            This is a rapidly evolving field. KTO is notable because it only needs binary thumbs up/down feedback, not pairwise comparisons, making data collection much cheaper. IPO addresses some theoretical shortcomings of DPO. ORPO merges SFT and preference optimization into a single stage. GRPO, used by DeepSeek, eliminates the critic model from PPO. Online DPO combines DPO's simplicity with PPO's online exploration. The overall trend is toward simpler, cheaper alignment methods that still produce high-quality results. For your projects, DPO is likely the practical choice.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 24: Section - Safety -->
+    <!-- ============================================================ -->
+    <section class="section-title">
+        <h2>Part 6</h2>
+        <h3>Safety & Responsible Deployment</h3>
+        <p style="font-size:0.7em; margin-top:1em; color:#93a1a1;">Alignment is necessary but not sufficient</p>
+        <aside class="notes">
+            RLHF and DPO align the model's behavior, but deployment safety requires additional layers. Let's look at the practical safety measures used in production systems.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 25: Safety Stack -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>The Safety Stack</h2>
+        <div style="max-width:90%; margin:0 auto;">
+            <div class="safety-card red fragment">
+                <div class="card-icon">&#x1f6e1;</div>
+                <div>
+                    <strong>Red Teaming</strong><br>
+                    Adversarial testing by humans and AI to find vulnerabilities before deployment. Try to break the model systematically.
+                </div>
+            </div>
+            <div class="safety-card yellow fragment">
+                <div class="card-icon">&#x26a0;</div>
+                <div>
+                    <strong>Jailbreaking & Guardrails</strong><br>
+                    Prompt injection attacks try to bypass safety training. Input/output guardrails filter at the API level.
+                </div>
+            </div>
+            <div class="safety-card blue fragment">
+                <div class="card-icon">&#x1f50d;</div>
+                <div>
+                    <strong>Content Filtering</strong><br>
+                    Classifier-based filters on both inputs and outputs. Detect harmful content that alignment missed.
+                </div>
+            </div>
+            <div class="safety-card green fragment">
+                <div class="card-icon">&#x2705;</div>
+                <div>
+                    <strong>Responsible Deployment</strong><br>
+                    Staged rollouts, monitoring, user feedback loops, usage policies, and incident response plans.
+                </div>
+            </div>
+        </div>
+        <aside class="notes">
+            Think of safety as defense in depth. RLHF is the first line of defense, training the model to behave well. Red teaming is the second: systematically trying to break the model before users do. Guardrails are runtime protections, filtering inputs and outputs at the API level. Content filtering catches things the model's alignment training missed. And responsible deployment means staged rollouts, monitoring, and having a plan for when things go wrong. No single layer is sufficient; you need all of them.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 26: Discussion - Alignment Trade-offs -->
+    <!-- ============================================================ -->
+    <section class="discussion-slide">
+        <h2>Discussion</h2>
+        <p style="font-size:0.8em; margin-bottom:1em;">The alignment tax and trade-offs</p>
+        <div style="font-size:0.72em; text-align:left; max-width:85%; margin:0 auto;">
+            <p class="fragment"><span class="highlight">Helpfulness vs. Safety</span><br>
+                <span style="color:#93a1a1;">Overly safe models refuse legitimate requests (the "sorry, I can't help" problem)</span></p>
+            <p class="fragment" style="margin-top:0.8em;"><span class="highlight-blue">Whose values?</span><br>
+                <span style="color:#93a1a1;">Different cultures, contexts, and users have different preferences</span></p>
+            <p class="fragment" style="margin-top:0.8em;"><span class="highlight-purple">Open vs. Closed alignment</span><br>
+                <span style="color:#93a1a1;">Should alignment details be public? Safety vs. transparency</span></p>
+        </div>
+        <p class="fragment small" style="margin-top:1em;">
+            These are <strong>engineering trade-offs</strong>, not just philosophical debates.
+        </p>
+        <aside class="notes">
+            Take a moment to consider these trade-offs. There is a real tension between helpfulness and safety: Claude and ChatGPT have both been criticized for being too cautious. Whose values should be encoded? A model trained on American preferences may not serve users in other cultures well. And there is a transparency question: publishing alignment methods helps researchers but also helps adversaries. As engineers building products with LLMs, you will face these trade-offs directly. There are no perfect answers, only thoughtful engineering decisions.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 27: Section - Full Pipeline -->
+    <!-- ============================================================ -->
+    <section class="section-title">
+        <h2>Part 7</h2>
+        <h3>The Full LLM Training Pipeline</h3>
+        <p style="font-size:0.7em; margin-top:1em; color:#93a1a1;">Putting it all together</p>
+        <aside class="notes">
+            We have now covered every piece of the puzzle. Let's put it all together into one comprehensive view of how modern LLMs are built from scratch to deployment.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 28: Full Pipeline Diagram -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>From Raw Data to Deployed Model</h2>
+        <div class="full-pipeline" style="margin-top:0.5em;">
+            <div class="pipe-row">
+                <div class="pipe-step" style="background:rgba(126,200,227,0.15); border:2px solid #7ec8e3; color:#7ec8e3;">
+                    Pre-training
+                    <div class="pipe-label">Trillions of tokens<br>Next-token prediction</div>
+                </div>
+                <div class="pipe-arrow">&rarr;</div>
+                <div class="pipe-step" style="background:rgba(229,192,123,0.15); border:2px solid #e5c07b; color:#e5c07b;">
+                    SFT
+                    <div class="pipe-label">~10-100K demonstrations<br>Learn response format</div>
+                </div>
+                <div class="pipe-arrow">&rarr;</div>
+                <div class="pipe-step" style="background:rgba(255,107,107,0.15); border:2px solid #ff6b6b; color:#ff6b6b;">
+                    RLHF / DPO
+                    <div class="pipe-label">Preference data<br>Align with human values</div>
+                </div>
+                <div class="pipe-arrow">&rarr;</div>
+                <div class="pipe-step" style="background:rgba(152,195,121,0.15); border:2px solid #98c379; color:#98c379;">
+                    Deployment
+                    <div class="pipe-label">Safety filters<br>Monitoring & guardrails</div>
+                </div>
+            </div>
+        </div>
+        <div class="fragment" style="font-size:0.6em; margin-top:1.2em; text-align:left; max-width:90%; margin-left:auto; margin-right:auto;">
+            <div class="two-column">
+                <div>
+                    <p><span class="highlight-blue">Pre-training</span>: general knowledge & language ability</p>
+                    <p><span class="highlight-yellow">SFT</span>: learn to follow instructions</p>
+                </div>
+                <div>
+                    <p><span class="highlight">RLHF/DPO</span>: align with human preferences</p>
+                    <p><span class="highlight-green">Deployment</span>: safety layers & monitoring</p>
+                </div>
+            </div>
+        </div>
+        <aside class="notes">
+            Here is the complete picture. Pre-training gives the model its knowledge and language abilities - this is the most expensive phase, costing millions of dollars for frontier models. SFT teaches the model the format of good responses. RLHF or DPO aligns it with human values and preferences. Deployment adds runtime safety measures. Each stage is essential and builds on the previous one. When you hear about "GPT-4" or "Claude", what you are interacting with is the result of ALL of these stages combined.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 29: Section - Course Wrap-Up -->
+    <!-- ============================================================ -->
+    <section class="section-title">
+        <h2>Part 8</h2>
+        <h3>Course Wrap-Up</h3>
+        <p style="font-size:0.7em; margin-top:1em; color:#93a1a1;">Connecting the dots: Day 1 to Day 5</p>
+        <aside class="notes">
+            This is the final section of our final teaching session. Let's step back and see the full journey we have taken over these 5 days.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 30: The Journey -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>Our Journey</h2>
+        <div class="journey">
+            <div class="day-card" style="color:#7ec8e3;">
+                <div class="day-num">Day 1</div>
+                <div class="day-topic">NLP Foundations<br>& Word Embeddings</div>
+            </div>
+            <div class="day-connector">&rarr;</div>
+            <div class="day-card" style="color:#e5c07b;">
+                <div class="day-num">Day 2</div>
+                <div class="day-topic">Transformers<br>& Attention</div>
+            </div>
+            <div class="day-connector">&rarr;</div>
+            <div class="day-card" style="color:#98c379;">
+                <div class="day-num">Day 3</div>
+                <div class="day-topic">Fine-Tuning<br>& Prompting</div>
+            </div>
+            <div class="day-connector">&rarr;</div>
+            <div class="day-card" style="color:#c678dd;">
+                <div class="day-num">Day 4</div>
+                <div class="day-topic">RAG &<br>Multimodal</div>
+            </div>
+            <div class="day-connector">&rarr;</div>
+            <div class="day-card" style="color:#ff6b6b;">
+                <div class="day-num">Day 5</div>
+                <div class="day-topic">Agents &<br>Alignment</div>
+            </div>
+        </div>
+        <div class="fragment" style="font-size:0.6em; margin-top:1.5em; text-align:left; max-width:90%; margin-left:auto; margin-right:auto;">
+            <div class="two-column">
+                <div>
+                    <p><span class="highlight-blue">Day 1</span>: How do we represent language? (tokens, embeddings)</p>
+                    <p><span class="highlight-yellow">Day 2</span>: How do models understand context? (attention, transformers)</p>
+                    <p><span class="highlight-green">Day 3</span>: How do we adapt models? (fine-tuning, prompting)</p>
+                </div>
+                <div>
+                    <p><span class="highlight-purple">Day 4</span>: How do we add knowledge and modalities? (RAG, vision)</p>
+                    <p><span class="highlight">Day 5</span>: How do we make models useful and safe? (agents, RLHF)</p>
+                </div>
+            </div>
+        </div>
+        <aside class="notes">
+            Look at how far we have come. On Day 1, we started with the basics: how do you represent words as numbers? We learned about tokenization, Word2Vec, and embeddings. Day 2 introduced the Transformer architecture and the attention mechanism that revolutionized NLP. Day 3 showed how to adapt pre-trained models to specific tasks through fine-tuning and prompting. Day 4 extended models with external knowledge (RAG) and multimodal capabilities. And today, Day 5, we covered how to deploy models as agents and align them with human values. Each piece builds on the ones before it.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 31: The Complete Stack -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>The Complete NLP Stack</h2>
+        <div style="font-size:0.62em; text-align:left; max-width:90%; margin:0 auto;">
+            <div class="fragment" style="margin-bottom:0.5em; padding:0.4em 0.6em; border-left:3px solid #7ec8e3;">
+                <span class="highlight-blue">Foundation</span>: Tokenization &rarr; Embeddings &rarr; Contextual Representations
+            </div>
+            <div class="fragment" style="margin-bottom:0.5em; padding:0.4em 0.6em; border-left:3px solid #e5c07b;">
+                <span class="highlight-yellow">Architecture</span>: Self-Attention &rarr; Transformers &rarr; Encoder/Decoder variants
+            </div>
+            <div class="fragment" style="margin-bottom:0.5em; padding:0.4em 0.6em; border-left:3px solid #98c379;">
+                <span class="highlight-green">Training</span>: Pre-training &rarr; SFT &rarr; RLHF/DPO
+            </div>
+            <div class="fragment" style="margin-bottom:0.5em; padding:0.4em 0.6em; border-left:3px solid #c678dd;">
+                <span class="highlight-purple">Adaptation</span>: Prompting &rarr; Fine-tuning &rarr; RAG &rarr; Tool Use
+            </div>
+            <div class="fragment" style="margin-bottom:0.5em; padding:0.4em 0.6em; border-left:3px solid #ff6b6b;">
+                <span class="highlight">Deployment</span>: Safety &rarr; Guardrails &rarr; Monitoring &rarr; Agents
+            </div>
+        </div>
+        <p class="fragment" style="font-size:0.7em; margin-top:1em;">
+            You now understand <span class="highlight-green">every layer</span> of this stack.
+        </p>
+        <aside class="notes">
+            This is the complete NLP stack as it exists today. At the foundation level, we have tokenization and embeddings. The architecture layer is dominated by Transformers. The training pipeline goes from pre-training through alignment. Adaptation techniques let us customize models for specific use cases. And the deployment layer adds safety and agent capabilities. You now have a mental model for every single layer. When you read a paper about a new technique, you can place it in this stack. When you build a product with LLMs, you know what is happening at each level.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 32: Key Papers -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>Key Papers & References</h2>
+        <div style="font-size:0.62em; text-align:left; max-width:90%; margin:0 auto;">
+            <div style="margin-bottom:0.6em; padding:0.4em;">
+                <span class="highlight-blue">InstructGPT</span> - Ouyang et al. (2022)<br>
+                <span style="color:#93a1a1;">"Training language models to follow instructions with human feedback"</span>
+            </div>
+            <div style="margin-bottom:0.6em; padding:0.4em;">
+                <span class="highlight-green">DPO</span> - Rafailov et al. (2023)<br>
+                <span style="color:#93a1a1;">"Direct Preference Optimization: Your Language Model is Secretly a Reward Model"</span>
+            </div>
+            <div style="margin-bottom:0.6em; padding:0.4em;">
+                <span class="highlight-purple">Constitutional AI</span> - Bai et al. (2022)<br>
+                <span style="color:#93a1a1;">"Constitutional AI: Harmlessness from AI Feedback"</span>
+            </div>
+            <div style="margin-bottom:0.6em; padding:0.4em;">
+                <span class="highlight-yellow">PPO</span> - Schulman et al. (2017)<br>
+                <span style="color:#93a1a1;">"Proximal Policy Optimization Algorithms"</span>
+            </div>
+            <div style="margin-bottom:0.6em; padding:0.4em;">
+                <span class="highlight">RLAIF</span> - Lee et al. (2023)<br>
+                <span style="color:#93a1a1;">"RLAIF: Scaling Reinforcement Learning from Human Feedback with AI Feedback"</span>
+            </div>
+        </div>
+        <aside class="notes">
+            Here are the key papers for today's topics. The InstructGPT paper is the foundational RLHF work. The DPO paper is the must-read for the simpler alternative. Constitutional AI explains Anthropic's approach. PPO is the underlying RL algorithm. And the RLAIF paper shows how AI feedback can scale alignment. I recommend reading InstructGPT and DPO first - they are well-written and accessible to software engineers.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 33: Demo Day Preview -->
+    <!-- ============================================================ -->
+    <section class="discussion-slide">
+        <h2>Demo Day</h2>
+        <p style="font-size:0.8em;">Tomorrow: show what you have built!</p>
+        <div style="font-size:0.7em; text-align:left; max-width:80%; margin:1em auto;">
+            <p class="fragment"><span class="highlight-blue">Present your project</span> to the class</p>
+            <p class="fragment"><span class="highlight-green">Demonstrate</span> your NLP application working</p>
+            <p class="fragment"><span class="highlight-yellow">Explain</span> the technical choices you made</p>
+            <p class="fragment"><span class="highlight-purple">Connect</span> your work to concepts from the course</p>
+        </div>
+        <p class="fragment" style="font-size:0.75em; margin-top:1em;">
+            Think about: which parts of the NLP stack does your project use?
+        </p>
+        <aside class="notes">
+            Tomorrow is Demo Day. This is your chance to show off what you have built during the course. When you present, I encourage you to connect your project back to what we have learned. Which parts of the NLP stack are you using? Did you use embeddings, fine-tuning, RAG, prompting, agents? Understanding WHERE your project sits in the stack shows deep understanding.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 34: Final Slide -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>Thank You</h2>
+        <p style="font-size:0.8em; margin-top:1em;">
+            From <span class="highlight-blue">word vectors</span> to <span class="highlight">aligned AI</span> in 5 days
+        </p>
+        <div style="font-size:0.65em; color:#93a1a1; margin-top:1.5em;">
+            <p>The field is moving fast.</p>
+            <p>The fundamentals you learned will stay relevant.</p>
+            <p>Keep building, keep learning.</p>
+        </div>
+        <p style="font-size:0.7em; margin-top:1.5em;">
+            <span class="highlight-green">Good luck on Demo Day!</span>
+        </p>
+        <p style="font-size:0.55em; color:#586e75; margin-top:2em;">
+            TAL - ZHANG Zheng - March 2026
+        </p>
+        <aside class="notes">
+            That concludes our final teaching session. We have covered an incredible amount of ground in 5 days: from the basic building blocks of NLP to the cutting-edge alignment techniques that make models like ChatGPT and Claude possible. The field is moving fast, but the fundamentals we covered - embeddings, attention, transformers, fine-tuning, alignment - these are the foundation that everything builds on. Good luck on Demo Day tomorrow. I am looking forward to seeing what you have built!
+        </aside>
+    </section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        slideNumber: 'c/t',
+        transition: 'slide',
+        plugins: [RevealHighlight, RevealNotes]
+    });
+</script>
+</body>
+</html>

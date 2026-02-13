@@ -1,0 +1,1368 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Transformer Architecture: Attention Is All You Need</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/moon.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --r-heading-font: 'Helvetica Neue', Arial, sans-serif;
+            --r-main-font: 'Helvetica Neue', Arial, sans-serif;
+        }
+        .reveal { font-size: 32px; }
+        .reveal h1 { font-size: 2.2em; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.2em; color: #7ec8e3; }
+        .reveal ul { text-align: left; }
+        .reveal li { margin-bottom: 0.4em; }
+
+        /* Highlight text */
+        .highlight { color: #ff6b6b; }
+        .highlight-blue { color: #7ec8e3; }
+        .highlight-green { color: #98c379; }
+        .highlight-yellow { color: #e5c07b; }
+        .highlight-purple { color: #c678dd; }
+        .small { font-size: 0.65em; color: #93a1a1; }
+
+        /* Two column layout */
+        .two-column {
+            display: flex;
+            gap: 2em;
+            align-items: flex-start;
+        }
+        .two-column > div { flex: 1; }
+
+        /* Stat numbers */
+        .stat-big {
+            font-size: 3em;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+
+        /* Section divider */
+        .section-title h2 {
+            font-size: 2em;
+            margin-bottom: 0.3em;
+        }
+        .section-title h3 {
+            font-size: 0.9em;
+            color: #93a1a1;
+            font-weight: normal;
+        }
+
+        /* Quote styling */
+        .quote-slide blockquote {
+            font-style: italic;
+            font-size: 1.1em;
+            border-left: 4px solid #7ec8e3;
+            padding-left: 1em;
+            margin: 1em auto;
+            max-width: 80%;
+            text-align: left;
+        }
+        .quote-slide .attribution {
+            text-align: right;
+            color: #93a1a1;
+            font-size: 0.7em;
+            margin-right: 10%;
+        }
+
+        /* Discussion slides */
+        .discussion-slide {
+            background: rgba(126, 200, 227, 0.08) !important;
+        }
+
+        /* Pipeline/flow diagram */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3em;
+            flex-wrap: wrap;
+        }
+        .pipeline .step {
+            background: rgba(126, 200, 227, 0.15);
+            border: 2px solid #7ec8e3;
+            border-radius: 8px;
+            padding: 0.6em 1em;
+            text-align: center;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .pipeline .arrow {
+            font-size: 1.5em;
+            color: #7ec8e3;
+        }
+
+        /* Comparison table */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7em;
+        }
+        .compare-table th {
+            background: rgba(126, 200, 227, 0.2);
+            padding: 0.5em;
+            text-align: left;
+            border-bottom: 2px solid #7ec8e3;
+        }
+        .compare-table td {
+            padding: 0.5em;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .compare-table .good { color: #98c379; }
+        .compare-table .bad { color: #ff6b6b; }
+
+        /* Formula styling */
+        .formula {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+            font-size: 1.1em;
+        }
+        .formula-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 0.8em 1.2em;
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+            font-size: 1.1em;
+            display: inline-block;
+            margin: 0.5em 0;
+        }
+
+        /* Architecture diagram boxes */
+        .arch-box {
+            border-radius: 8px;
+            padding: 0.5em 1em;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.75em;
+            margin: 0.3em auto;
+            position: relative;
+        }
+        .arch-box.attention {
+            background: rgba(255, 107, 107, 0.2);
+            border: 2px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+        .arch-box.ffn {
+            background: rgba(126, 200, 227, 0.2);
+            border: 2px solid #7ec8e3;
+            color: #7ec8e3;
+        }
+        .arch-box.norm {
+            background: rgba(152, 195, 121, 0.15);
+            border: 2px solid #98c379;
+            color: #98c379;
+        }
+        .arch-box.embed {
+            background: rgba(229, 192, 123, 0.2);
+            border: 2px solid #e5c07b;
+            color: #e5c07b;
+        }
+        .arch-box.output {
+            background: rgba(198, 120, 221, 0.2);
+            border: 2px solid #c678dd;
+            color: #c678dd;
+        }
+        .arch-arrow {
+            text-align: center;
+            font-size: 1.2em;
+            color: #93a1a1;
+            margin: 0.15em 0;
+        }
+
+        /* Step boxes */
+        .step-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 0.8em;
+            margin: 0.5em 0;
+            text-align: left;
+            font-size: 0.8em;
+        }
+        .step-box .step-num {
+            display: inline-block;
+            background: #7ec8e3;
+            color: #002b36;
+            width: 1.5em;
+            height: 1.5em;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 1.5em;
+            font-weight: bold;
+            margin-right: 0.5em;
+        }
+
+        /* Timeline */
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1em 0;
+            position: relative;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            right: 5%;
+            height: 3px;
+            background: #7ec8e3;
+            z-index: 0;
+        }
+        .timeline .era {
+            text-align: center;
+            z-index: 1;
+            background: #002b36;
+            padding: 0.5em;
+            border-radius: 8px;
+            border: 2px solid #7ec8e3;
+            min-width: 100px;
+        }
+        .timeline .era .year {
+            font-size: 0.7em;
+            color: #93a1a1;
+        }
+        .timeline .era .label {
+            font-weight: bold;
+            font-size: 0.75em;
+        }
+
+        /* Head visualization */
+        .head-grid {
+            display: flex;
+            gap: 0.8em;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .head-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid;
+            border-radius: 8px;
+            padding: 0.6em 0.8em;
+            text-align: center;
+            font-size: 0.65em;
+            min-width: 110px;
+        }
+        .head-card .head-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 0.3em;
+        }
+
+        /* Variant cards */
+        .variant-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 0.8em;
+            text-align: center;
+            font-size: 0.7em;
+            flex: 1;
+        }
+        .variant-card h4 {
+            margin: 0 0 0.3em 0;
+            font-size: 1.2em;
+        }
+
+        /* Matrix box */
+        .matrix-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 1em;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75em;
+            text-align: left;
+        }
+
+        /* Ref link */
+        .ref {
+            font-size: 0.45em;
+            color: #657b83;
+            margin-top: 0.5em;
+        }
+        .ref a { color: #657b83; text-decoration: underline; }
+
+        /* Positional encoding wave */
+        .wave-container {
+            display: flex;
+            gap: 0.3em;
+            justify-content: center;
+            align-items: flex-end;
+            height: 80px;
+            margin: 1em 0;
+        }
+        .wave-bar {
+            width: 12px;
+            border-radius: 3px 3px 0 0;
+            transition: height 0.3s;
+        }
+
+        /* Nx label */
+        .nx-label {
+            position: absolute;
+            right: -2em;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.8em;
+            color: #93a1a1;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ==================== SLIDE 1: TITLE ==================== -->
+
+            <section>
+                <h1>The Transformer</h1>
+                <h3>Attention Is All You Need</h3>
+                <p style="margin-top: 2em; font-size: 0.7em; color: #93a1a1;">
+                    TAL &mdash; Day 2, Session 2<br>
+                    March 9, 2026 &bull; 15:45 &ndash; 17:45<br>
+                    ZHANG Zheng
+                </p>
+                <aside class="notes">
+                    Welcome back from break. In Session 1 we covered the attention mechanism
+                    in depth: queries, keys, values, and scaled dot-product attention.
+                    Now we are going to see how that mechanism becomes the foundation of
+                    an entirely new architecture that replaced RNNs and CNNs for sequence tasks.
+                    This is the most important architecture in modern AI.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 2: RECAP FROM SESSION 1 ==================== -->
+
+            <section>
+                <h2>Quick Recap: Session 1</h2>
+                <p style="font-size: 0.85em;">What we learned about <span class="highlight">Attention</span>:</p>
+                <ul style="font-size: 0.8em;">
+                    <li class="fragment">Attention computes <span class="highlight-blue">weighted relevance</span> between tokens</li>
+                    <li class="fragment">Three key vectors: <span class="highlight">Query</span>, <span class="highlight-blue">Key</span>, <span class="highlight-green">Value</span></li>
+                    <li class="fragment">Scaled Dot-Product Attention:
+                        <div class="formula-box" style="display:block; margin-top:0.4em;">
+                            Attention(Q, K, V) = softmax(QK<sup>T</sup> / &radic;d<sub>k</sub>) &middot; V
+                        </div>
+                    </li>
+                    <li class="fragment">Self-attention lets every token attend to <em>every other token</em></li>
+                </ul>
+                <p class="fragment small">Today: How do we build an <strong>entire architecture</strong> from just attention?</p>
+                <aside class="notes">
+                    Quickly check understanding. Ask: "Can someone remind us why we divide by
+                    root d_k?" (Answer: to prevent the dot products from growing too large,
+                    which would push softmax into regions with tiny gradients.)
+                    This recap should take 2-3 minutes max.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 3: THE PAPER ==================== -->
+
+            <section class="quote-slide">
+                <h2>"Attention Is All You Need"</h2>
+                <blockquote>
+                    "We propose a new simple network architecture, the Transformer,
+                    based solely on attention mechanisms, dispensing with recurrence
+                    and convolutions entirely."
+                </blockquote>
+                <p class="attribution">&mdash; Vaswani et al., NeurIPS 2017</p>
+                <div class="fragment" style="margin-top: 1em;">
+                    <ul style="font-size: 0.75em;">
+                        <li>8 authors from Google Brain &amp; Google Research</li>
+                        <li>Originally designed for <span class="highlight-blue">machine translation</span></li>
+                        <li>Today: <span class="highlight">200,000+ citations</span> &mdash; one of the most cited CS papers ever</li>
+                    </ul>
+                </div>
+                <aside class="notes">
+                    The title is bold and provocative: "Attention Is All You Need."
+                    At the time, everyone used RNNs (LSTMs, GRUs) for sequence modeling.
+                    The idea of removing recurrence entirely was radical.
+                    The paper was initially about machine translation (English-to-German, English-to-French),
+                    but it turned out to be universally applicable.
+                    Fun fact: the authors have said the title was partly tongue-in-cheek.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 4: WHY NOT RNNs ==================== -->
+
+            <section>
+                <h2>The Problem with RNNs</h2>
+                <div class="two-column">
+                    <div>
+                        <h3 style="color: #ff6b6b;">RNN / LSTM</h3>
+                        <div class="pipeline" style="flex-direction: column; gap: 0.2em;">
+                            <div class="step" style="width: 160px;">x<sub>1</sub> &rarr; h<sub>1</sub></div>
+                            <div class="arrow" style="transform: rotate(90deg);">&rarr;</div>
+                            <div class="step" style="width: 160px;">x<sub>2</sub> &rarr; h<sub>2</sub></div>
+                            <div class="arrow" style="transform: rotate(90deg);">&rarr;</div>
+                            <div class="step" style="width: 160px;">x<sub>3</sub> &rarr; h<sub>3</sub></div>
+                            <div class="arrow" style="transform: rotate(90deg);">&rarr;</div>
+                            <div class="step" style="width: 160px;">x<sub>n</sub> &rarr; h<sub>n</sub></div>
+                        </div>
+                        <p class="small" style="text-align:center;">Sequential: must wait for h<sub>t-1</sub></p>
+                    </div>
+                    <div class="fragment">
+                        <h3 style="color: #98c379;">Transformer</h3>
+                        <div style="display:flex; gap:0.5em; justify-content:center; flex-wrap:wrap;">
+                            <div class="step" style="border-color:#98c379;">x<sub>1</sub></div>
+                            <div class="step" style="border-color:#98c379;">x<sub>2</sub></div>
+                            <div class="step" style="border-color:#98c379;">x<sub>3</sub></div>
+                            <div class="step" style="border-color:#98c379;">x<sub>n</sub></div>
+                        </div>
+                        <p style="text-align:center; font-size:0.7em; color:#98c379; margin:0.5em 0;">&darr; All attend to all simultaneously &darr;</p>
+                        <div style="display:flex; gap:0.5em; justify-content:center; flex-wrap:wrap;">
+                            <div class="step" style="border-color:#98c379;">y<sub>1</sub></div>
+                            <div class="step" style="border-color:#98c379;">y<sub>2</sub></div>
+                            <div class="step" style="border-color:#98c379;">y<sub>3</sub></div>
+                            <div class="step" style="border-color:#98c379;">y<sub>n</sub></div>
+                        </div>
+                        <p class="small" style="text-align:center;">Parallel: all tokens processed at once</p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Key limitation of RNNs: they process tokens one at a time, left to right.
+                    h_t depends on h_{t-1}, so you cannot parallelize training.
+                    With long sequences (1000+ tokens), training is very slow.
+                    Also, information from early tokens degrades as it passes through many steps
+                    (the vanishing gradient problem, even with LSTMs).
+                    Transformers solve both: full parallelization AND direct connections between all tokens.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 5: SECTION - ARCHITECTURE ==================== -->
+
+            <section class="section-title">
+                <h2>The Transformer Architecture</h2>
+                <h3>Encoder-Decoder: the big picture</h3>
+                <aside class="notes">
+                    Now let's dive into the architecture. We will build it up piece by piece.
+                    By the end, you will understand every component.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 6: ENCODER-DECODER OVERVIEW ==================== -->
+
+            <section>
+                <h2>Encoder-Decoder Overview</h2>
+                <div class="two-column">
+                    <div style="text-align: center;">
+                        <h3 style="color: #7ec8e3;">Encoder</h3>
+                        <p class="small" style="color:#7ec8e3;">"Understand the input"</p>
+                        <div style="border: 2px solid #7ec8e3; border-radius: 12px; padding: 0.5em; position:relative;">
+                            <div class="arch-box norm" style="font-size:0.65em;">Add &amp; Norm</div>
+                            <div class="arch-box ffn" style="font-size:0.65em;">Feed-Forward Network</div>
+                            <div class="arch-box norm" style="font-size:0.65em;">Add &amp; Norm</div>
+                            <div class="arch-box attention" style="font-size:0.65em;">Multi-Head Self-Attention</div>
+                            <span style="position:absolute; right:-1.8em; top:50%; transform:translateY(-50%); font-size:0.7em; color:#93a1a1;">&times;6</span>
+                        </div>
+                        <div class="arch-arrow">&uarr;</div>
+                        <div class="arch-box embed" style="font-size:0.65em;">Input Embedding + Positional Encoding</div>
+                    </div>
+                    <div style="text-align: center;" class="fragment">
+                        <h3 style="color: #c678dd;">Decoder</h3>
+                        <p class="small" style="color:#c678dd;">"Generate the output"</p>
+                        <div style="border: 2px solid #c678dd; border-radius: 12px; padding: 0.5em; position:relative;">
+                            <div class="arch-box norm" style="font-size:0.65em;">Add &amp; Norm</div>
+                            <div class="arch-box ffn" style="font-size:0.65em;">Feed-Forward Network</div>
+                            <div class="arch-box norm" style="font-size:0.65em;">Add &amp; Norm</div>
+                            <div class="arch-box output" style="font-size:0.65em;">Multi-Head Cross-Attention</div>
+                            <div class="arch-box norm" style="font-size:0.65em;">Add &amp; Norm</div>
+                            <div class="arch-box attention" style="font-size:0.65em;">Masked Multi-Head Self-Attention</div>
+                            <span style="position:absolute; right:-1.8em; top:50%; transform:translateY(-50%); font-size:0.7em; color:#93a1a1;">&times;6</span>
+                        </div>
+                        <div class="arch-arrow">&uarr;</div>
+                        <div class="arch-box embed" style="font-size:0.65em;">Output Embedding + Positional Encoding</div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    This is the full Transformer architecture from the paper.
+                    The encoder takes the input sequence and builds rich representations.
+                    The decoder generates the output sequence one token at a time.
+                    Both are stacks of 6 identical layers.
+                    Notice 3 types of attention: self-attention in encoder, masked self-attention
+                    in decoder, and cross-attention connecting decoder to encoder.
+                    We will explain each component in detail over the next slides.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 7: MULTI-HEAD ATTENTION INTRO ==================== -->
+
+            <section class="section-title">
+                <h2>Multi-Head Attention</h2>
+                <h3>Why one attention is not enough</h3>
+                <aside class="notes">
+                    We know attention from Session 1. Now the question is: why do we need
+                    multiple attention "heads" running in parallel?
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 8: MULTI-HEAD ATTENTION ==================== -->
+
+            <section>
+                <h2>Multi-Head Attention</h2>
+                <p style="font-size: 0.85em;">Instead of one attention function, run <span class="highlight">h parallel heads</span>:</p>
+                <div class="formula-box fragment" style="display:block; text-align:center;">
+                    MultiHead(Q, K, V) = Concat(head<sub>1</sub>, ..., head<sub>h</sub>) &middot; W<sup>O</sup>
+                    <br><br>
+                    where head<sub>i</sub> = Attention(QW<sub>i</sub><sup>Q</sup>, KW<sub>i</sub><sup>K</sup>, VW<sub>i</sub><sup>V</sup>)
+                </div>
+                <div class="fragment" style="margin-top: 1em;">
+                    <p style="font-size: 0.8em;">In the original paper: <span class="highlight-blue">h = 8 heads</span>, d<sub>model</sub> = 512</p>
+                    <p style="font-size: 0.8em;">Each head operates on d<sub>k</sub> = d<sub>model</sub> / h = <span class="highlight-green">64 dimensions</span></p>
+                </div>
+                <aside class="notes">
+                    Each head has its own learned projection matrices W_Q, W_K, W_V.
+                    So each head can learn to attend to different types of relationships.
+                    The key insight: we split the 512-dimensional space into 8 heads of 64 dimensions each.
+                    This means multi-head attention has roughly the same computational cost as
+                    single-head attention with full dimensionality.
+                    After all heads compute their attention, we concatenate and project with W_O.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 9: WHAT EACH HEAD LEARNS ==================== -->
+
+            <section>
+                <h2>What Does Each Head Learn?</h2>
+                <p style="font-size: 0.8em;">Different heads specialize in different <span class="highlight-blue">linguistic relationships</span>:</p>
+                <div class="head-grid fragment">
+                    <div class="head-card" style="border-color: #ff6b6b;">
+                        <div class="head-title" style="color: #ff6b6b;">Head 1</div>
+                        <div>Syntactic: subject&ndash;verb agreement</div>
+                    </div>
+                    <div class="head-card" style="border-color: #7ec8e3;">
+                        <div class="head-title" style="color: #7ec8e3;">Head 2</div>
+                        <div>Positional: nearby token relationships</div>
+                    </div>
+                    <div class="head-card" style="border-color: #98c379;">
+                        <div class="head-title" style="color: #98c379;">Head 3</div>
+                        <div>Semantic: meaning similarity</div>
+                    </div>
+                    <div class="head-card" style="border-color: #e5c07b;">
+                        <div class="head-title" style="color: #e5c07b;">Head 4</div>
+                        <div>Coreference: pronoun &rarr; noun links</div>
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 1em;">
+                    <div class="head-grid">
+                        <div class="head-card" style="border-color: #c678dd;">
+                            <div class="head-title" style="color: #c678dd;">Head 5</div>
+                            <div>Rare patterns: idioms, named entities</div>
+                        </div>
+                        <div class="head-card" style="border-color: #93a1a1;">
+                            <div class="head-title" style="color: #93a1a1;">Heads 6-8</div>
+                            <div>Other patterns (some redundant)</div>
+                        </div>
+                    </div>
+                </div>
+                <p class="fragment small">These specializations emerge during training &mdash; they are not hand-coded!</p>
+                <aside class="notes">
+                    This is one of the most elegant aspects of multi-head attention.
+                    Nobody tells the model "head 1 should handle syntax" -- the heads
+                    naturally specialize through gradient descent during training.
+                    Research by Clark et al. (2019) showed that specific BERT heads consistently
+                    attend to syntactic relations like direct objects, possessive pronouns, etc.
+                    Some heads are redundant, which is why later research explored head pruning.
+                    The key intuition: language has many types of relationships happening simultaneously,
+                    so it makes sense to have multiple parallel attention mechanisms.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 10: POSITIONAL ENCODING SECTION ==================== -->
+
+            <section class="section-title">
+                <h2>Positional Encoding</h2>
+                <h3>Teaching the Transformer about word order</h3>
+                <aside class="notes">
+                    Here is a subtle but critical problem. Attention is permutation-invariant:
+                    if you shuffle the input tokens, the attention weights change but the mechanism
+                    itself has no concept of order. We need to explicitly add position information.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 11: WHY POSITIONAL ENCODING ==================== -->
+
+            <section>
+                <h2>Why Do We Need Position Info?</h2>
+                <p style="font-size: 0.9em;">Self-attention is <span class="highlight">order-agnostic</span>:</p>
+                <div class="matrix-box fragment" style="text-align: center; font-size: 0.85em;">
+                    "The <span class="highlight-blue">cat</span> sat on the <span class="highlight-green">mat</span>"<br><br>
+                    vs.<br><br>
+                    "The <span class="highlight-green">mat</span> sat on the <span class="highlight-blue">cat</span>"
+                </div>
+                <p class="fragment" style="font-size: 0.85em; margin-top: 0.8em;">
+                    Without positional encoding, the Transformer sees
+                    <span class="highlight">identical bag-of-tokens</span> for both!
+                </p>
+                <p class="fragment" style="font-size: 0.85em;">
+                    RNNs get order for free (sequential processing).<br>
+                    Transformers must <span class="highlight-blue">explicitly inject</span> position information.
+                </p>
+                <aside class="notes">
+                    This is the trade-off of parallelization: we lose inherent ordering.
+                    "The cat sat on the mat" and "The mat sat on the cat" would produce
+                    the same attention patterns without positional information.
+                    We need to add position information to the embeddings so the model
+                    knows that "cat" is at position 2 and "mat" is at position 6.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 12: SINUSOIDAL ENCODING ==================== -->
+
+            <section>
+                <h2>Sinusoidal Positional Encoding</h2>
+                <p style="font-size: 0.8em;">The original paper uses <span class="highlight-blue">sine and cosine</span> functions:</p>
+                <div class="formula-box fragment" style="display:block; text-align:center; font-size: 0.95em;">
+                    PE<sub>(pos, 2i)</sub> = sin(pos / 10000<sup>2i/d</sup>)<br><br>
+                    PE<sub>(pos, 2i+1)</sub> = cos(pos / 10000<sup>2i/d</sup>)
+                </div>
+                <div class="fragment" style="margin-top: 1em;">
+                    <p style="font-size: 0.75em;">Each position gets a <span class="highlight-green">unique pattern</span> of sines and cosines at different frequencies:</p>
+                    <div class="wave-container">
+                        <div class="wave-bar" style="height:60px; background:#ff6b6b;"></div>
+                        <div class="wave-bar" style="height:20px; background:#ff6b6b;"></div>
+                        <div class="wave-bar" style="height:45px; background:#7ec8e3;"></div>
+                        <div class="wave-bar" style="height:70px; background:#7ec8e3;"></div>
+                        <div class="wave-bar" style="height:35px; background:#98c379;"></div>
+                        <div class="wave-bar" style="height:10px; background:#98c379;"></div>
+                        <div class="wave-bar" style="height:55px; background:#e5c07b;"></div>
+                        <div class="wave-bar" style="height:40px; background:#e5c07b;"></div>
+                        <div class="wave-bar" style="height:15px; background:#c678dd;"></div>
+                        <div class="wave-bar" style="height:65px; background:#c678dd;"></div>
+                        <div class="wave-bar" style="height:50px; background:#ff6b6b;"></div>
+                        <div class="wave-bar" style="height:25px; background:#7ec8e3;"></div>
+                    </div>
+                    <p class="small" style="text-align:center;">Low dimensions = high frequency | High dimensions = low frequency</p>
+                </div>
+                <aside class="notes">
+                    The intuition: think of it like a clock. The seconds hand rotates fast (high frequency),
+                    the minutes hand slower, the hours hand even slower. Each moment in time has a unique
+                    combination of all these "hands."
+                    Similarly, each position in the sequence gets a unique combination of sines and cosines
+                    at different frequencies.
+                    pos = position in the sequence, i = dimension index, d = model dimension.
+                    Low-order dimensions oscillate quickly (capture fine-grained position),
+                    high-order dimensions oscillate slowly (capture coarse position relationships).
+                    Key property: PE(pos+k) can be expressed as a linear function of PE(pos),
+                    so the model can easily learn relative positions.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 13: FIXED VS LEARNED POSITIONAL ENCODING ==================== -->
+
+            <section>
+                <h2>Fixed vs. Learned Positions</h2>
+                <div class="two-column">
+                    <div>
+                        <h3 style="color: #7ec8e3;">Sinusoidal (Fixed)</h3>
+                        <ul style="font-size: 0.7em;">
+                            <li class="fragment"><span class="good highlight-green">Generalizes</span> to longer sequences than seen in training</li>
+                            <li class="fragment"><span class="good highlight-green">No extra parameters</span> to learn</li>
+                            <li class="fragment">Relative positions encoded by linear transformation</li>
+                            <li class="fragment">Used in: <span class="highlight-blue">original Transformer</span></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="color: #c678dd;">Learned Embeddings</h3>
+                        <ul style="font-size: 0.7em;">
+                            <li class="fragment">Each position gets a <span class="highlight-purple">trainable vector</span></li>
+                            <li class="fragment"><span class="good highlight-green">Slightly better</span> performance in practice</li>
+                            <li class="fragment"><span class="bad highlight">Limited</span> to max sequence length in training</li>
+                            <li class="fragment">Used in: <span class="highlight-purple">BERT, GPT</span></li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="fragment small" style="text-align:center; margin-top:1em;">
+                    Modern models (2023+): <strong>RoPE</strong> (Rotary Position Embedding) combines benefits of both
+                </p>
+                <aside class="notes">
+                    The original paper found that sinusoidal and learned encodings performed nearly identically.
+                    In practice, most modern models use learned positional embeddings because they are simple
+                    and give marginally better results.
+                    The big downside of learned embeddings: if you train with max 512 tokens,
+                    you cannot handle 1000-token inputs at inference time.
+                    RoPE, used in LLaMA and many recent models, encodes relative positions through
+                    rotation matrices. It is now the dominant approach in decoder-only LLMs.
+                    This is an active area of research. ALiBi is another alternative.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 14: FFN SECTION ==================== -->
+
+            <section class="section-title">
+                <h2>Feed-Forward Networks</h2>
+                <h3>The "thinking" layer in each block</h3>
+                <aside class="notes">
+                    After attention aggregates information from other tokens,
+                    the feed-forward network processes each token independently.
+                    It is deceptively simple but critically important.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 15: FFN DETAILS ==================== -->
+
+            <section>
+                <h2>Position-wise Feed-Forward Network</h2>
+                <p style="font-size: 0.85em;">Applied to <span class="highlight-blue">each position independently</span> and identically:</p>
+                <div class="formula-box fragment" style="display:block; text-align:center;">
+                    FFN(x) = max(0, xW<sub>1</sub> + b<sub>1</sub>) W<sub>2</sub> + b<sub>2</sub>
+                </div>
+                <div class="fragment" style="margin-top:1em;">
+                    <div class="pipeline">
+                        <div class="step" style="border-color:#e5c07b;">Input<br><span class="small">d = 512</span></div>
+                        <div class="arrow">&rarr;</div>
+                        <div class="step" style="border-color:#ff6b6b;">Linear + ReLU<br><span class="small">d = 2048</span></div>
+                        <div class="arrow">&rarr;</div>
+                        <div class="step" style="border-color:#e5c07b;">Linear<br><span class="small">d = 512</span></div>
+                    </div>
+                </div>
+                <ul style="font-size: 0.75em; margin-top: 1em;">
+                    <li class="fragment">Expands to <span class="highlight">4x the dimension</span> (512 &rarr; 2048), then compresses back</li>
+                    <li class="fragment">Think of it as: attention <em>gathers</em> information, FFN <em>processes</em> it</li>
+                    <li class="fragment">Same weights for every position (but <em>different</em> from layer to layer)</li>
+                </ul>
+                <aside class="notes">
+                    The FFN is a simple two-layer neural network with a ReLU activation in between.
+                    "Position-wise" means it is applied to each token independently -- there is no
+                    interaction between tokens here. That is the job of attention.
+                    The expansion to 4x is important: it gives the model a larger "workspace" to
+                    transform the representation. Think of it as a bottleneck architecture.
+                    Recent work suggests that FFN layers act as "key-value memories" that store
+                    factual knowledge (Geva et al., 2021). This is why larger FFN dimensions
+                    correlate with more knowledge capacity.
+                    Modern models often use GELU instead of ReLU, and some use gated variants (SwiGLU).
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 16: LAYER NORM AND RESIDUAL ==================== -->
+
+            <section>
+                <h2>Layer Norm &amp; Residual Connections</h2>
+                <p style="font-size: 0.8em;">Two critical techniques that make deep Transformers <span class="highlight-green">trainable</span>:</p>
+                <div class="two-column fragment">
+                    <div>
+                        <h3 style="color: #98c379;">Residual Connection</h3>
+                        <div class="formula-box" style="display:block; text-align:center; font-size:0.9em;">
+                            output = x + Sublayer(x)
+                        </div>
+                        <ul style="font-size: 0.65em; margin-top:0.5em;">
+                            <li>Adds input directly to output</li>
+                            <li>Gradients flow through <span class="highlight-green">shortcut path</span></li>
+                            <li>Enables training of <strong>deep</strong> networks</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="color: #e5c07b;">Layer Normalization</h3>
+                        <div class="formula-box" style="display:block; text-align:center; font-size:0.9em;">
+                            LayerNorm(x) = &gamma; &middot; (x - &mu;) / &sigma; + &beta;
+                        </div>
+                        <ul style="font-size: 0.65em; margin-top:0.5em;">
+                            <li>Normalizes across features (not batch)</li>
+                            <li>Stabilizes activations during training</li>
+                            <li>&gamma; and &beta; are learned parameters</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top:1em; text-align:center;">
+                    <div class="formula-box" style="font-size:0.9em;">
+                        Combined: &nbsp; output = LayerNorm(x + Sublayer(x))
+                    </div>
+                </div>
+                <aside class="notes">
+                    Residual connections (from ResNet, 2015) are essential. Without them,
+                    training a 6-layer Transformer would be very difficult due to vanishing gradients.
+                    The shortcut lets gradients bypass the sublayer entirely if needed.
+                    Layer normalization (Ba et al., 2016) normalizes across the feature dimension
+                    for each token independently. This is different from batch normalization which
+                    normalizes across the batch dimension.
+                    Why layer norm instead of batch norm? Sequences have variable lengths,
+                    so batch statistics are unreliable. Layer norm works per-token.
+                    Note: the original paper applies LayerNorm AFTER the residual (Post-LN).
+                    Modern Transformers use Pre-LN (normalize before the sublayer) which trains more stably.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 17: FULL BLOCK WALKTHROUGH SECTION ==================== -->
+
+            <section class="section-title">
+                <h2>The Full Transformer Block</h2>
+                <h3>Step-by-step through one encoder layer</h3>
+                <aside class="notes">
+                    Now let's put all the pieces together and trace the data flow
+                    through one complete encoder layer. This is where everything clicks.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 18: STEP BY STEP ENCODER BLOCK ==================== -->
+
+            <section>
+                <h2>Encoder Block: Step by Step</h2>
+                <p class="small">Tracing one token through a single encoder layer:</p>
+
+                <div class="step-box fragment">
+                    <span class="step-num">1</span>
+                    <strong>Input:</strong> Token embedding + positional encoding &rarr; <span class="highlight-yellow">x</span>
+                </div>
+                <div class="step-box fragment">
+                    <span class="step-num">2</span>
+                    <strong>Multi-Head Self-Attention:</strong> <span class="highlight-yellow">x</span> produces Q, K, V &rarr; attention output <span class="highlight">a</span>
+                </div>
+                <div class="step-box fragment">
+                    <span class="step-num">3</span>
+                    <strong>Add &amp; Norm:</strong> LayerNorm(<span class="highlight-yellow">x</span> + <span class="highlight">a</span>) &rarr; <span class="highlight-blue">z</span>
+                </div>
+                <div class="step-box fragment">
+                    <span class="step-num">4</span>
+                    <strong>Feed-Forward:</strong> FFN(<span class="highlight-blue">z</span>) &rarr; <span class="highlight-green">f</span>
+                </div>
+                <div class="step-box fragment">
+                    <span class="step-num">5</span>
+                    <strong>Add &amp; Norm:</strong> LayerNorm(<span class="highlight-blue">z</span> + <span class="highlight-green">f</span>) &rarr; <span class="highlight-purple">output</span>
+                </div>
+
+                <p class="fragment small" style="text-align:center; margin-top:0.5em;">
+                    This <span class="highlight-purple">output</span> becomes the input to the next encoder layer (repeat &times;6)
+                </p>
+                <aside class="notes">
+                    Walk through this slowly. Let's trace a concrete token, say "cat", through the block.
+                    Step 1: "cat" gets its embedding vector (learned) plus its positional encoding.
+                    Step 2: This vector is projected into Q, K, V. All tokens do the same.
+                    Multi-head attention computes 8 parallel attention operations.
+                    Step 3: We add the original input (residual) to the attention output, then normalize.
+                    Step 4: The FFN independently transforms each token's representation.
+                    Step 5: Another residual + normalization.
+                    This output goes to the next layer. After 6 layers, we have rich contextual representations.
+                    Ask students: "Why do we have two Add&Norm steps?" (One for attention, one for FFN)
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 19: DECODER DIFFERENCES ==================== -->
+
+            <section>
+                <h2>Decoder: What's Different?</h2>
+                <p style="font-size: 0.85em;">The decoder has <span class="highlight">three key differences</span> from the encoder:</p>
+                <div class="step-box fragment">
+                    <span class="step-num" style="background:#ff6b6b;">1</span>
+                    <strong>Masked Self-Attention:</strong> Each position can only attend to <span class="highlight">earlier positions</span>.
+                    Prevents "seeing the future" during generation.
+                </div>
+                <div class="step-box fragment">
+                    <span class="step-num" style="background:#c678dd;">2</span>
+                    <strong>Cross-Attention:</strong> Queries come from the <span class="highlight-purple">decoder</span>,
+                    but Keys and Values come from the <span class="highlight-blue">encoder output</span>.
+                    This is how the decoder "reads" the input.
+                </div>
+                <div class="step-box fragment">
+                    <span class="step-num" style="background:#e5c07b;">3</span>
+                    <strong>Autoregressive generation:</strong> Output is generated
+                    <span class="highlight-yellow">one token at a time</span>, left to right.
+                </div>
+                <aside class="notes">
+                    The mask in masked self-attention is an upper-triangular matrix of negative infinity
+                    values added before softmax, forcing future positions to have zero attention weight.
+                    Cross-attention is the bridge between encoder and decoder. The decoder's query says
+                    "what am I looking for?" and the encoder's keys and values provide the context.
+                    This is analogous to how in Session 1 we described attention in sequence-to-sequence models:
+                    the decoder attends to the encoder states.
+                    During training, all positions are computed in parallel using teacher forcing
+                    (we feed the ground truth). During inference, generation is sequential.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 20: COMPLETE ARCHITECTURE DIAGRAM ==================== -->
+
+            <section>
+                <h2>Putting It All Together</h2>
+                <div class="pipeline" style="align-items: flex-end; gap: 1.5em;">
+                    <div style="text-align:center;">
+                        <div class="arch-box embed" style="width:180px; font-size:0.6em;">Input Embedding<br>+ Pos. Encoding</div>
+                        <div class="arch-arrow">&uarr;</div>
+                        <p class="small">"The cat sat"</p>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="border:2px solid #7ec8e3; border-radius:12px; padding:0.4em; width:180px;">
+                            <div class="arch-box attention" style="font-size:0.55em; margin:0.15em auto;">Self-Attn</div>
+                            <div class="arch-box ffn" style="font-size:0.55em; margin:0.15em auto;">FFN</div>
+                            <p class="small" style="margin:0;">&times;6 layers</p>
+                        </div>
+                        <div class="arch-arrow">&uarr;</div>
+                        <p class="small" style="color:#7ec8e3;">Encoder</p>
+                    </div>
+                    <div class="arrow" style="font-size:2em;">&rarr;</div>
+                    <div style="text-align:center;">
+                        <div style="border:2px solid #c678dd; border-radius:12px; padding:0.4em; width:180px;">
+                            <div class="arch-box attention" style="font-size:0.55em; margin:0.15em auto;">Masked Self-Attn</div>
+                            <div class="arch-box output" style="font-size:0.55em; margin:0.15em auto;">Cross-Attn</div>
+                            <div class="arch-box ffn" style="font-size:0.55em; margin:0.15em auto;">FFN</div>
+                            <p class="small" style="margin:0;">&times;6 layers</p>
+                        </div>
+                        <div class="arch-arrow">&uarr;</div>
+                        <p class="small" style="color:#c678dd;">Decoder</p>
+                    </div>
+                    <div style="text-align:center;">
+                        <div class="arch-box output" style="width:180px; font-size:0.6em;">Linear + Softmax</div>
+                        <div class="arch-arrow">&uarr;</div>
+                        <p class="small">"Le chat assis"</p>
+                    </div>
+                </div>
+                <p class="fragment" style="font-size: 0.75em; margin-top: 1em; text-align:center;">
+                    Original paper: <span class="highlight-blue">d<sub>model</sub> = 512</span>,
+                    <span class="highlight-green">h = 8 heads</span>,
+                    <span class="highlight">6 layers</span>,
+                    <span class="highlight-yellow">d<sub>ff</sub> = 2048</span>
+                    &mdash; ~65M parameters
+                </p>
+                <aside class="notes">
+                    Here is the complete picture. Input goes through embedding + positional encoding,
+                    then through 6 encoder layers, each with self-attention and FFN.
+                    The encoder output feeds into the decoder's cross-attention.
+                    The decoder also has 6 layers: masked self-attention, cross-attention, FFN.
+                    Finally, a linear layer + softmax produces probabilities over the output vocabulary.
+                    The original model had about 65 million parameters.
+                    Compare to GPT-3 with 175 BILLION parameters -- same basic architecture, just scaled up.
+                    The architecture is elegant: it is built entirely from attention, FFN, and normalization.
+                    No recurrence, no convolutions.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 21: DISCUSSION ==================== -->
+
+            <section class="discussion-slide">
+                <h2>Let's Think About It</h2>
+                <p style="font-size: 1.1em; color: #7ec8e3; margin: 1em 0;">Discussion Question</p>
+                <p style="font-size: 0.95em;">
+                    In the encoder, self-attention lets every token see <span class="highlight">every other token</span>.<br>
+                    In the decoder, masked attention only lets tokens see <span class="highlight-blue">past tokens</span>.
+                </p>
+                <p class="fragment" style="font-size: 1em; margin-top: 1.5em;">
+                    Why is this masking <span class="highlight">necessary</span> in the decoder?<br>
+                    What would happen without it?
+                </p>
+                <p class="fragment small" style="margin-top: 1.5em;">
+                    Hint: Think about how the model is used at <em>inference time</em>...
+                </p>
+                <aside class="notes">
+                    Give students 2-3 minutes to think/discuss.
+                    Answer: During inference, the decoder generates one token at a time.
+                    When generating token t, tokens t+1, t+2, ... do not exist yet.
+                    If we allowed the model to see future tokens during training,
+                    it would learn to "cheat" by just copying the answer.
+                    At inference time, those future tokens would not be available, and the model would fail.
+                    The mask ensures training conditions match inference conditions.
+                    This is the key difference between encoder (bidirectional) and decoder (unidirectional).
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 22: VARIANTS SECTION ==================== -->
+
+            <section class="section-title">
+                <h2>Transformer Variants</h2>
+                <h3>Encoder-only, Decoder-only, Encoder-Decoder</h3>
+                <aside class="notes">
+                    The original Transformer used both encoder and decoder.
+                    But researchers quickly discovered that you could use just one side
+                    for different types of tasks. This led to three major families.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 23: THREE VARIANTS ==================== -->
+
+            <section>
+                <h2>Three Transformer Families</h2>
+                <div class="two-column" style="gap: 1em;">
+                    <div class="variant-card fragment" style="border: 2px solid #7ec8e3;">
+                        <h4 style="color: #7ec8e3;">Encoder-Only</h4>
+                        <div class="arch-box ffn" style="font-size:0.6em; width:80%; margin:0.3em auto;">Self-Attention (bidirectional)</div>
+                        <p style="margin:0.5em 0;"><strong>BERT</strong> (2018)</p>
+                        <p>Sees <span class="highlight-blue">entire input</span> at once</p>
+                        <p style="font-size:0.8em; color:#93a1a1;">Best for: classification, NER, QA extraction</p>
+                    </div>
+                    <div class="variant-card fragment" style="border: 2px solid #ff6b6b;">
+                        <h4 style="color: #ff6b6b;">Decoder-Only</h4>
+                        <div class="arch-box attention" style="font-size:0.6em; width:80%; margin:0.3em auto;">Masked Self-Attention (causal)</div>
+                        <p style="margin:0.5em 0;"><strong>GPT</strong> (2018&ndash;)</p>
+                        <p>Sees only <span class="highlight">past tokens</span></p>
+                        <p style="font-size:0.8em; color:#93a1a1;">Best for: text generation, chat, code</p>
+                    </div>
+                    <div class="variant-card fragment" style="border: 2px solid #98c379;">
+                        <h4 style="color: #98c379;">Encoder-Decoder</h4>
+                        <div class="arch-box norm" style="font-size:0.6em; width:80%; margin:0.3em auto;">Full Architecture</div>
+                        <p style="margin:0.5em 0;"><strong>T5</strong> (2019)</p>
+                        <p>Encoder reads, decoder generates</p>
+                        <p style="font-size:0.8em; color:#93a1a1;">Best for: translation, summarization</p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Encoder-only (BERT): Uses only the encoder with bidirectional attention.
+                    Every token sees every other token. Great for understanding tasks.
+                    Trained with masked language modeling (predict hidden words).
+
+                    Decoder-only (GPT): Uses only the decoder with causal masking.
+                    Each token only sees previous tokens. Great for generation tasks.
+                    Trained with next-token prediction.
+                    This is what powers ChatGPT, Claude, and most modern LLMs.
+
+                    Encoder-Decoder (T5, BART): Uses the full architecture.
+                    Best for tasks that map one sequence to another.
+                    T5's insight: frame every NLP task as text-to-text.
+
+                    The big trend: decoder-only models have dominated since GPT-3 showed
+                    that scale + generation = powerful general intelligence.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 24: WHY TRANSFORMERS WON ==================== -->
+
+            <section class="section-title">
+                <h2>Why Transformers Won</h2>
+                <h3>The end of the RNN era</h3>
+                <aside class="notes">
+                    Let's step back and understand why this architecture didn't just work
+                    but completely dominated everything before it.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 25: PARALLELIZATION & SCALABILITY ==================== -->
+
+            <section>
+                <h2>Why Transformers Won</h2>
+                <table class="compare-table">
+                    <tr>
+                        <th>Property</th>
+                        <th>RNN / LSTM</th>
+                        <th>Transformer</th>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Parallelization</strong></td>
+                        <td class="bad">Sequential (O(n) steps)</td>
+                        <td class="good">Fully parallel (O(1) steps)</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Long-range dependencies</strong></td>
+                        <td class="bad">Degrades over distance</td>
+                        <td class="good">Direct connection (any distance)</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Training speed</strong></td>
+                        <td class="bad">Slow (cannot use GPUs fully)</td>
+                        <td class="good">Fast (GPU-friendly matrix ops)</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Scalability</strong></td>
+                        <td class="bad">Diminishing returns at scale</td>
+                        <td class="good">Performance grows with scale</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Pretraining</strong></td>
+                        <td class="bad">Limited transfer learning</td>
+                        <td class="good">Excellent pretrain &rarr; finetune</td>
+                    </tr>
+                </table>
+                <p class="fragment" style="font-size: 0.8em; margin-top: 1em; text-align:center;">
+                    The <span class="highlight">scaling hypothesis</span>: Transformer performance improves predictably with more data, compute, and parameters
+                </p>
+                <aside class="notes">
+                    Parallelization is the most immediate advantage. RNNs must process token by token.
+                    Transformers process all tokens simultaneously with matrix multiplication.
+                    This maps perfectly to GPUs which are designed for parallel matrix operations.
+
+                    Long-range dependencies: In an RNN, information from token 1 must pass through
+                    every intermediate hidden state to reach token 100. In a Transformer, token 1
+                    directly attends to token 100 in a single operation.
+
+                    The scaling story is perhaps most important: OpenAI discovered that Transformer
+                    performance scales as a smooth power law with data, parameters, and compute.
+                    This "scaling law" is why we went from 65M to 175B+ parameters.
+                    RNNs do not exhibit these clean scaling properties.
+
+                    Transfer learning: pretraining on massive text then fine-tuning on specific tasks
+                    works remarkably well with Transformers. This is the paradigm shift.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 26: KEY MILESTONES TIMELINE ==================== -->
+
+            <section>
+                <h2>Key Milestones</h2>
+                <div class="timeline">
+                    <div class="era fragment">
+                        <div class="year">2017</div>
+                        <div class="label" style="color:#e5c07b;">Transformer</div>
+                    </div>
+                    <div class="era fragment">
+                        <div class="year">2018</div>
+                        <div class="label" style="color:#7ec8e3;">BERT</div>
+                    </div>
+                    <div class="era fragment">
+                        <div class="year">2019</div>
+                        <div class="label" style="color:#ff6b6b;">GPT-2</div>
+                    </div>
+                    <div class="era fragment">
+                        <div class="year">2020</div>
+                        <div class="label" style="color:#c678dd;">GPT-3</div>
+                    </div>
+                    <div class="era fragment">
+                        <div class="year">2022</div>
+                        <div class="label" style="color:#98c379;">ChatGPT</div>
+                    </div>
+                </div>
+
+                <div class="fragment" style="margin-top: 1.5em;">
+                    <ul style="font-size: 0.7em;">
+                        <li><span class="highlight-yellow">2017 - Transformer:</span> "Attention Is All You Need" &mdash; 65M params, machine translation</li>
+                        <li><span class="highlight-blue">2018 - BERT:</span> Bidirectional encoder &mdash; 340M params, crushed every NLU benchmark</li>
+                        <li><span class="highlight">2019 - GPT-2:</span> "Too dangerous to release" &mdash; 1.5B params, coherent text generation</li>
+                        <li><span class="highlight-purple">2020 - GPT-3:</span> Few-shot learning emerges &mdash; 175B params, in-context learning</li>
+                        <li><span class="highlight-green">2022 - ChatGPT:</span> RLHF + GPT-3.5 &mdash; AI goes mainstream, 100M users in 2 months</li>
+                    </ul>
+                </div>
+                <aside class="notes">
+                    Walk through each milestone:
+                    2017: The original paper. Focused on translation. Most people did not immediately
+                    realize how transformative it would be.
+                    2018: BERT showed that pretraining a Transformer encoder on a huge corpus,
+                    then fine-tuning on specific tasks, dramatically outperformed everything.
+                    It topped 11 NLP benchmarks simultaneously.
+                    2019: GPT-2 (OpenAI) showed that a decoder-only Transformer could generate
+                    remarkably coherent text. OpenAI initially withheld the full model,
+                    claiming it was "too dangerous" -- this was controversial.
+                    2020: GPT-3 was the true inflection point. It showed that at sufficient scale,
+                    the model could perform tasks it was never explicitly trained for,
+                    just from a few examples in the prompt (few-shot learning).
+                    2022: ChatGPT made AI accessible to everyone. The key innovation was RLHF
+                    (Reinforcement Learning from Human Feedback) to make the model helpful and safe.
+                    Fastest-growing consumer application in history.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 27: SCALE OF GROWTH ==================== -->
+
+            <section>
+                <h2>The Scale Explosion</h2>
+                <div class="two-column">
+                    <div style="text-align: center;">
+                        <p class="small">Transformer (2017)</p>
+                        <p class="stat-big">65M</p>
+                        <p class="small">parameters</p>
+                    </div>
+                    <div style="text-align: center;" class="fragment">
+                        <p class="small">GPT-3 (2020)</p>
+                        <p class="stat-big">175B</p>
+                        <p class="small">parameters</p>
+                    </div>
+                </div>
+                <p class="fragment" style="font-size: 1.2em; margin-top: 1em; text-align: center;">
+                    That's <span class="highlight">&times;2,700</span> growth in 3 years
+                </p>
+                <div class="fragment" style="margin-top:1em;">
+                    <p style="font-size: 0.8em; text-align:center;">Same architecture. Same attention mechanism. Just <span class="highlight-blue">bigger</span>.</p>
+                    <p style="font-size: 0.75em; text-align:center; color:#93a1a1;">
+                        GPT-4 (2023): rumored ~1.8T params (MoE) &bull;
+                        Llama 3 (2024): 405B params
+                    </p>
+                </div>
+                <aside class="notes">
+                    This is perhaps the most remarkable thing about the Transformer.
+                    The basic architecture from 2017 is essentially the same as what powers
+                    GPT-4, Claude, Gemini, and Llama today.
+                    The key changes have been: more layers, more heads, more parameters,
+                    more training data, better training techniques (RLHF, DPO),
+                    and some architectural tweaks (RoPE, SwiGLU, grouped-query attention).
+                    But the core idea -- self-attention + FFN + residual connections -- is unchanged.
+                    This scalability is what makes the Transformer the most important
+                    neural network architecture in history.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 28: BEYOND NLP ==================== -->
+
+            <section>
+                <h2>Transformers: Beyond NLP</h2>
+                <p style="font-size: 0.85em;">The architecture generalized to <span class="highlight">almost everything</span>:</p>
+                <div class="head-grid" style="margin-top: 1em;">
+                    <div class="head-card fragment" style="border-color: #ff6b6b;">
+                        <div class="head-title" style="color: #ff6b6b;">Vision</div>
+                        <div>ViT, DINO<br>Image = patches as tokens</div>
+                    </div>
+                    <div class="head-card fragment" style="border-color: #7ec8e3;">
+                        <div class="head-title" style="color: #7ec8e3;">Audio</div>
+                        <div>Whisper<br>Spectrograms as tokens</div>
+                    </div>
+                    <div class="head-card fragment" style="border-color: #98c379;">
+                        <div class="head-title" style="color: #98c379;">Code</div>
+                        <div>Codex, StarCoder<br>Code as token sequences</div>
+                    </div>
+                    <div class="head-card fragment" style="border-color: #e5c07b;">
+                        <div class="head-title" style="color: #e5c07b;">Biology</div>
+                        <div>AlphaFold 2<br>Amino acids as tokens</div>
+                    </div>
+                    <div class="head-card fragment" style="border-color: #c678dd;">
+                        <div class="head-title" style="color: #c678dd;">Multimodal</div>
+                        <div>GPT-4V, Gemini<br>Text + images + audio</div>
+                    </div>
+                    <div class="head-card fragment" style="border-color: #93a1a1;">
+                        <div class="head-title" style="color: #93a1a1;">Video</div>
+                        <div>Sora<br>Spacetime patches as tokens</div>
+                    </div>
+                </div>
+                <p class="fragment small" style="text-align:center; margin-top:0.8em;">
+                    Key insight: anything that can be represented as a <strong>sequence of tokens</strong> can use a Transformer
+                </p>
+                <aside class="notes">
+                    The universality of the Transformer is remarkable.
+                    Vision Transformer (ViT): splits an image into 16x16 patches, treats each patch
+                    as a "token", and applies standard Transformer attention. Works as well as CNNs.
+                    Whisper: OpenAI's speech recognition model. Converts audio to spectrograms,
+                    then treats spectrogram frames as tokens.
+                    AlphaFold 2: Google DeepMind's protein structure prediction.
+                    Uses Transformer attention to model relationships between amino acids.
+                    Multimodal models like GPT-4V process text and images in the same Transformer.
+                    The abstraction is powerful: if you can tokenize it, you can Transformer it.
+                    This is why some researchers call it a "universal computation engine."
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 29: DISCUSSION 2 ==================== -->
+
+            <section class="discussion-slide">
+                <h2>Group Discussion</h2>
+                <p style="font-size: 1em; color: #7ec8e3; margin: 1em 0;">5 minutes</p>
+                <p style="font-size: 0.95em;">
+                    The Transformer has <span class="highlight">O(n&sup2;)</span> complexity in sequence length<br>
+                    (every token attends to every other token).
+                </p>
+                <ul style="font-size: 0.8em; margin-top: 1em;">
+                    <li class="fragment">A 1,000-token sequence: <span class="highlight-blue">1 million</span> attention computations</li>
+                    <li class="fragment">A 100,000-token sequence: <span class="highlight">10 billion</span> attention computations</li>
+                </ul>
+                <p class="fragment" style="font-size: 1em; margin-top: 1.5em;">
+                    How might we handle <span class="highlight-green">very long documents</span>?<br>
+                    Can you think of any strategies?
+                </p>
+                <aside class="notes">
+                    This is a genuine open problem in the field. Let students brainstorm.
+                    Possible answers they might come up with:
+                    - Sliding window attention (only attend to nearby tokens)
+                    - Sparse attention patterns (attend to every k-th token)
+                    - Chunking the document and processing pieces
+                    - Hierarchical attention (sentence-level then document-level)
+
+                    Actual solutions in the field:
+                    - Longformer: local + global attention (2020)
+                    - Sparse Transformer (2019)
+                    - Flash Attention: hardware-aware efficient attention (2022)
+                    - Ring Attention: distributing across devices (2023)
+                    - Context window expansion: modern models handle 128K-1M tokens
+                    This connects to their work as software engineers: efficiency matters at scale.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 30: KEY TAKEAWAYS ==================== -->
+
+            <section>
+                <h2>Key Takeaways</h2>
+                <ol style="font-size: 0.8em;">
+                    <li class="fragment">The Transformer uses <span class="highlight">only attention</span> &mdash; no recurrence, no convolutions</li>
+                    <li class="fragment"><span class="highlight-blue">Multi-head attention</span> lets the model capture different types of relationships simultaneously</li>
+                    <li class="fragment"><span class="highlight-yellow">Positional encoding</span> injects order information that attention lacks</li>
+                    <li class="fragment">Each block: <span class="highlight-green">Attention &rarr; Add&Norm &rarr; FFN &rarr; Add&Norm</span></li>
+                    <li class="fragment">Three families: <span class="highlight-blue">encoder-only</span> (BERT), <span class="highlight">decoder-only</span> (GPT), <span class="highlight-green">encoder-decoder</span> (T5)</li>
+                    <li class="fragment">Transformers won because of <span class="highlight-purple">parallelization</span>, <span class="highlight-green">scalability</span>, and <span class="highlight-blue">transfer learning</span></li>
+                </ol>
+                <div class="fragment" style="margin-top: 1em; padding: 0.8em; border: 2px solid #e5c07b; border-radius: 12px;">
+                    <p style="font-size: 0.85em; margin: 0; text-align:center;">
+                        <span class="highlight-yellow">The Transformer is the foundation of modern AI.</span><br>
+                        <span class="small">Every major language model (GPT-4, Claude, Gemini, Llama) is a Transformer.</span>
+                    </p>
+                </div>
+                <aside class="notes">
+                    Summarize the key points. Make sure every student understands these 6 points.
+                    The Transformer is not just an NLP architecture -- it is THE architecture of modern AI.
+                    Everything we will cover in the rest of the course builds on this foundation.
+                    In future sessions, we will look at how these models are trained (pretraining),
+                    how they are adapted to specific tasks (fine-tuning), and how they are made
+                    useful and safe (RLHF, alignment).
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 31: LOOKING AHEAD ==================== -->
+
+            <section>
+                <h2>What's Next?</h2>
+                <p style="font-size: 0.85em;">Now that you understand the Transformer architecture...</p>
+                <div class="pipeline" style="margin-top: 1.5em;">
+                    <div class="step" style="border-color: #93a1a1; opacity: 0.5;">Attention<br><span class="small" style="color:#93a1a1;">Session 1 &check;</span></div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="border-color: #ff6b6b;">Transformer<br><span class="small" style="color:#ff6b6b;">Today &check;</span></div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="border-color: #e5c07b;">Pretraining<br><span class="small" style="color:#e5c07b;">Next</span></div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="border-color: #c678dd;">Fine-tuning<br><span class="small" style="color:#c678dd;">Next</span></div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="border-color: #98c379;">LLMs<br><span class="small" style="color:#98c379;">Next</span></div>
+                </div>
+                <p style="margin-top: 2em; font-size: 0.7em; color: #93a1a1;">
+                    References:<br>
+                    Vaswani et al. (2017) "Attention Is All You Need"<br>
+                    Devlin et al. (2018) "BERT: Pre-training of Deep Bidirectional Transformers"<br>
+                    Jay Alammar - "The Illustrated Transformer" (jalammar.github.io)
+                </p>
+                <aside class="notes">
+                    Encourage students to read "The Illustrated Transformer" by Jay Alammar --
+                    it is the best visual explanation of the architecture.
+                    Also recommend the original paper -- it is surprisingly readable.
+                    Next sessions will build on this: how to train these models (pretraining objectives),
+                    how to adapt them (fine-tuning), and how to use them effectively (prompting, RAG).
+                    Any final questions before we wrap up?
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 32: THANK YOU ==================== -->
+
+            <section>
+                <h1>Thank You</h1>
+                <h3>Questions?</h3>
+                <p style="margin-top: 2em; font-size: 0.7em; color: #93a1a1;">
+                    Day 2 &mdash; Session 2: The Transformer Architecture<br>
+                    TAL &bull; ZHANG Zheng
+                </p>
+                <p style="margin-top: 1.5em; font-size: 0.85em;">
+                    Thank you!
+                </p>
+                <aside class="notes">
+                    End of Day 2 Session 2. Excellent work today.
+                    The Transformer is the most important concept in this entire course.
+                    Make sure students are comfortable with all the components before moving forward.
+                    Remind them that everything in modern AI is built on this architecture.
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            controlsTutorial: false,
+            progress: true,
+            center: true,
+            plugins: [RevealHighlight, RevealNotes]
+        });
+    </script>
+</body>
+</html>

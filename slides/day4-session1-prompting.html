@@ -1,0 +1,1464 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompting: The New Programming Paradigm</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/moon.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --r-heading-font: 'Helvetica Neue', Arial, sans-serif;
+            --r-main-font: 'Helvetica Neue', Arial, sans-serif;
+        }
+        .reveal { font-size: 32px; }
+        .reveal h1 { font-size: 2.2em; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.2em; color: #7ec8e3; }
+        .reveal ul { text-align: left; }
+        .reveal li { margin-bottom: 0.4em; }
+
+        /* Big stat numbers */
+        .stat-big {
+            font-size: 3.5em;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin: 0.2em 0;
+        }
+        .stat-label {
+            font-size: 0.6em;
+            color: #93a1a1;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1em;
+        }
+        .stat-box {
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+        }
+        .stat-box .stat-big {
+            font-size: 2.8em;
+        }
+
+        /* Quote styling */
+        .quote-slide blockquote {
+            font-style: italic;
+            font-size: 1.2em;
+            border-left: 4px solid #7ec8e3;
+            padding-left: 1em;
+            margin: 1em auto;
+            max-width: 80%;
+            text-align: left;
+        }
+        .quote-slide .attribution {
+            text-align: right;
+            color: #93a1a1;
+            font-size: 0.7em;
+            margin-right: 10%;
+        }
+
+        /* Discussion slides */
+        .discussion-slide {
+            background: rgba(126, 200, 227, 0.08) !important;
+        }
+        .discussion-slide h2 {
+            color: #7ec8e3;
+        }
+
+        /* Two column layout */
+        .two-column {
+            display: flex;
+            gap: 2em;
+            align-items: flex-start;
+        }
+        .two-column > div {
+            flex: 1;
+        }
+
+        /* Highlight text */
+        .highlight { color: #ff6b6b; }
+        .highlight-blue { color: #7ec8e3; }
+        .highlight-green { color: #98c379; }
+        .highlight-yellow { color: #e5c07b; }
+        .highlight-purple { color: #c678dd; }
+        .small { font-size: 0.65em; color: #93a1a1; }
+
+        /* Section divider */
+        .section-title h2 {
+            font-size: 2em;
+            margin-bottom: 0.3em;
+        }
+        .section-title h3 {
+            font-size: 0.9em;
+            color: #93a1a1;
+            font-weight: normal;
+        }
+
+        /* Prompt box styling */
+        .prompt-box {
+            background: rgba(0, 43, 54, 0.9);
+            border: 2px solid #7ec8e3;
+            border-radius: 8px;
+            padding: 0.8em 1em;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-size: 0.7em;
+            line-height: 1.5;
+            margin: 0.5em 0;
+            position: relative;
+        }
+        .prompt-box.bad {
+            border-color: #ff6b6b;
+        }
+        .prompt-box.bad::before {
+            content: 'BAD';
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            background: #ff6b6b;
+            color: #fff;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 0.7em;
+            font-weight: bold;
+            padding: 1px 8px;
+            border-radius: 4px;
+        }
+        .prompt-box.good {
+            border-color: #98c379;
+        }
+        .prompt-box.good::before {
+            content: 'GOOD';
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            background: #98c379;
+            color: #002b36;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 0.7em;
+            font-weight: bold;
+            padding: 1px 8px;
+            border-radius: 4px;
+        }
+
+        /* Prompt role labels */
+        .role-label {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-weight: bold;
+            font-size: 0.85em;
+            margin-bottom: 0.2em;
+        }
+        .role-system { color: #c678dd; }
+        .role-user { color: #7ec8e3; }
+        .role-assistant { color: #98c379; }
+
+        /* Comparison table */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7em;
+            margin: 0.5em 0;
+        }
+        .compare-table th {
+            background: rgba(126, 200, 227, 0.2);
+            color: #7ec8e3;
+            padding: 0.5em;
+            border: 1px solid #93a1a1;
+        }
+        .compare-table td {
+            padding: 0.5em;
+            border: 1px solid #93a1a1;
+            text-align: left;
+        }
+
+        /* Arrow flow */
+        .flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3em;
+            flex-wrap: wrap;
+            margin: 0.5em 0;
+        }
+        .flow .step {
+            background: rgba(126, 200, 227, 0.15);
+            border: 2px solid #7ec8e3;
+            border-radius: 8px;
+            padding: 0.5em 0.8em;
+            text-align: center;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+        .flow .step.active {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.15);
+        }
+        .flow .arrow {
+            font-size: 1.5em;
+            color: #7ec8e3;
+        }
+
+        /* Paradigm shift diagram */
+        .paradigm-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 1em;
+            margin: 1em 0;
+        }
+        .paradigm-box {
+            text-align: center;
+            padding: 1em;
+            border-radius: 12px;
+            flex: 1;
+            min-width: 180px;
+        }
+        .paradigm-box h4 {
+            margin: 0 0 0.3em 0;
+            font-size: 0.9em;
+        }
+        .paradigm-box p {
+            margin: 0;
+            font-size: 0.65em;
+            color: #93a1a1;
+        }
+        .paradigm-old {
+            border: 2px solid #93a1a1;
+            background: rgba(147, 161, 161, 0.1);
+        }
+        .paradigm-new {
+            border: 2px solid #98c379;
+            background: rgba(152, 195, 121, 0.15);
+        }
+
+        /* Technique card */
+        .technique-card {
+            background: rgba(126, 200, 227, 0.08);
+            border: 1px solid #7ec8e3;
+            border-radius: 8px;
+            padding: 0.6em 0.8em;
+            margin: 0.4em 0;
+            text-align: left;
+            font-size: 0.75em;
+        }
+        .technique-card h4 {
+            color: #7ec8e3;
+            margin: 0 0 0.2em 0;
+            font-size: 1.1em;
+        }
+        .technique-card p {
+            margin: 0;
+        }
+
+        /* Pitfall box */
+        .pitfall-box {
+            background: rgba(255, 107, 107, 0.1);
+            border-left: 4px solid #ff6b6b;
+            padding: 0.5em 0.8em;
+            margin: 0.4em 0;
+            text-align: left;
+            font-size: 0.75em;
+            border-radius: 0 8px 8px 0;
+        }
+        .pitfall-box h4 {
+            color: #ff6b6b;
+            margin: 0 0 0.2em 0;
+        }
+        .pitfall-box p {
+            margin: 0;
+        }
+
+        /* Roadmap for session */
+        .session-roadmap {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.6em;
+            font-size: 0.65em;
+        }
+        .session-roadmap .block {
+            background: rgba(126, 200, 227, 0.1);
+            border: 1px solid #7ec8e3;
+            border-radius: 8px;
+            padding: 0.6em;
+            text-align: center;
+        }
+        .session-roadmap .block.current {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+        .session-roadmap .block .time {
+            color: #93a1a1;
+            font-size: 0.85em;
+        }
+        .session-roadmap .block .topic {
+            font-weight: bold;
+            margin-top: 0.3em;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ==================== SLIDE 1: TITLE ==================== -->
+            <section>
+                <h1 style="font-size: 1.8em;">Prompting</h1>
+                <h3 style="color: #93a1a1; font-weight: normal;">The New Programming Paradigm</h3>
+                <p style="margin-top: 2em; font-size: 0.7em; color: #93a1a1;">
+                    TAL &mdash; Day 4, Session 1<br>
+                    March 19, 2026 &bull; 13:30 &ndash; 15:30
+                </p>
+                <p style="font-size: 0.6em; color: #93a1a1;">
+                    Instructor: ZHANG Zheng
+                </p>
+                <aside class="notes">
+                    Welcome back for Day 4. You now understand Transformers, pre-training, and fine-tuning.
+                    Today we flip the perspective: instead of training models, we learn to TALK to them.
+                    Prompting is arguably the most practical skill in modern AI &mdash; this session is hands-on.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 2: SESSION ROADMAP ==================== -->
+            <section>
+                <h2>Today's Roadmap</h2>
+                <div class="session-roadmap">
+                    <div class="block">
+                        <div class="time">13:30 &ndash; 13:50</div>
+                        <div class="topic">What is Prompting?</div>
+                        <div style="font-size: 0.85em;">The paradigm shift</div>
+                    </div>
+                    <div class="block">
+                        <div class="time">13:50 &ndash; 14:15</div>
+                        <div class="topic">Zero &amp; Few-Shot</div>
+                        <div style="font-size: 0.85em;">In-Context Learning</div>
+                    </div>
+                    <div class="block">
+                        <div class="time">14:15 &ndash; 14:40</div>
+                        <div class="topic">Prompt Engineering</div>
+                        <div style="font-size: 0.85em;">Best practices</div>
+                    </div>
+                    <div class="block">
+                        <div class="time">14:40 &ndash; 15:05</div>
+                        <div class="topic">Chain-of-Thought</div>
+                        <div style="font-size: 0.85em;">Step-by-step reasoning</div>
+                    </div>
+                    <div class="block">
+                        <div class="time">15:05 &ndash; 15:20</div>
+                        <div class="topic">Advanced Techniques</div>
+                        <div style="font-size: 0.85em;">ToT, ReAct, Self-Consistency</div>
+                    </div>
+                    <div class="block">
+                        <div class="time">15:20 &ndash; 15:30</div>
+                        <div class="topic">Pitfalls &amp; Wrap-up</div>
+                        <div style="font-size: 0.85em;">Evaluation &amp; limits</div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Here is the full plan for our 2-hour session. We move fast because every section has live examples.
+                    The goal is that by the end you have a personal toolkit of prompt patterns you can apply immediately.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 3: THE PARADIGM SHIFT ==================== -->
+            <section class="section-title">
+                <h2>Part 1</h2>
+                <h3>What Is Prompting? The New Programming Paradigm</h3>
+                <aside class="notes">
+                    Let's start with the big picture. Why does prompting matter?
+                    It represents a fundamental shift in how we build software with AI.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 4: OLD vs NEW ==================== -->
+            <section>
+                <h2>The Paradigm Shift</h2>
+                <div class="paradigm-row">
+                    <div class="paradigm-box paradigm-old">
+                        <h4>Traditional ML</h4>
+                        <p>Collect data &rarr; Train model &rarr; Deploy</p>
+                        <p style="margin-top: 0.3em; color: #ff6b6b;">Weeks to months</p>
+                    </div>
+                    <div style="font-size: 2em; color: #7ec8e3;">&rarr;</div>
+                    <div class="paradigm-box paradigm-old">
+                        <h4>Fine-tuning</h4>
+                        <p>Take pre-trained model &rarr; Adapt with data</p>
+                        <p style="margin-top: 0.3em; color: #e5c07b;">Days to weeks</p>
+                    </div>
+                    <div style="font-size: 2em; color: #7ec8e3;">&rarr;</div>
+                    <div class="paradigm-box paradigm-new">
+                        <h4>Prompting</h4>
+                        <p>Write instructions &rarr; Get results</p>
+                        <p style="margin-top: 0.3em; color: #98c379;">Minutes to hours</p>
+                    </div>
+                </div>
+                <p class="fragment small" style="text-align: center;">
+                    "The hottest new programming language is English." &mdash; Andrej Karpathy
+                </p>
+                <aside class="notes">
+                    We went from training models from scratch (months of work, huge compute budgets) to fine-tuning
+                    pre-trained models (days, moderate compute) to now just writing natural language instructions.
+                    Karpathy's quote captures it perfectly. This is a 1000x reduction in iteration time.
+                    But just like any programming language, there are patterns, anti-patterns, and best practices.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 5: WHAT IS A PROMPT ==================== -->
+            <section>
+                <h2>What Is a Prompt?</h2>
+                <p>A prompt is the <span class="highlight">input text</span> you provide to an LLM to elicit a desired output.</p>
+                <div class="fragment" style="margin-top: 1em;">
+                    <div class="flow">
+                        <div class="step active">Prompt (your input)</div>
+                        <div class="arrow">&rarr;</div>
+                        <div class="step">LLM</div>
+                        <div class="arrow">&rarr;</div>
+                        <div class="step">Completion (output)</div>
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 1em;">
+                    <h3>A prompt can include:</h3>
+                    <ul style="font-size: 0.8em;">
+                        <li><span class="highlight-blue">Instructions</span> &mdash; What you want the model to do</li>
+                        <li><span class="highlight-green">Context</span> &mdash; Background information, documents, data</li>
+                        <li><span class="highlight-yellow">Examples</span> &mdash; Input/output pairs showing the pattern</li>
+                        <li><span class="highlight-purple">Constraints</span> &mdash; Format, length, style requirements</li>
+                    </ul>
+                </div>
+                <aside class="notes">
+                    At its core, a prompt is just text input. But the quality of that text determines the quality of the output.
+                    Think of it as an API call where the interface is natural language.
+                    A good prompt typically combines several of these elements: instructions, context, examples, and constraints.
+                    We will see concrete examples of each throughout this session.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 6: SECTION - ZERO/FEW-SHOT ==================== -->
+            <section class="section-title">
+                <h2>Part 2</h2>
+                <h3>Zero-Shot and Few-Shot Prompting</h3>
+                <aside class="notes">
+                    Now let's get into the two foundational prompting strategies.
+                    Everything else builds on these.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 7: ZERO-SHOT ==================== -->
+            <section>
+                <h2>Zero-Shot Prompting</h2>
+                <p style="font-size: 0.85em;">Just describe the task. <span class="highlight">No examples</span> needed.</p>
+                <div class="fragment">
+                    <div class="prompt-box" style="margin-top: 0.8em;">
+                        <div class="role-label role-user">User:</div>
+                        Classify the sentiment of this review as positive, negative, or neutral:<br><br>
+                        "The battery life is incredible but the screen is too dim outdoors."
+                    </div>
+                </div>
+                <div class="fragment">
+                    <div class="prompt-box" style="border-color: #98c379;">
+                        <div class="role-label role-assistant">Assistant:</div>
+                        <strong>Neutral</strong> (mixed). The review expresses a positive opinion about
+                        battery life but a negative opinion about screen brightness.
+                    </div>
+                </div>
+                <p class="fragment small" style="text-align: center; margin-top: 0.5em;">
+                    Works well for tasks the model has seen during pre-training (classification, summarization, translation).
+                </p>
+                <aside class="notes">
+                    Zero-shot is the simplest approach: just tell the model what to do.
+                    Modern LLMs are remarkably good at this for common tasks because they've seen millions of similar
+                    patterns during pre-training. GPT-4, Claude, Gemini all handle basic classification, summarization,
+                    and translation in zero-shot mode quite well.
+                    But for unusual or complex tasks, zero-shot often falls short. That's where few-shot comes in.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 8: FEW-SHOT ==================== -->
+            <section>
+                <h2>Few-Shot Prompting</h2>
+                <p style="font-size: 0.85em;">Provide <span class="highlight-green">examples</span> to teach the pattern.</p>
+                <div class="prompt-box" style="font-size: 0.6em;">
+                    <div class="role-label role-user">User:</div>
+                    Extract the product and issue from support tickets.<br><br>
+                    <span class="highlight-yellow">Ticket:</span> "My AirPods Pro keep disconnecting from my iPhone."<br>
+                    <span class="highlight-green">Output:</span> {"product": "AirPods Pro", "issue": "disconnecting"}<br><br>
+                    <span class="highlight-yellow">Ticket:</span> "The MacBook keyboard stopped working after the update."<br>
+                    <span class="highlight-green">Output:</span> {"product": "MacBook", "issue": "keyboard not working"}<br><br>
+                    <span class="highlight-yellow">Ticket:</span> "iPad screen flickers when brightness is above 50%."<br>
+                    <span class="highlight-green">Output:</span>
+                </div>
+                <div class="fragment">
+                    <div class="prompt-box" style="border-color: #98c379; font-size: 0.6em;">
+                        <div class="role-label role-assistant">Assistant:</div>
+                        {"product": "iPad", "issue": "screen flickering"}
+                    </div>
+                </div>
+                <p class="fragment small" style="text-align: center;">
+                    This is <strong>In-Context Learning (ICL)</strong> &mdash; the model learns the task from examples
+                    in the prompt, with <em>no weight updates</em>. (Brown et al., 2020)
+                </p>
+                <aside class="notes">
+                    Few-shot prompting is one of the most powerful ideas in modern NLP. You give the model a few
+                    input-output examples, and it figures out the pattern. No training, no fine-tuning.
+                    This is called In-Context Learning, introduced in the GPT-3 paper by Brown et al.
+                    The model's weights don't change &mdash; it's doing pattern matching in the context window.
+                    Notice how the output format is exactly consistent with the examples. That's the power of ICL.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 9: ICL PRINCIPLES ==================== -->
+            <section>
+                <h2>In-Context Learning: Key Questions</h2>
+                <div class="two-column">
+                    <div>
+                        <h3>How many examples?</h3>
+                        <ul style="font-size: 0.7em;">
+                            <li class="fragment"><span class="highlight">1-3 examples</span>: Usually enough for simple tasks</li>
+                            <li class="fragment"><span class="highlight-blue">4-8 examples</span>: Complex extraction or classification</li>
+                            <li class="fragment"><span class="highlight-green">Diminishing returns</span> beyond 8-10</li>
+                            <li class="fragment">More examples = more tokens = <span class="highlight">higher cost</span></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Where to place them?</h3>
+                        <ul style="font-size: 0.7em;">
+                            <li class="fragment"><span class="highlight-yellow">Before the actual query</span> (standard)</li>
+                            <li class="fragment">Most models attend more to <span class="highlight">recent tokens</span></li>
+                            <li class="fragment">Put the <em>most similar</em> example <span class="highlight-green">closest to the query</span></li>
+                            <li class="fragment">Consistent formatting across all examples</li>
+                        </ul>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Two practical questions every engineer asks: how many examples do I need, and where do I put them?
+                    For most tasks, 2-5 examples is the sweet spot. Research shows diminishing returns beyond that,
+                    and you're burning tokens (and money) for minimal gains.
+                    Placement matters: recency bias means the model pays more attention to examples near the query.
+                    So put your best, most representative example last, right before the actual input.
+                    Also, consistency in formatting is crucial. If your examples have slightly different formats,
+                    the model will be confused about which pattern to follow.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 10: EXAMPLE SELECTION ==================== -->
+            <section>
+                <h2>Example Selection Strategies</h2>
+                <table class="compare-table">
+                    <thead>
+                        <tr>
+                            <th>Strategy</th>
+                            <th>How It Works</th>
+                            <th>When to Use</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="fragment">
+                            <td><span class="highlight-blue">Random</span></td>
+                            <td>Pick examples randomly from a pool</td>
+                            <td>Baseline; quick prototyping</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight-green">Similarity-based</span></td>
+                            <td>Embed query, find nearest examples</td>
+                            <td>Diverse input space; retrieval-augmented</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight-yellow">Diverse</span></td>
+                            <td>Cover different categories / edge cases</td>
+                            <td>Classification with many classes</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight-purple">Difficulty-based</span></td>
+                            <td>Include hard examples the model gets wrong</td>
+                            <td>When model struggles with edge cases</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="fragment small" style="text-align: center; margin-top: 0.5em;">
+                    Liu et al. (2022) showed that <strong>example selection can matter more than example count</strong>.
+                </p>
+                <aside class="notes">
+                    Not all examples are created equal. Liu et al. demonstrated that selecting the right examples
+                    can improve few-shot performance by 10-20% compared to random selection.
+                    In practice, similarity-based selection (using embeddings to find the most relevant examples
+                    for each query) works best for production systems. This is basically RAG for few-shot examples.
+                    For classification, make sure to cover all classes. For extraction, show diverse input patterns.
+                    The key insight: treat your example bank like training data &mdash; curate it carefully.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 11: SECTION - PROMPT ENGINEERING ==================== -->
+            <section class="section-title">
+                <h2>Part 3</h2>
+                <h3>Prompt Engineering Best Practices</h3>
+                <aside class="notes">
+                    Now let's talk about the craft of writing good prompts.
+                    These are patterns that consistently improve results across all LLMs.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 12: BE SPECIFIC ==================== -->
+            <section>
+                <h2>Rule 1: Be Specific and Clear</h2>
+                <div class="two-column">
+                    <div>
+                        <div class="prompt-box bad" style="font-size: 0.6em;">
+                            Summarize this article.
+                        </div>
+                        <p class="small" style="margin-top: 0.3em;">Vague: what length? what focus? what style?</p>
+                    </div>
+                    <div>
+                        <div class="prompt-box good" style="font-size: 0.6em;">
+                            Summarize this article in <strong>3 bullet points</strong>,
+                            focusing on the <strong>technical contributions</strong>.
+                            Each bullet should be <strong>one sentence</strong>.
+                            Write for a <strong>software engineer</strong> audience.
+                        </div>
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 0.8em;">
+                    <h3>Specificity checklist:</h3>
+                    <ul style="font-size: 0.7em;">
+                        <li><span class="highlight-blue">Output format</span> &mdash; length, structure, style</li>
+                        <li><span class="highlight-green">Audience</span> &mdash; who is the output for?</li>
+                        <li><span class="highlight-yellow">Scope</span> &mdash; what to include / exclude</li>
+                        <li><span class="highlight">Tone</span> &mdash; formal, casual, technical</li>
+                    </ul>
+                </div>
+                <aside class="notes">
+                    The number one mistake in prompting is being too vague. The model fills in ambiguity with
+                    its own assumptions, and those assumptions may not match yours.
+                    Think of it like giving instructions to a very capable but very literal intern.
+                    They'll do exactly what you ask &mdash; so you need to ask precisely.
+                    The good prompt here specifies format (bullet points), count (3), focus (technical contributions),
+                    length (one sentence each), and audience (software engineers). That's 5 constraints in 2 sentences.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 13: CONTEXT AND CONSTRAINTS ==================== -->
+            <section>
+                <h2>Rule 2: Provide Context &amp; Constraints</h2>
+                <div class="prompt-box good" style="font-size: 0.55em;">
+                    <div class="role-label role-user">User:</div>
+                    You are a <strong>senior code reviewer</strong> at a fintech company.<br>
+                    Our codebase uses <strong>Python 3.11, FastAPI, and SQLAlchemy</strong>.<br>
+                    We follow <strong>PEP 8</strong> and require <strong>type hints on all public functions</strong>.<br><br>
+                    Review the following function. Focus on:<br>
+                    1. Security vulnerabilities (especially SQL injection)<br>
+                    2. Error handling<br>
+                    3. Type safety<br><br>
+                    Format your response as:<br>
+                    - CRITICAL: [issues that must be fixed]<br>
+                    - WARNING: [issues that should be fixed]<br>
+                    - SUGGESTION: [nice-to-have improvements]<br><br>
+                    ```python<br>
+                    def get_user(db, user_id):<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;query = f"SELECT * FROM users WHERE id = {user_id}"<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return db.execute(query).first()<br>
+                    ```
+                </div>
+                <p class="fragment small" style="text-align: center;">
+                    <span class="highlight-blue">Role</span> +
+                    <span class="highlight-green">Tech context</span> +
+                    <span class="highlight-yellow">Focus areas</span> +
+                    <span class="highlight-purple">Output format</span> = Excellent prompt
+                </p>
+                <aside class="notes">
+                    This is a production-quality prompt. Notice the layered structure:
+                    First, we set a ROLE (senior code reviewer at fintech) &mdash; this activates relevant knowledge.
+                    Then CONTEXT (Python 3.11, FastAPI, SQLAlchemy, PEP 8) &mdash; this narrows the solution space.
+                    Then FOCUS AREAS (security, error handling, types) &mdash; this prioritizes what to look for.
+                    Finally, OUTPUT FORMAT (CRITICAL/WARNING/SUGGESTION) &mdash; this makes output actionable.
+                    The model will flag the SQL injection vulnerability as CRITICAL, the missing type hints as WARNING,
+                    and maybe suggest using ORM queries as a SUGGESTION. That's exactly what you want from a code review.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 14: STRUCTURED OUTPUT ==================== -->
+            <section>
+                <h2>Rule 3: Use Structured Output Formats</h2>
+                <div class="two-column">
+                    <div>
+                        <h3 style="font-size: 0.9em;">JSON output</h3>
+                        <div class="prompt-box good" style="font-size: 0.5em;">
+                            Extract entities from this text.
+                            Return a JSON object with this schema:<br><br>
+                            {<br>
+                            &nbsp;&nbsp;"people": [{"name": str, "role": str}],<br>
+                            &nbsp;&nbsp;"organizations": [str],<br>
+                            &nbsp;&nbsp;"dates": [{"date": str, "event": str}]<br>
+                            }
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 0.9em;">XML tags for separation</h3>
+                        <div class="prompt-box good" style="font-size: 0.5em;">
+                            Analyze this code and respond using
+                            these tags:<br><br>
+                            &lt;analysis&gt;Your analysis&lt;/analysis&gt;<br>
+                            &lt;fixed_code&gt;Corrected code&lt;/fixed_code&gt;<br>
+                            &lt;explanation&gt;What you changed
+                            and why&lt;/explanation&gt;
+                        </div>
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 0.8em;">
+                    <h3>Why structured output matters:</h3>
+                    <ul style="font-size: 0.7em;">
+                        <li>Easier to <span class="highlight-blue">parse programmatically</span></li>
+                        <li>Reduces <span class="highlight">ambiguity</span> in model responses</li>
+                        <li>Enables <span class="highlight-green">downstream processing</span> (API pipelines)</li>
+                        <li>Many APIs now support <span class="highlight-yellow">forced JSON mode</span></li>
+                    </ul>
+                </div>
+                <aside class="notes">
+                    When building production systems, you need machine-readable output.
+                    JSON is the most common choice because every language can parse it.
+                    XML tags are great when you need to separate different sections of a response &mdash;
+                    Anthropic's Claude documentation actually recommends this approach.
+                    Most modern LLM APIs (OpenAI, Anthropic, Google) now support JSON mode or structured outputs,
+                    which guarantees valid JSON. Always use that in production.
+                    Pro tip: provide the exact schema you expect. Don't just say "return JSON" &mdash;
+                    show the model the keys, types, and nesting you want.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 15: SYSTEM vs USER PROMPTS ==================== -->
+            <section>
+                <h2>System Prompts vs User Prompts</h2>
+                <div class="prompt-box" style="font-size: 0.55em; border-color: #c678dd;">
+                    <div class="role-label role-system">System (persistent instructions):</div>
+                    You are a helpful assistant that specializes in Python code review.<br>
+                    Always respond in this format: ISSUE &rarr; FIX &rarr; EXPLANATION.<br>
+                    Never suggest changes that break backward compatibility.
+                </div>
+                <div class="prompt-box fragment" style="font-size: 0.55em;">
+                    <div class="role-label role-user">User (per-request input):</div>
+                    Review this function:<br>
+                    ```python<br>
+                    def process(data): return [x*2 for x in data if x > 0]<br>
+                    ```
+                </div>
+                <div class="fragment" style="margin-top: 0.5em;">
+                    <table class="compare-table" style="font-size: 0.65em;">
+                        <thead>
+                            <tr><th></th><th>System Prompt</th><th>User Prompt</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>Scope</strong></td><td>Applies to all messages</td><td>Single request</td></tr>
+                            <tr><td><strong>Content</strong></td><td>Role, rules, format, constraints</td><td>Specific task + input data</td></tr>
+                            <tr><td><strong>Analogy</strong></td><td>Job description</td><td>Today's task</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <aside class="notes">
+                    Modern LLM APIs separate system prompts from user prompts. Understanding the difference is critical.
+                    The system prompt sets the stage: who is the model, what rules does it follow, what format to use.
+                    It persists across the conversation. Think of it as the model's job description.
+                    The user prompt is the specific request. It changes with each interaction.
+                    Best practice: put all persistent instructions, format requirements, and constraints in the system prompt.
+                    Put variable content (the actual data to process) in the user prompt.
+                    This separation makes your prompts modular and reusable.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 16: TEMPERATURE AND SAMPLING ==================== -->
+            <section>
+                <h2>Temperature &amp; Sampling Parameters</h2>
+                <div class="stat-row">
+                    <div class="stat-box">
+                        <div class="stat-big" style="font-size: 2em; color: #7ec8e3;">T=0</div>
+                        <div class="stat-label">Deterministic</div>
+                        <p class="small">Code, math, extraction<br>Always pick top token</p>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-big" style="font-size: 2em; color: #e5c07b;">T=0.7</div>
+                        <div class="stat-label">Balanced</div>
+                        <p class="small">General conversation<br>Creative but coherent</p>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-big" style="font-size: 2em; color: #ff6b6b;">T=1.0+</div>
+                        <div class="stat-label">Creative</div>
+                        <p class="small">Brainstorming, writing<br>High variety, more risk</p>
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 0.8em;">
+                    <h3>Other parameters to know:</h3>
+                    <ul style="font-size: 0.7em;">
+                        <li><span class="highlight-blue">top_p</span> (nucleus sampling) &mdash; threshold for cumulative probability</li>
+                        <li><span class="highlight-green">max_tokens</span> &mdash; hard cap on output length</li>
+                        <li><span class="highlight-yellow">stop sequences</span> &mdash; custom tokens that end generation</li>
+                    </ul>
+                </div>
+                <aside class="notes">
+                    Temperature controls randomness. At T=0, the model always picks the highest-probability token.
+                    This is what you want for factual tasks: code generation, data extraction, math.
+                    At T=0.7, there's some randomness &mdash; good for general conversation where you want natural variation.
+                    Above 1.0, the distribution flattens and you get more creative but less reliable output.
+                    Rule of thumb: if there's one correct answer, use T=0. If you want variety, use T=0.7-1.0.
+                    top_p is an alternative to temperature. Using both at non-default values is not recommended.
+                    max_tokens prevents runaway generation. stop sequences are useful for structured output.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 17: SECTION - CHAIN OF THOUGHT ==================== -->
+            <section class="section-title">
+                <h2>Part 4</h2>
+                <h3>Chain-of-Thought Prompting</h3>
+                <p class="small">Wei et al., "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models" (2022)</p>
+                <aside class="notes">
+                    Now we get to one of the most important breakthroughs in prompting research.
+                    Chain-of-Thought fundamentally changed what we thought LLMs could do.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 18: COT BREAKTHROUGH ==================== -->
+            <section>
+                <h2>The Breakthrough</h2>
+                <div class="two-column">
+                    <div>
+                        <h3 style="color: #ff6b6b;">Standard prompting</h3>
+                        <div class="prompt-box bad" style="font-size: 0.55em;">
+                            <div class="role-label role-user">User:</div>
+                            Roger has 5 tennis balls. He buys 2 more cans
+                            of tennis balls. Each can has 3 balls.
+                            How many tennis balls does he have now?
+                        </div>
+                        <div class="prompt-box" style="font-size: 0.55em; border-color: #ff6b6b;">
+                            <div class="role-label role-assistant">Assistant:</div>
+                            The answer is <strong>11</strong>. <span style="color: #ff6b6b;">&cross;</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="color: #98c379;">Chain-of-Thought</h3>
+                        <div class="prompt-box good" style="font-size: 0.55em;">
+                            <div class="role-label role-user">User:</div>
+                            Roger has 5 tennis balls. He buys 2 more cans
+                            of tennis balls. Each can has 3 balls.
+                            How many tennis balls does he have now?<br>
+                            <strong>Let's think step by step.</strong>
+                        </div>
+                        <div class="prompt-box" style="font-size: 0.55em; border-color: #98c379;">
+                            <div class="role-label role-assistant">Assistant:</div>
+                            Roger starts with 5 balls.<br>
+                            He buys 2 cans &times; 3 balls = 6 balls.<br>
+                            5 + 6 = <strong>11</strong>. <span style="color: #98c379;">&check;</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="fragment" style="font-size: 0.75em; text-align: center; margin-top: 0.5em;">
+                    Adding <span class="highlight">"Let's think step by step"</span> improved accuracy on
+                    GSM8K math benchmark from <span class="highlight">17.7%</span> to <span class="highlight-green">78.7%</span>.
+                </p>
+                <p class="fragment small" style="text-align: center;">
+                    Kojima et al. (2022): "Large Language Models are Zero-Shot Reasoners"
+                </p>
+                <aside class="notes">
+                    This is the famous example from the Chain-of-Thought paper. In this simple case both get 11,
+                    but the reasoning trace matters enormously for harder problems.
+                    The key insight: when you ask the model to show its work, it actually reasons better.
+                    It's not just producing prettier output &mdash; it makes fewer errors on multi-step problems.
+                    The "Let's think step by step" phrase was shown by Kojima et al. to be a remarkably effective
+                    zero-shot CoT trigger. On GSM8K (grade school math), accuracy went from 17.7% to 78.7%.
+                    That's a 4x improvement from six words!
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 19: ZERO-SHOT vs FEW-SHOT CoT ==================== -->
+            <section>
+                <h2>Zero-Shot CoT vs Few-Shot CoT</h2>
+                <div class="two-column">
+                    <div>
+                        <h3>Zero-Shot CoT</h3>
+                        <div class="prompt-box" style="font-size: 0.55em; border-color: #7ec8e3;">
+                            [Problem statement]<br><br>
+                            <strong>Let's think step by step.</strong>
+                        </div>
+                        <ul style="font-size: 0.65em; margin-top: 0.5em;">
+                            <li class="fragment"><span class="highlight-green">Simple</span> to use</li>
+                            <li class="fragment">No examples needed</li>
+                            <li class="fragment">Works well for <span class="highlight-blue">common reasoning</span></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Few-Shot CoT</h3>
+                        <div class="prompt-box" style="font-size: 0.55em; border-color: #e5c07b;">
+                            Q: [Example problem 1]<br>
+                            A: [Step-by-step solution 1]<br><br>
+                            Q: [Example problem 2]<br>
+                            A: [Step-by-step solution 2]<br><br>
+                            Q: [Actual problem]<br>
+                            A:
+                        </div>
+                        <ul style="font-size: 0.65em; margin-top: 0.5em;">
+                            <li class="fragment"><span class="highlight-yellow">More reliable</span> for complex tasks</li>
+                            <li class="fragment">Controls reasoning <span class="highlight-purple">style</span></li>
+                            <li class="fragment">Best for <span class="highlight">domain-specific</span> reasoning</li>
+                        </ul>
+                    </div>
+                </div>
+                <aside class="notes">
+                    There are two flavors of Chain-of-Thought.
+                    Zero-shot CoT is the easy one: just append "Let's think step by step" to your prompt.
+                    Few-shot CoT is more powerful: you provide examples that include the reasoning steps.
+                    The model then mimics your reasoning style. This is crucial for domain-specific tasks
+                    where the reasoning pattern is not obvious from the question alone.
+                    For example, if you're doing legal analysis, you might show examples of how to reason
+                    through statute interpretation. The model will follow that specific reasoning pattern.
+                    In practice, zero-shot CoT is your default. Switch to few-shot CoT when you need
+                    more control over the reasoning process.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 20: CoT EXAMPLES ==================== -->
+            <section>
+                <h2>CoT in Practice: Coding Example</h2>
+                <div class="prompt-box" style="font-size: 0.5em;">
+                    <div class="role-label role-user">User:</div>
+                    What is the time complexity of this function? <strong>Think step by step.</strong><br><br>
+                    ```python<br>
+                    def find_pairs(arr, target):<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;seen = set()<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;pairs = []<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;for num in arr:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;complement = target - num<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if complement in seen:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pairs.append((complement, num))<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;seen.add(num)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return pairs<br>
+                    ```
+                </div>
+                <div class="fragment">
+                    <div class="prompt-box" style="font-size: 0.5em; border-color: #98c379;">
+                        <div class="role-label role-assistant">Assistant:</div>
+                        <strong>Step 1:</strong> Identify the loop &rarr; one `for` loop over `arr` of length n.<br>
+                        <strong>Step 2:</strong> Inside the loop: `complement = target - num` is O(1).<br>
+                        <strong>Step 3:</strong> `complement in seen` &rarr; set lookup is O(1) average.<br>
+                        <strong>Step 4:</strong> `pairs.append(...)` is amortized O(1). `seen.add(num)` is O(1).<br>
+                        <strong>Step 5:</strong> All operations inside the loop are O(1), loop runs n times.<br>
+                        <strong>Answer: O(n)</strong> time complexity, O(n) space for the set.
+                    </div>
+                </div>
+                <aside class="notes">
+                    Here's a practical software engineering example. The model breaks down the complexity analysis
+                    into discrete steps, examining each operation inside the loop.
+                    Without CoT, models sometimes just guess "O(n^2)" because they see a list-searching pattern.
+                    With CoT, the model correctly identifies that set operations are O(1) on average,
+                    leading to the correct O(n) analysis.
+                    This is the kind of prompt you'd use in code review, interview prep, or teaching.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 21: WHY CoT WORKS ==================== -->
+            <section>
+                <h2>Why Does CoT Work?</h2>
+                <div class="flow" style="margin: 1em 0;">
+                    <div class="step">Complex Problem</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step active">Decompose</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step">Sub-problem 1</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step">Sub-problem 2</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="border-color: #98c379; background: rgba(152, 195, 121, 0.15);">Answer</div>
+                </div>
+                <ul style="font-size: 0.8em;">
+                    <li class="fragment"><span class="highlight-blue">Decomposition</span> &mdash; breaks multi-step problems into single-step ones</li>
+                    <li class="fragment"><span class="highlight-green">Working memory</span> &mdash; intermediate results are written in text (the context window is the scratchpad)</li>
+                    <li class="fragment"><span class="highlight-yellow">Error localization</span> &mdash; you can see <em>where</em> reasoning goes wrong</li>
+                    <li class="fragment"><span class="highlight">Autoregressive help</span> &mdash; each generated token conditions the next, building up correct reasoning</li>
+                </ul>
+                <p class="fragment small" style="text-align: center; margin-top: 0.5em;">
+                    Key limitation: CoT helps most with <strong>multi-step reasoning</strong>.
+                    For simple factual recall, it adds unnecessary tokens.
+                </p>
+                <aside class="notes">
+                    The theoretical explanation has several parts.
+                    First, decomposition: LLMs struggle with problems that require multiple reasoning steps in one shot.
+                    CoT forces the model to tackle one step at a time.
+                    Second, working memory: the model's only "memory" during generation is the context window.
+                    By writing intermediate steps as text, the model can refer back to earlier results.
+                    Think of it as the model doing scratch work on paper instead of mental math.
+                    Third, the autoregressive nature of LLMs means each token is conditioned on all previous tokens.
+                    When the model writes "Step 1: X = 5", that text helps it correctly generate Step 2.
+                    Important caveat: CoT is most useful for multi-step reasoning. For simple questions like
+                    "What is the capital of France?", CoT just wastes tokens.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 22: SECTION - ADVANCED ==================== -->
+            <section class="section-title">
+                <h2>Part 5</h2>
+                <h3>Advanced Prompting Techniques</h3>
+                <aside class="notes">
+                    Let's look at techniques that build on CoT to push the boundaries even further.
+                    These are research-driven approaches that are increasingly used in production.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 23: SELF-CONSISTENCY ==================== -->
+            <section>
+                <h2>Self-Consistency</h2>
+                <p class="small">Wang et al., "Self-Consistency Improves Chain of Thought Reasoning" (2022)</p>
+                <div class="flow" style="margin: 0.8em 0;">
+                    <div class="step">Same Prompt</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="border-color: #e5c07b;">
+                        Sample N paths<br>
+                        <span style="font-size: 0.7em;">(T &gt; 0)</span>
+                    </div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="border-color: #c678dd;">
+                        Path 1: Answer A<br>
+                        Path 2: Answer A<br>
+                        Path 3: Answer B
+                    </div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="border-color: #98c379; background: rgba(152, 195, 121, 0.15);">
+                        Majority vote<br>
+                        <strong>Answer A</strong>
+                    </div>
+                </div>
+                <div class="fragment">
+                    <h3>Key idea:</h3>
+                    <ul style="font-size: 0.75em;">
+                        <li>Run the <span class="highlight-blue">same CoT prompt</span> multiple times with T &gt; 0</li>
+                        <li>Different reasoning paths may reach <span class="highlight-green">different answers</span></li>
+                        <li>Take the <span class="highlight">majority vote</span> &mdash; the most common answer wins</li>
+                        <li>Improves accuracy by <span class="highlight-yellow">5-15%</span> over single-path CoT</li>
+                    </ul>
+                </div>
+                <p class="fragment small" style="text-align: center;">
+                    Trade-off: N&times; more API calls = N&times; cost. Typical N = 5&ndash;10.
+                </p>
+                <aside class="notes">
+                    Self-Consistency is beautifully simple. Instead of generating one chain of thought, generate several.
+                    Use temperature > 0 so each path is different. Then take the majority vote on the final answer.
+                    The intuition: if multiple independent reasoning paths agree on an answer, it's likely correct.
+                    It's like asking 5 experts and going with the consensus.
+                    Wang et al. showed 5-15% improvement over single-path CoT on math and reasoning benchmarks.
+                    The downside is cost: 5 samples means 5x the API cost. So use it for high-stakes decisions
+                    where accuracy matters more than latency and cost.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 24: TREE OF THOUGHTS ==================== -->
+            <section>
+                <h2>Tree of Thoughts (ToT)</h2>
+                <p class="small">Yao et al., "Tree of Thoughts: Deliberate Problem Solving with LLMs" (2023)</p>
+                <div class="two-column" style="margin-top: 0.5em;">
+                    <div style="text-align: center;">
+                        <p style="font-size: 0.7em; color: #93a1a1;">Chain-of-Thought (linear)</p>
+                        <div class="flow" style="flex-direction: column; gap: 0.2em;">
+                            <div class="step" style="width: 60%; margin: 0 auto;">Thought 1</div>
+                            <div style="color: #7ec8e3;">&darr;</div>
+                            <div class="step" style="width: 60%; margin: 0 auto;">Thought 2</div>
+                            <div style="color: #7ec8e3;">&darr;</div>
+                            <div class="step" style="width: 60%; margin: 0 auto;">Thought 3</div>
+                            <div style="color: #7ec8e3;">&darr;</div>
+                            <div class="step" style="width: 60%; margin: 0 auto; border-color: #98c379;">Answer</div>
+                        </div>
+                    </div>
+                    <div style="text-align: center;">
+                        <p style="font-size: 0.7em; color: #93a1a1;">Tree of Thoughts (branching)</p>
+                        <div style="font-size: 0.7em; line-height: 1.8;">
+                            <div style="text-align: center;">
+                                <span style="border: 2px solid #7ec8e3; border-radius: 6px; padding: 2px 10px;">Start</span>
+                            </div>
+                            <div style="text-align: center; color: #7ec8e3;">&swarr; &nbsp;&nbsp;&nbsp;&darr;&nbsp;&nbsp;&nbsp; &searr;</div>
+                            <div style="display: flex; justify-content: space-around;">
+                                <span style="border: 2px solid #ff6b6b; border-radius: 6px; padding: 2px 8px; opacity: 0.5;">A (prune)</span>
+                                <span style="border: 2px solid #e5c07b; border-radius: 6px; padding: 2px 8px;">B (explore)</span>
+                                <span style="border: 2px solid #ff6b6b; border-radius: 6px; padding: 2px 8px; opacity: 0.5;">C (prune)</span>
+                            </div>
+                            <div style="text-align: center; color: #7ec8e3;">&nbsp;&nbsp;&nbsp;&swarr; &nbsp;&searr;</div>
+                            <div style="display: flex; justify-content: center; gap: 2em;">
+                                <span style="border: 2px solid #e5c07b; border-radius: 6px; padding: 2px 8px;">B1</span>
+                                <span style="border: 2px solid #98c379; border-radius: 6px; padding: 2px 8px; background: rgba(152, 195, 121, 0.15);">B2 &check;</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="fragment" style="font-size: 0.65em; margin-top: 0.5em;">
+                    <li><span class="highlight-blue">Generate</span> multiple thoughts at each step</li>
+                    <li><span class="highlight-yellow">Evaluate</span> each thought (self-evaluation or heuristic)</li>
+                    <li><span class="highlight">Prune</span> unpromising branches, <span class="highlight-green">explore</span> promising ones</li>
+                </ul>
+                <aside class="notes">
+                    Tree of Thoughts extends CoT from a single linear chain to a branching tree.
+                    At each reasoning step, the model generates multiple possible next thoughts.
+                    Then it evaluates which branches are promising and prunes the rest.
+                    This is essentially search (BFS or DFS) over the reasoning space, using the LLM
+                    both as the generator and the evaluator.
+                    ToT is especially powerful for planning, puzzle-solving, and creative tasks
+                    where the first approach might not be the best.
+                    The downside: it requires many more API calls (one per node in the tree).
+                    In practice, ToT is used for high-value offline tasks, not real-time applications.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 25: REACT ==================== -->
+            <section>
+                <h2>ReAct: Reasoning + Acting</h2>
+                <p class="small">Yao et al., "ReAct: Synergizing Reasoning and Acting in Language Models" (2022)</p>
+                <div class="prompt-box" style="font-size: 0.5em; margin-top: 0.5em;">
+                    <span class="highlight-blue"><strong>Thought:</strong></span> I need to find the population of France and Germany to compare them.<br>
+                    <span class="highlight-green"><strong>Action:</strong></span> search("population of France 2025")<br>
+                    <span class="highlight-yellow"><strong>Observation:</strong></span> France population: ~68.5 million (2025 est.)<br>
+                    <span class="highlight-blue"><strong>Thought:</strong></span> Now I need Germany's population.<br>
+                    <span class="highlight-green"><strong>Action:</strong></span> search("population of Germany 2025")<br>
+                    <span class="highlight-yellow"><strong>Observation:</strong></span> Germany population: ~84.5 million (2025 est.)<br>
+                    <span class="highlight-blue"><strong>Thought:</strong></span> Germany (84.5M) has a larger population than France (68.5M) by about 16M.<br>
+                    <span class="highlight-green"><strong>Action:</strong></span> finish("Germany has a larger population than France: ~84.5M vs ~68.5M.")
+                </div>
+                <div class="fragment" style="margin-top: 0.5em;">
+                    <h3>The pattern: <span class="highlight-blue">Thought</span> &rarr; <span class="highlight-green">Action</span> &rarr; <span class="highlight-yellow">Observation</span> &rarr; repeat</h3>
+                    <ul style="font-size: 0.7em;">
+                        <li>Combines <span class="highlight-blue">reasoning</span> (CoT) with <span class="highlight-green">tool use</span></li>
+                        <li>Foundation of <span class="highlight">AI agents</span> (LangChain, AutoGPT, etc.)</li>
+                    </ul>
+                </div>
+                <aside class="notes">
+                    ReAct is the bridge between prompting and AI agents.
+                    The key innovation: interleave reasoning (thinking about what to do) with acting (actually doing it).
+                    The Thought-Action-Observation loop lets the model plan, execute, observe results, and adjust.
+                    This is the foundation of every modern AI agent framework: LangChain, LlamaIndex, AutoGPT, CrewAI.
+                    When you hear "tool use" or "function calling" in LLM APIs, it's implementing ReAct under the hood.
+                    The LLM decides WHICH tool to call and with WHAT arguments, observes the result,
+                    then decides what to do next. This is extremely powerful and is the basis of
+                    what we'll work with in the next session on Claude Code and MCP.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 26: PROMPT CHAINING ==================== -->
+            <section>
+                <h2>Prompt Chaining</h2>
+                <p style="font-size: 0.85em;">Break complex tasks into a <span class="highlight-blue">pipeline</span> of simpler prompts.</p>
+                <div class="flow" style="margin: 1em 0;">
+                    <div class="step">
+                        <strong>Step 1</strong><br>
+                        <span style="font-size: 0.8em;">Extract key facts</span>
+                    </div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step">
+                        <strong>Step 2</strong><br>
+                        <span style="font-size: 0.8em;">Analyze &amp; reason</span>
+                    </div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step">
+                        <strong>Step 3</strong><br>
+                        <span style="font-size: 0.8em;">Format output</span>
+                    </div>
+                </div>
+                <div class="fragment">
+                    <h3>Example: Code review pipeline</h3>
+                    <div style="display: flex; gap: 0.5em; font-size: 0.6em;">
+                        <div class="technique-card" style="flex: 1;">
+                            <h4>Prompt 1</h4>
+                            <p>"List all functions in this code with their signatures and purpose."</p>
+                        </div>
+                        <div style="font-size: 2em; color: #7ec8e3; align-self: center;">&rarr;</div>
+                        <div class="technique-card" style="flex: 1;">
+                            <h4>Prompt 2</h4>
+                            <p>"Given these functions, identify security issues, bugs, and anti-patterns."</p>
+                        </div>
+                        <div style="font-size: 2em; color: #7ec8e3; align-self: center;">&rarr;</div>
+                        <div class="technique-card" style="flex: 1;">
+                            <h4>Prompt 3</h4>
+                            <p>"Generate a code review report with severity ratings and fix suggestions."</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="fragment small" style="text-align: center; margin-top: 0.3em;">
+                    Each prompt is simple and focused. The output of one becomes the input of the next.
+                </p>
+                <aside class="notes">
+                    Prompt chaining is the most practical advanced technique for production systems.
+                    Instead of writing one mega-prompt that tries to do everything, break it into steps.
+                    Each step gets a focused prompt and produces intermediate output that feeds the next step.
+                    Benefits: each prompt is simpler and more reliable, you can test and debug each step independently,
+                    and you can use different models or temperatures for different steps.
+                    For example, use a cheap fast model for extraction in step 1, and a powerful model for analysis in step 2.
+                    This is essentially software engineering applied to prompting: decomposition and modularity.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 27: TECHNIQUES COMPARISON ==================== -->
+            <section>
+                <h2>Techniques at a Glance</h2>
+                <table class="compare-table" style="font-size: 0.55em;">
+                    <thead>
+                        <tr>
+                            <th>Technique</th>
+                            <th>Complexity</th>
+                            <th>Cost</th>
+                            <th>Best For</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="highlight-blue">Zero-shot</span></td>
+                            <td>Low</td>
+                            <td>1x</td>
+                            <td>Simple, well-defined tasks</td>
+                        </tr>
+                        <tr>
+                            <td><span class="highlight-green">Few-shot</span></td>
+                            <td>Low-Medium</td>
+                            <td>1x (more tokens)</td>
+                            <td>Pattern matching, extraction</td>
+                        </tr>
+                        <tr>
+                            <td><span class="highlight-yellow">CoT</span></td>
+                            <td>Low</td>
+                            <td>1x (more output)</td>
+                            <td>Math, logic, multi-step reasoning</td>
+                        </tr>
+                        <tr>
+                            <td><span class="highlight-purple">Self-Consistency</span></td>
+                            <td>Medium</td>
+                            <td>5-10x</td>
+                            <td>High-stakes decisions, math</td>
+                        </tr>
+                        <tr>
+                            <td><span class="highlight">Tree of Thoughts</span></td>
+                            <td>High</td>
+                            <td>10-50x</td>
+                            <td>Planning, puzzles, creative tasks</td>
+                        </tr>
+                        <tr>
+                            <td><span class="highlight-blue">ReAct</span></td>
+                            <td>High</td>
+                            <td>Variable</td>
+                            <td>Tasks requiring external tools/data</td>
+                        </tr>
+                        <tr>
+                            <td><span class="highlight-green">Prompt Chaining</span></td>
+                            <td>Medium</td>
+                            <td>2-5x</td>
+                            <td>Complex multi-stage workflows</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="fragment small" style="text-align: center; margin-top: 0.5em;">
+                    Start simple (zero-shot), add complexity only when needed. <span class="highlight">Simplest effective technique wins.</span>
+                </p>
+                <aside class="notes">
+                    Here's your decision framework. Always start with zero-shot. If that doesn't work, try few-shot.
+                    If reasoning quality is the issue, add CoT. If reliability matters, use self-consistency.
+                    ToT and ReAct are for specialized use cases.
+                    The guiding principle: use the simplest technique that achieves your accuracy target.
+                    More complex techniques cost more in API calls, latency, and code complexity.
+                    Prompt chaining is often the sweet spot for production systems: moderate cost,
+                    good reliability, and easy to debug.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 28: SECTION - PITFALLS ==================== -->
+            <section class="section-title">
+                <h2>Part 6</h2>
+                <h3>Evaluation and Pitfalls</h3>
+                <aside class="notes">
+                    Before we wrap up, let's talk about what can go wrong.
+                    These are the failure modes every engineer needs to understand.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 29: HALLUCINATION ==================== -->
+            <section>
+                <h2>Pitfall 1: Hallucination</h2>
+                <div class="pitfall-box">
+                    <h4>The model generates confident, fluent, but factually incorrect text.</h4>
+                    <p>LLMs are trained to produce <em>plausible</em> text, not <em>truthful</em> text.</p>
+                </div>
+                <div class="fragment two-column" style="margin-top: 0.8em; font-size: 0.75em;">
+                    <div>
+                        <h3 style="color: #ff6b6b;">Common hallucination types</h3>
+                        <ul>
+                            <li>Fabricated citations / papers</li>
+                            <li>Incorrect API signatures</li>
+                            <li>Made-up statistics</li>
+                            <li>Plausible but wrong code</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="color: #98c379;">Mitigation strategies</h3>
+                        <ul>
+                            <li><span class="highlight-green">RAG</span>: ground responses in real documents</li>
+                            <li><span class="highlight-blue">Ask for sources</span>: "cite your references"</li>
+                            <li><span class="highlight-yellow">Constrain scope</span>: "only use info from the provided text"</li>
+                            <li><span class="highlight-purple">Verification</span>: automated fact-checking pipelines</li>
+                        </ul>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Hallucination is the number one risk when using LLMs in production.
+                    The model has no notion of truth; it generates what's statistically likely given the prompt.
+                    If you ask "list 5 papers on X", it may invent paper titles, authors, and DOIs that look real but aren't.
+                    Mitigation: always ground the model in real data when accuracy matters.
+                    RAG (Retrieval-Augmented Generation) is the standard approach: retrieve relevant documents first,
+                    then ask the model to answer based on those documents.
+                    Also: tell the model "say I don't know if you're not sure". This helps but doesn't eliminate the problem.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 30: SENSITIVITY AND BIAS ==================== -->
+            <section>
+                <h2>Pitfall 2: Sensitivity &amp; Bias</h2>
+                <div class="two-column">
+                    <div>
+                        <h3 style="color: #e5c07b;">Prompt Sensitivity</h3>
+                        <div style="font-size: 0.65em;">
+                            <div class="prompt-box" style="font-size: 0.85em; border-color: #e5c07b;">
+                                "Is this review positive?"<br>
+                                &rarr; <span class="highlight-green">Yes (90% confidence)</span>
+                            </div>
+                            <div class="prompt-box" style="font-size: 0.85em; border-color: #e5c07b; margin-top: 0.5em;">
+                                "Is this review negative?"<br>
+                                &rarr; <span class="highlight">Yes (75% confidence)</span>
+                            </div>
+                            <p class="fragment small">Same review! Different framing &rarr; different answer.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="color: #c678dd;">Bias in Prompting</h3>
+                        <ul style="font-size: 0.65em;">
+                            <li class="fragment"><span class="highlight-purple">Anchoring</span> &mdash; model follows the framing you set</li>
+                            <li class="fragment"><span class="highlight-blue">Example bias</span> &mdash; few-shot examples skew output distribution</li>
+                            <li class="fragment"><span class="highlight">Sycophancy</span> &mdash; model agrees with your stated opinion</li>
+                            <li class="fragment"><span class="highlight-green">Position bias</span> &mdash; in multiple-choice, preference for certain positions</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 0.5em;">
+                    <p style="font-size: 0.75em; text-align: center;">
+                        <span class="highlight-yellow">Best practice:</span> Test prompts with diverse inputs.
+                        Use neutral phrasing. Balance few-shot examples across categories.
+                    </p>
+                </div>
+                <aside class="notes">
+                    Two related issues that trip up even experienced practitioners.
+                    Prompt sensitivity: small changes in wording can flip the model's answer.
+                    "Is this positive?" and "Is this negative?" can get different answers for the same input.
+                    This is because the model is influenced by the framing of the question.
+                    Bias: LLMs inherit biases from training data, and prompts can amplify or mitigate them.
+                    Sycophancy is particularly sneaky: if you say "I think X", the model is more likely to agree.
+                    Always test prompts with diverse inputs and edge cases. Use neutral phrasing for evaluations.
+                    If you're doing classification with few-shot examples, make sure to balance examples across classes.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 31: PROMPT TEMPLATE ==================== -->
+            <section class="discussion-slide">
+                <h2>Your Prompting Toolkit</h2>
+                <p style="font-size: 0.75em;">A universal template you can adapt for any task:</p>
+                <div class="prompt-box" style="font-size: 0.5em; border-color: #7ec8e3;">
+                    <span class="highlight-purple"><strong>[SYSTEM]</strong></span> You are a {role} with expertise in {domain}.<br>
+                    Follow these rules: {rules}.<br><br>
+                    <span class="highlight-blue"><strong>[CONTEXT]</strong></span> Background: {relevant context}<br>
+                    Constraints: {limitations and requirements}<br><br>
+                    <span class="highlight-yellow"><strong>[EXAMPLES]</strong></span> (optional)<br>
+                    Input: {example_input_1}<br>
+                    Output: {example_output_1}<br><br>
+                    <span class="highlight-green"><strong>[TASK]</strong></span> {specific instruction}<br><br>
+                    <span class="highlight"><strong>[FORMAT]</strong></span> Respond in the following format:<br>
+                    {output_schema_or_template}<br><br>
+                    <span style="color: #93a1a1;"><strong>[REASONING]</strong></span> (optional) Think step by step before answering.
+                </div>
+                <p class="fragment small" style="text-align: center; margin-top: 0.3em;">
+                    Not every prompt needs all sections. Start minimal, add sections when output quality is insufficient.
+                </p>
+                <aside class="notes">
+                    Here's a universal template that covers everything we discussed today.
+                    SYSTEM sets the role and rules. CONTEXT provides background.
+                    EXAMPLES teach the pattern (few-shot). TASK is the actual instruction.
+                    FORMAT specifies output structure. REASONING triggers CoT.
+                    You don't need all sections every time. Start with just TASK.
+                    If the output isn't good enough, add SYSTEM for role-setting.
+                    If the format is wrong, add FORMAT. If reasoning is off, add REASONING.
+                    Think of it as progressive enhancement: add complexity only as needed.
+                    I encourage you to save this template and adapt it for your own projects.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 32: KEY PAPERS ==================== -->
+            <section>
+                <h2>Key References</h2>
+                <ul style="font-size: 0.6em; line-height: 1.8;">
+                    <li class="fragment"><span class="highlight-blue">Brown et al. (2020)</span> &mdash; "Language Models are Few-Shot Learners" (GPT-3, In-Context Learning)</li>
+                    <li class="fragment"><span class="highlight-green">Wei et al. (2022)</span> &mdash; "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models"</li>
+                    <li class="fragment"><span class="highlight-yellow">Kojima et al. (2022)</span> &mdash; "Large Language Models are Zero-Shot Reasoners" (zero-shot CoT)</li>
+                    <li class="fragment"><span class="highlight-purple">Wang et al. (2022)</span> &mdash; "Self-Consistency Improves Chain of Thought Reasoning"</li>
+                    <li class="fragment"><span class="highlight">Yao et al. (2023)</span> &mdash; "Tree of Thoughts: Deliberate Problem Solving with LLMs"</li>
+                    <li class="fragment"><span class="highlight-blue">Yao et al. (2022)</span> &mdash; "ReAct: Synergizing Reasoning and Acting in Language Models"</li>
+                    <li class="fragment"><span class="highlight-green">Liu et al. (2022)</span> &mdash; "What Makes Good In-Context Examples for GPT-3?"</li>
+                </ul>
+                <p class="fragment small" style="text-align: center; margin-top: 0.5em;">
+                    Recommended survey: "A Survey on In-context Learning" (Dong et al., 2024)
+                </p>
+                <aside class="notes">
+                    These are the foundational papers for everything we covered today.
+                    If you read one paper, make it Wei et al. on Chain-of-Thought &mdash; it's the most impactful.
+                    The Dong et al. survey from 2024 is an excellent overview of the entire field of in-context learning.
+                    All of these are freely available on arXiv.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 33: WRAP-UP ==================== -->
+            <section>
+                <h2>Key Takeaways</h2>
+                <ol style="font-size: 0.8em;">
+                    <li class="fragment">Prompting is a <span class="highlight">new programming paradigm</span> &mdash; natural language as code</li>
+                    <li class="fragment"><span class="highlight-blue">Zero-shot</span> first, <span class="highlight-green">few-shot</span> when needed &mdash; always start simple</li>
+                    <li class="fragment">Be <span class="highlight-yellow">specific</span>: role + context + format + constraints</li>
+                    <li class="fragment"><span class="highlight-purple">Chain-of-Thought</span> unlocks multi-step reasoning ("think step by step")</li>
+                    <li class="fragment">Advanced techniques (Self-Consistency, ToT, ReAct) trade <span class="highlight">cost for accuracy</span></li>
+                    <li class="fragment">Always validate: beware of <span class="highlight">hallucination</span>, sensitivity, and bias</li>
+                </ol>
+                <div class="fragment" style="margin-top: 1em; padding: 0.5em; border: 2px solid #98c379; border-radius: 8px; text-align: center;">
+                    <p style="font-size: 0.85em; margin: 0;">
+                        <span class="highlight-green">Next up (Session 2):</span> Hands-on with Claude Code &amp; MCP<br>
+                        <span class="small">We'll apply these prompting techniques in practice with real AI tools.</span>
+                    </p>
+                </div>
+                <aside class="notes">
+                    Let's recap the key takeaways from this session.
+                    First: prompting is genuinely a new way of programming. Take it seriously as a skill.
+                    Second: always start simple. Zero-shot is your baseline. Add complexity incrementally.
+                    Third: specificity is the single most impactful improvement you can make.
+                    Fourth: CoT is the most useful advanced technique for everyday work.
+                    Fifth: understand the cost/accuracy trade-off of advanced techniques.
+                    Sixth: never trust LLM output blindly. Always validate, especially in production.
+                    After our break, we move to Session 2 where we'll use Claude Code and MCP to put
+                    all of these prompting principles into practice. Take a short break and come back ready to code.
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            controlsTutorial: false,
+            progress: true,
+            center: true,
+            plugins: [RevealHighlight, RevealNotes]
+        });
+    </script>
+</body>
+</html>

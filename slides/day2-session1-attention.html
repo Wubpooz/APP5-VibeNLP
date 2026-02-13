@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 2 Session 1: Attention Mechanisms - TAL Course</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/moon.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --red: #ff6b6b;
+            --blue: #7ec8e3;
+            --green: #98c379;
+            --grey: #93a1a1;
+            --bg: #002b36;
+            --yellow: #e5c07b;
+            --purple: #c678dd;
+        }
+
+        .reveal {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3 {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            text-transform: none;
+        }
+
+        .highlight { color: var(--red) !important; }
+        .highlight-blue { color: var(--blue) !important; }
+        .highlight-green { color: var(--green) !important; }
+        .highlight-yellow { color: var(--yellow) !important; }
+        .highlight-purple { color: var(--purple) !important; }
+
+        .small { font-size: 0.6em; }
+
+        .section-title {
+            color: var(--blue) !important;
+            font-size: 1.8em !important;
+            border-bottom: 3px solid var(--red);
+            padding-bottom: 20px;
+        }
+
+        .two-column {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .two-column > div {
+            flex: 1;
+        }
+
+        .stat-big {
+            font-size: 2.5em;
+            color: var(--red);
+            font-weight: bold;
+        }
+
+        .discussion-slide {
+            background: linear-gradient(135deg, rgba(126, 200, 227, 0.1), rgba(255, 107, 107, 0.1)) !important;
+        }
+
+        .quote-slide {
+            font-style: italic;
+            border-left: 4px solid var(--blue);
+            padding-left: 30px;
+            text-align: left;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .era {
+            text-align: center;
+            padding: 15px 20px;
+            border-radius: 8px;
+            background: rgba(126, 200, 227, 0.15);
+            border: 1px solid var(--blue);
+            min-width: 140px;
+        }
+
+        .era .year {
+            font-size: 0.7em;
+            color: var(--grey);
+            margin-bottom: 5px;
+        }
+
+        .era .label {
+            font-size: 0.9em;
+            color: var(--blue);
+            font-weight: bold;
+        }
+
+        /* Architecture diagram styles */
+        .diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin: 20px auto;
+        }
+
+        .diagram-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .box {
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 0.65em;
+            font-weight: bold;
+            text-align: center;
+            min-width: 80px;
+            border: 2px solid;
+        }
+
+        .box-red {
+            background: rgba(255, 107, 107, 0.15);
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        .box-blue {
+            background: rgba(126, 200, 227, 0.15);
+            border-color: var(--blue);
+            color: var(--blue);
+        }
+
+        .box-green {
+            background: rgba(152, 195, 121, 0.15);
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .box-yellow {
+            background: rgba(229, 192, 123, 0.15);
+            border-color: var(--yellow);
+            color: var(--yellow);
+        }
+
+        .box-purple {
+            background: rgba(198, 120, 221, 0.15);
+            border-color: var(--purple);
+            color: var(--purple);
+        }
+
+        .box-grey {
+            background: rgba(147, 161, 161, 0.15);
+            border-color: var(--grey);
+            color: var(--grey);
+        }
+
+        .arrow-down {
+            font-size: 1.2em;
+            color: var(--grey);
+        }
+
+        .arrow-right {
+            font-size: 1.2em;
+            color: var(--grey);
+        }
+
+        .formula {
+            background: rgba(147, 161, 161, 0.1);
+            border: 1px solid var(--grey);
+            border-radius: 8px;
+            padding: 15px 25px;
+            margin: 15px auto;
+            font-size: 1.1em;
+            display: inline-block;
+        }
+
+        .formula-large {
+            font-size: 1.3em;
+            padding: 20px 35px;
+        }
+
+        .attention-grid {
+            display: grid;
+            gap: 2px;
+            margin: 15px auto;
+            width: fit-content;
+        }
+
+        .attention-cell {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.5em;
+            font-weight: bold;
+            border-radius: 3px;
+        }
+
+        .paper-ref {
+            font-size: 0.55em;
+            color: var(--grey);
+            margin-top: 20px;
+            font-style: italic;
+        }
+
+        .comparison-table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            font-size: 0.65em;
+        }
+
+        .comparison-table th {
+            background: rgba(126, 200, 227, 0.2);
+            color: var(--blue);
+            padding: 10px 15px;
+            border: 1px solid rgba(126, 200, 227, 0.3);
+        }
+
+        .comparison-table td {
+            padding: 10px 15px;
+            border: 1px solid rgba(147, 161, 161, 0.2);
+            text-align: center;
+        }
+
+        .step-list {
+            text-align: left;
+            font-size: 0.75em;
+            line-height: 1.8;
+        }
+
+        .step-list li {
+            margin-bottom: 8px;
+        }
+
+        .big-concept {
+            font-size: 1.6em;
+            color: var(--yellow);
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .analogy-box {
+            background: rgba(229, 192, 123, 0.1);
+            border: 2px solid var(--yellow);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px auto;
+            max-width: 80%;
+            text-align: left;
+            font-size: 0.75em;
+        }
+
+        .analogy-box .analogy-title {
+            color: var(--yellow);
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .flow-horizontal {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 15px auto;
+        }
+
+        .weight-bar {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin: 5px 0;
+            font-size: 0.65em;
+        }
+
+        .weight-bar .bar {
+            height: 20px;
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
+        .key-takeaway {
+            background: rgba(255, 107, 107, 0.1);
+            border-left: 4px solid var(--red);
+            padding: 15px 20px;
+            margin: 15px auto;
+            text-align: left;
+            font-size: 0.8em;
+            max-width: 85%;
+        }
+
+        .slide-number {
+            font-size: 0.5em;
+            color: var(--grey);
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 1: Title -->
+            <!-- ============================================================ -->
+            <section>
+                <h2 style="color: var(--blue);">Attention Mechanisms</h2>
+                <h4 style="color: var(--grey);">From RNN Bottlenecks to the Foundation of Transformers</h4>
+                <br>
+                <p style="font-size: 0.7em; color: var(--grey);">
+                    TAL Course &mdash; Day 2, Session 1<br>
+                    March 9, 2026 &bull; 13:30 &ndash; 15:30
+                </p>
+                <p style="font-size: 0.6em; color: var(--grey);">Instructor: ZHANG Zheng</p>
+                <aside class="notes">
+                    Welcome to Day 2! Today we tackle one of the most important ideas in modern NLP: attention mechanisms.
+                    This single concept is the foundation of every large language model you hear about today, from ChatGPT to Claude.
+                    By the end of this session, you will understand WHY attention was invented, HOW it works mathematically,
+                    and WHY it changed everything. Let's start by understanding the problem it solved.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 2: Session Roadmap -->
+            <!-- ============================================================ -->
+            <section>
+                <h3 style="color: var(--blue);">Session Roadmap</h3>
+                <div style="text-align: left; max-width: 80%; margin: 0 auto; font-size: 0.75em; line-height: 2;">
+                    <p class="fragment"><span class="highlight">Part 1</span> &mdash; Why RNNs Hit a Wall (30 min)</p>
+                    <p class="fragment"><span class="highlight-blue">Part 2</span> &mdash; The Attention Idea: Bahdanau &amp; Luong (30 min)</p>
+                    <p class="fragment"><span class="highlight-green">Part 3</span> &mdash; Self-Attention &amp; Query-Key-Value (30 min)</p>
+                    <p class="fragment"><span class="highlight-yellow">Part 4</span> &mdash; Attention in Practice: Computation &amp; Visualization (20 min)</p>
+                    <p class="fragment"><span class="highlight-purple">Wrap-up</span> &mdash; From Attention to Transformers (10 min)</p>
+                </div>
+                <aside class="notes">
+                    Here is our plan for the next two hours. We will build the story step by step:
+                    first understand the problem with RNNs, then see how attention solves it,
+                    then go deeper into self-attention which is the key to Transformers.
+                    We will use lots of analogies and diagrams. No prior deep learning knowledge is assumed.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 3: Part 1 Section Title -->
+            <!-- ============================================================ -->
+            <section>
+                <h2 class="section-title">Part 1: Why RNNs Hit a Wall</h2>
+                <p style="color: var(--grey); font-size: 0.8em;">The problems that attention was invented to solve</p>
+                <aside class="notes">
+                    Before we can appreciate attention, we need to understand what was broken.
+                    Let's go back to RNNs and sequence-to-sequence models.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 4: RNN Recap - The Conveyor Belt -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>Quick Recap: How an RNN Processes a Sentence</h3>
+                <div class="analogy-box">
+                    <div class="analogy-title">Analogy: The Telephone Game</div>
+                    Imagine passing a message through a line of people. Each person hears the message, adds their own word,
+                    and whispers the updated message to the next person. By the end, the original message is distorted.
+                </div>
+                <div class="fragment diagram" style="margin-top: 20px;">
+                    <div class="diagram-row">
+                        <div class="box box-grey">x<sub>1</sub><br>"The"</div>
+                        <span class="arrow-right">&rarr;</span>
+                        <div class="box box-grey">x<sub>2</sub><br>"cat"</div>
+                        <span class="arrow-right">&rarr;</span>
+                        <div class="box box-grey">x<sub>3</sub><br>"sat"</div>
+                        <span class="arrow-right">&rarr;</span>
+                        <div class="box box-grey">x<sub>4</sub><br>"on"</div>
+                        <span class="arrow-right">&rarr;</span>
+                        <div class="box box-grey">x<sub>5</sub><br>"the"</div>
+                        <span class="arrow-right">&rarr;</span>
+                        <div class="box box-grey">x<sub>6</sub><br>"mat"</div>
+                    </div>
+                    <div class="diagram-row" style="margin-top: 8px;">
+                        <div class="box box-blue">h<sub>1</sub></div>
+                        <span class="arrow-right">&rarr;</span>
+                        <div class="box box-blue">h<sub>2</sub></div>
+                        <span class="arrow-right">&rarr;</span>
+                        <div class="box box-blue">h<sub>3</sub></div>
+                        <span class="arrow-right">&rarr;</span>
+                        <div class="box box-blue">h<sub>4</sub></div>
+                        <span class="arrow-right">&rarr;</span>
+                        <div class="box box-blue">h<sub>5</sub></div>
+                        <span class="arrow-right">&rarr;</span>
+                        <div class="box box-red">h<sub>6</sub></div>
+                    </div>
+                </div>
+                <p class="fragment small" style="color: var(--grey); margin-top: 15px;">
+                    Each hidden state h<sub>t</sub> must carry <em>all</em> information about the sentence seen so far
+                </p>
+                <aside class="notes">
+                    An RNN processes words one at a time, left to right. At each step, the hidden state is updated
+                    to incorporate the new word. The final hidden state h6 is supposed to encode the ENTIRE sentence.
+                    Think of the telephone game: by the time you reach the end, early information gets corrupted.
+                    This is the fundamental bottleneck.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 5: Problem 1 - Vanishing Gradients -->
+            <!-- ============================================================ -->
+            <section>
+                <h3><span class="highlight">Problem 1:</span> Vanishing Gradients</h3>
+                <div class="two-column">
+                    <div class="fragment">
+                        <p style="font-size: 0.7em;">During training, gradients must flow backward through time:</p>
+                        <div class="diagram" style="margin: 15px 0;">
+                            <div class="diagram-row">
+                                <div class="box box-green" style="opacity: 1.0;">h<sub>6</sub></div>
+                                <span class="arrow-right">&larr;</span>
+                                <div class="box box-green" style="opacity: 0.7;">h<sub>5</sub></div>
+                                <span class="arrow-right">&larr;</span>
+                                <div class="box box-green" style="opacity: 0.4;">h<sub>4</sub></div>
+                                <span class="arrow-right">&larr;</span>
+                                <div class="box box-green" style="opacity: 0.2;">h<sub>3</sub></div>
+                                <span class="arrow-right">&larr;</span>
+                                <div class="box box-green" style="opacity: 0.1;">h<sub>2</sub></div>
+                                <span class="arrow-right">&larr;</span>
+                                <div class="box box-green" style="opacity: 0.05;">h<sub>1</sub></div>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.6em; color: var(--grey);">Gradient signal <span class="highlight">shrinks exponentially</span> at each step</p>
+                    </div>
+                    <div class="fragment">
+                        <p style="font-size: 0.7em;">What this means in practice:</p>
+                        <ul style="font-size: 0.65em; line-height: 1.8;">
+                            <li>Early words get <span class="highlight">almost zero learning signal</span></li>
+                            <li>The model <em>cannot learn</em> long-range patterns</li>
+                            <li>Like trying to shout across a football field &mdash; the sound fades</li>
+                        </ul>
+                        <br>
+                        <p style="font-size: 0.6em; color: var(--grey);">
+                            Even LSTMs &amp; GRUs (designed to fix this) struggle beyond ~200 tokens
+                        </p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Vanishing gradients is the most famous RNN problem. When we train with backpropagation through time,
+                    the gradient signal must travel backward through every time step. At each step, the gradient gets
+                    multiplied by a weight matrix. If those values are less than 1, the gradient shrinks exponentially.
+                    After 20-30 steps, the gradient is essentially zero. This means the model cannot learn relationships
+                    between words that are far apart. LSTMs and GRUs helped somewhat with their gating mechanisms,
+                    but they still struggle with very long sequences.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 6: Problem 2 - The Bottleneck -->
+            <!-- ============================================================ -->
+            <section>
+                <h3><span class="highlight">Problem 2:</span> The Information Bottleneck</h3>
+                <div class="fragment">
+                    <div class="diagram">
+                        <div class="diagram-row">
+                            <div class="box box-grey" style="font-size: 0.55em; min-width: 60px;">The</div>
+                            <div class="box box-grey" style="font-size: 0.55em; min-width: 60px;">European</div>
+                            <div class="box box-grey" style="font-size: 0.55em; min-width: 60px;">Commission</div>
+                            <div class="box box-grey" style="font-size: 0.55em; min-width: 60px;">said</div>
+                            <div class="box box-grey" style="font-size: 0.55em; min-width: 60px;">on</div>
+                            <div class="box box-grey" style="font-size: 0.55em; min-width: 60px;">Thursday</div>
+                            <div class="box box-grey" style="font-size: 0.55em; min-width: 60px;">...</div>
+                        </div>
+                        <div class="arrow-down">&darr;</div>
+                        <div style="font-size: 0.6em; color: var(--grey);">Entire sentence compressed into</div>
+                        <div class="arrow-down">&darr;</div>
+                        <div class="box box-red" style="min-width: 200px; padding: 15px;">
+                            Single Vector<br>
+                            <span style="font-size: 0.7em;">[0.23, -0.41, 0.87, ...]</span>
+                        </div>
+                        <div class="arrow-down">&darr;</div>
+                        <div style="font-size: 0.6em; color: var(--grey);">Decoder must reconstruct everything from this</div>
+                    </div>
+                </div>
+                <p class="fragment" style="font-size: 0.75em; color: var(--yellow);">
+                    Imagine summarizing an entire novel into a single tweet.<br>
+                    That is what seq2seq asks the encoder to do.
+                </p>
+                <aside class="notes">
+                    The second major problem is the information bottleneck. In a standard sequence-to-sequence model,
+                    the encoder processes the entire input sentence and produces a single fixed-size vector.
+                    This vector is supposed to capture everything about the input. For short sentences, this is fine.
+                    But for longer inputs, a fixed-size vector simply cannot hold all the nuances.
+                    It is like asking someone to summarize an entire novel in a single tweet.
+                    Information inevitably gets lost, especially details from early in the sentence.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 7: Problem 3 - Sequential Processing -->
+            <!-- ============================================================ -->
+            <section>
+                <h3><span class="highlight">Problem 3:</span> Sequential Processing Is Slow</h3>
+                <div class="two-column">
+                    <div class="fragment">
+                        <p style="font-size: 0.7em; color: var(--red); font-weight: bold;">RNN: Must wait for each step</p>
+                        <div class="diagram">
+                            <div class="diagram-row">
+                                <div class="box box-red" style="min-width: 50px;">t=1</div>
+                                <span class="arrow-right">&rarr;</span>
+                                <div class="box box-red" style="min-width: 50px;">t=2</div>
+                                <span class="arrow-right">&rarr;</span>
+                                <div class="box box-red" style="min-width: 50px;">t=3</div>
+                                <span class="arrow-right">&rarr;</span>
+                                <div class="box box-red" style="min-width: 50px;">t=4</div>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.6em;">Processing time: <span class="highlight">O(n)</span> &mdash; linear in sequence length</p>
+                        <p style="font-size: 0.6em; color: var(--grey);">Cannot use GPU parallelism effectively</p>
+                    </div>
+                    <div class="fragment">
+                        <p style="font-size: 0.7em; color: var(--green); font-weight: bold;">Ideal: Process all at once</p>
+                        <div class="diagram">
+                            <div class="diagram-row">
+                                <div class="box box-green" style="min-width: 50px;">t=1</div>
+                                <div class="box box-green" style="min-width: 50px;">t=2</div>
+                                <div class="box box-green" style="min-width: 50px;">t=3</div>
+                                <div class="box box-green" style="min-width: 50px;">t=4</div>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.6em;">Processing time: <span class="highlight-green">O(1)</span> &mdash; all in parallel</p>
+                        <p style="font-size: 0.6em; color: var(--grey);">Full GPU utilization</p>
+                    </div>
+                </div>
+                <p class="fragment small" style="color: var(--yellow); margin-top: 15px;">
+                    This is why training RNNs on long sequences is painfully slow.
+                    GPUs have thousands of cores but RNNs can only use them one step at a time.
+                </p>
+                <aside class="notes">
+                    The third problem is about speed. RNNs are inherently sequential: you cannot compute h3
+                    until you have computed h2, which requires h1. This means you cannot parallelize the computation.
+                    Modern GPUs have thousands of cores designed for parallel computation, but RNNs leave most of them idle.
+                    For a 1000-word document, you need 1000 sequential steps. This makes training extremely slow.
+                    As we will see, attention opens the door to parallel processing of all positions simultaneously.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 8: The Real-World Impact -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>The Long-Range Dependency Problem</h3>
+                <div style="text-align: left; max-width: 85%; margin: 0 auto;">
+                    <p class="fragment" style="font-size: 0.75em;">
+                        <span class="highlight-blue">"The cat</span>, which was sitting on the mat in the living room
+                        next to the old fireplace that hadn't been used in years,
+                        <span class="highlight-blue">was</span> very happy."
+                    </p>
+                    <p class="fragment" style="font-size: 0.65em; color: var(--grey); margin-left: 40px;">
+                        &uarr; The verb "was" must agree with "cat" &mdash; 20+ words earlier!
+                    </p>
+                    <br>
+                    <p class="fragment" style="font-size: 0.75em;">
+                        <span class="highlight-green">"She</span> told him about the project during the meeting
+                        that lasted three hours on a rainy Tuesday afternoon,
+                        and then <span class="highlight-green">she</span> left."
+                    </p>
+                    <p class="fragment" style="font-size: 0.65em; color: var(--grey); margin-left: 40px;">
+                        &uarr; "she" in the second clause refers back to "She" at the very beginning
+                    </p>
+                </div>
+                <div class="fragment key-takeaway" style="margin-top: 20px;">
+                    <strong>Key insight:</strong> Language is full of long-range dependencies.
+                    A model that forgets early words will make systematic errors.
+                </div>
+                <aside class="notes">
+                    Let me give you concrete examples of why these RNN limitations matter in real language.
+                    In the first example, the verb "was" must agree with "cat", but they are separated by 20 words.
+                    An RNN would need to carry the information about "cat" through all those intermediate hidden states.
+                    In practice, this information gets diluted or lost. The model might incorrectly use "were" instead.
+                    These long-range dependencies are everywhere in natural language, and they are essential for
+                    correct translation, summarization, and understanding.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 9: Part 2 Section Title -->
+            <!-- ============================================================ -->
+            <section>
+                <h2 class="section-title">Part 2: The Attention Mechanism</h2>
+                <p style="color: var(--grey); font-size: 0.8em;">"Don't compress everything &mdash; look back at the input!"</p>
+                <aside class="notes">
+                    Now we get to the breakthrough. The core idea of attention is beautifully simple:
+                    instead of forcing all information through a single bottleneck vector,
+                    let the decoder LOOK BACK at all the encoder hidden states and decide which ones are relevant
+                    for each output word. Let's see how this works.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 10: The Key Intuition -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>The Key Intuition Behind Attention</h3>
+                <div class="analogy-box fragment">
+                    <div class="analogy-title">Analogy: Reading an Open Book vs. Memorizing It</div>
+                    <p><strong>Without attention (standard seq2seq):</strong> Read the entire book, close it, then write a summary from memory alone.</p>
+                    <p style="margin-top: 10px;"><strong>With attention:</strong> Keep the book open! For each sentence you write in the summary,
+                    flip back to the relevant pages and re-read them.</p>
+                </div>
+                <div class="fragment" style="margin-top: 25px;">
+                    <p class="big-concept">"Which input words should I focus on right now?"</p>
+                    <p style="font-size: 0.7em; color: var(--grey);">
+                        The decoder asks this question at <em>every</em> output step
+                    </p>
+                </div>
+                <aside class="notes">
+                    The analogy I like best is the open-book exam vs closed-book exam. Standard seq2seq is like
+                    a closed-book exam: read everything, then answer from memory. Attention is like an open-book exam:
+                    for each question, you can look back at the relevant material.
+                    At each decoding step, the attention mechanism computes a relevance score between the current
+                    decoder state and every encoder hidden state. It then creates a weighted sum of encoder states,
+                    focusing on the most relevant ones. This is the context vector.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 11: Bahdanau Attention -->
+            <!-- ============================================================ -->
+            <section>
+                <h3><span class="highlight-blue">Bahdanau Attention</span> (2014)</h3>
+                <p style="font-size: 0.65em; color: var(--grey);">Also called "Additive Attention"</p>
+                <div class="two-column">
+                    <div class="fragment">
+                        <p style="font-size: 0.7em; font-weight: bold; color: var(--blue);">Architecture</p>
+                        <div class="diagram" style="font-size: 0.9em;">
+                            <div class="box box-green" style="min-width: 150px;">Context Vector c<sub>t</sub></div>
+                            <div class="arrow-down">&uarr;</div>
+                            <div style="font-size: 0.6em; color: var(--yellow);">Weighted sum</div>
+                            <div class="arrow-down">&uarr;</div>
+                            <div class="diagram-row">
+                                <div class="box box-blue" style="min-width: 45px; font-size: 0.55em;">&alpha;<sub>1</sub></div>
+                                <div class="box box-blue" style="min-width: 45px; font-size: 0.55em;">&alpha;<sub>2</sub></div>
+                                <div class="box box-blue" style="min-width: 45px; font-size: 0.55em;">&alpha;<sub>3</sub></div>
+                                <div class="box box-blue" style="min-width: 45px; font-size: 0.55em;">&alpha;<sub>4</sub></div>
+                            </div>
+                            <div class="arrow-down">&uarr; <span style="font-size: 0.5em;">softmax</span></div>
+                            <div class="diagram-row">
+                                <div class="box box-yellow" style="min-width: 45px; font-size: 0.55em;">e<sub>1</sub></div>
+                                <div class="box box-yellow" style="min-width: 45px; font-size: 0.55em;">e<sub>2</sub></div>
+                                <div class="box box-yellow" style="min-width: 45px; font-size: 0.55em;">e<sub>3</sub></div>
+                                <div class="box box-yellow" style="min-width: 45px; font-size: 0.55em;">e<sub>4</sub></div>
+                            </div>
+                            <div class="arrow-down">&uarr; <span style="font-size: 0.5em;">alignment model</span></div>
+                            <div class="diagram-row">
+                                <div class="box box-grey" style="min-width: 45px; font-size: 0.55em;">h<sub>1</sub></div>
+                                <div class="box box-grey" style="min-width: 45px; font-size: 0.55em;">h<sub>2</sub></div>
+                                <div class="box box-grey" style="min-width: 45px; font-size: 0.55em;">h<sub>3</sub></div>
+                                <div class="box box-grey" style="min-width: 45px; font-size: 0.55em;">h<sub>4</sub></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fragment">
+                        <p style="font-size: 0.7em; font-weight: bold; color: var(--yellow);">The Math</p>
+                        <div style="font-size: 0.7em; text-align: left; line-height: 2.2;">
+                            <p><strong>Step 1:</strong> Compute alignment scores</p>
+                            <div class="formula" style="font-size: 0.85em;">
+                                e<sub>t,i</sub> = v<sup>T</sup> tanh(W<sub>a</sub> s<sub>t-1</sub> + U<sub>a</sub> h<sub>i</sub>)
+                            </div>
+                            <p><strong>Step 2:</strong> Normalize with softmax</p>
+                            <div class="formula" style="font-size: 0.85em;">
+                                &alpha;<sub>t,i</sub> = softmax(e<sub>t,i</sub>)
+                            </div>
+                            <p><strong>Step 3:</strong> Compute context vector</p>
+                            <div class="formula" style="font-size: 0.85em;">
+                                c<sub>t</sub> = &Sigma;<sub>i</sub> &alpha;<sub>t,i</sub> &middot; h<sub>i</sub>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="paper-ref fragment">Bahdanau, Cho & Bengio. "Neural Machine Translation by Jointly Learning to Align and Translate." ICLR 2015 (arXiv 2014)</p>
+                <aside class="notes">
+                    Bahdanau attention was the first attention mechanism for NLP, published in 2014.
+                    It is called "additive" because the alignment score uses addition inside a tanh.
+                    Here is how it works step by step:
+                    1. For each encoder hidden state h_i, compute an alignment score e_t,i that measures
+                       how well h_i matches the current decoder state s_{t-1}. This uses a small neural network.
+                    2. Apply softmax to get attention weights alpha that sum to 1.
+                    3. Compute a weighted sum of all encoder states, weighted by alpha. This is the context vector.
+                    The context vector is then concatenated with the decoder input to help make the next prediction.
+                    The key innovation: the decoder can now "look at" all encoder states, not just the last one.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 12: Bahdanau - How It Helps Translation -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>Attention in Action: Machine Translation</h3>
+                <p style="font-size: 0.7em; color: var(--grey);">English &rarr; French: "The black cat sat on the mat"</p>
+                <div class="fragment" style="margin: 20px auto;">
+                    <p style="font-size: 0.65em; color: var(--blue); font-weight: bold;">When generating "Le" (The):</p>
+                    <div class="flow-horizontal" style="font-size: 0.7em;">
+                        <div class="box box-red" style="min-width: 55px; padding: 8px;">The<br><span style="font-size: 0.7em;">0.85</span></div>
+                        <div class="box box-grey" style="min-width: 55px; padding: 8px; opacity: 0.3;">black<br><span style="font-size: 0.7em;">0.05</span></div>
+                        <div class="box box-grey" style="min-width: 55px; padding: 8px; opacity: 0.3;">cat<br><span style="font-size: 0.7em;">0.04</span></div>
+                        <div class="box box-grey" style="min-width: 55px; padding: 8px; opacity: 0.2;">sat<br><span style="font-size: 0.7em;">0.02</span></div>
+                        <div class="box box-grey" style="min-width: 55px; padding: 8px; opacity: 0.2;">on<br><span style="font-size: 0.7em;">0.02</span></div>
+                        <div class="box box-grey" style="min-width: 55px; padding: 8px; opacity: 0.2;">the<br><span style="font-size: 0.7em;">0.01</span></div>
+                        <div class="box box-grey" style="min-width: 55px; padding: 8px; opacity: 0.2;">mat<br><span style="font-size: 0.7em;">0.01</span></div>
+                    </div>
+                </div>
+                <div class="fragment" style="margin: 20px auto;">
+                    <p style="font-size: 0.65em; color: var(--green); font-weight: bold;">When generating "chat" (cat):</p>
+                    <div class="flow-horizontal" style="font-size: 0.7em;">
+                        <div class="box box-grey" style="min-width: 55px; padding: 8px; opacity: 0.3;">The<br><span style="font-size: 0.7em;">0.03</span></div>
+                        <div class="box box-yellow" style="min-width: 55px; padding: 8px;">black<br><span style="font-size: 0.7em;">0.25</span></div>
+                        <div class="box box-green" style="min-width: 55px; padding: 8px;">cat<br><span style="font-size: 0.7em;">0.65</span></div>
+                        <div class="box box-grey" style="min-width: 55px; padding: 8px; opacity: 0.3;">sat<br><span style="font-size: 0.7em;">0.03</span></div>
+                        <div class="box box-grey" style="min-width: 55px; padding: 8px; opacity: 0.2;">on<br><span style="font-size: 0.7em;">0.02</span></div>
+                        <div class="box box-grey" style="min-width: 55px; padding: 8px; opacity: 0.2;">the<br><span style="font-size: 0.7em;">0.01</span></div>
+                        <div class="box box-grey" style="min-width: 55px; padding: 8px; opacity: 0.2;">mat<br><span style="font-size: 0.7em;">0.01</span></div>
+                    </div>
+                </div>
+                <p class="fragment small" style="color: var(--yellow);">
+                    The model <em>learns</em> to align source and target words &mdash; no explicit word alignment needed!
+                </p>
+                <aside class="notes">
+                    Let's see this in action with a translation example. When the decoder is about to generate "Le"
+                    (French for "The"), the attention weights are highest on the English word "The". Makes sense!
+                    When generating "chat" (French for "cat"), attention focuses on "cat" and somewhat on "black"
+                    because the adjective is relevant for the noun in French as well.
+                    Notice that the model learns these alignments automatically during training. We never tell it
+                    which words should align with which. This was a major breakthrough for machine translation.
+                    Before attention, translation quality degraded sharply for longer sentences.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 13: Luong Attention -->
+            <!-- ============================================================ -->
+            <section>
+                <h3><span class="highlight-green">Luong Attention</span> (2015)</h3>
+                <p style="font-size: 0.65em; color: var(--grey);">Also called "Multiplicative Attention"</p>
+                <div class="fragment">
+                    <p style="font-size: 0.7em; font-weight: bold; color: var(--green);">Three scoring functions:</p>
+                    <table class="comparison-table">
+                        <tr>
+                            <th>Name</th>
+                            <th>Formula</th>
+                            <th>Intuition</th>
+                        </tr>
+                        <tr>
+                            <td style="color: var(--blue);">Dot Product</td>
+                            <td><span class="formula" style="font-size: 0.9em; padding: 5px 10px;">e<sub>t,i</sub> = s<sub>t</sub><sup>T</sup> h<sub>i</sub></span></td>
+                            <td>Simplest: just multiply</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td style="color: var(--yellow);">General</td>
+                            <td><span class="formula" style="font-size: 0.9em; padding: 5px 10px;">e<sub>t,i</sub> = s<sub>t</sub><sup>T</sup> W<sub>a</sub> h<sub>i</sub></span></td>
+                            <td>Learnable weight matrix</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td style="color: var(--purple);">Concat</td>
+                            <td><span class="formula" style="font-size: 0.9em; padding: 5px 10px;">e<sub>t,i</sub> = v<sup>T</sup> tanh(W<sub>a</sub>[s<sub>t</sub>;h<sub>i</sub>])</span></td>
+                            <td>Like Bahdanau</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="fragment key-takeaway" style="margin-top: 20px;">
+                    <strong>Key difference from Bahdanau:</strong> Luong uses the <em>current</em> decoder hidden state s<sub>t</sub>
+                    (not s<sub>t-1</sub>), and the dot-product variant is much faster to compute.
+                </div>
+                <p class="paper-ref fragment">Luong, Pham & Manning. "Effective Approaches to Attention-based Neural Machine Translation." EMNLP 2015</p>
+                <aside class="notes">
+                    A year after Bahdanau, Luong et al. proposed simpler alternatives for computing attention scores.
+                    The most important one is the dot product: just take the dot product of the decoder state and encoder state.
+                    No neural network needed! This is much faster to compute.
+                    The "general" variant adds a learnable weight matrix for more expressiveness.
+                    The "concat" variant is essentially the same as Bahdanau.
+                    The dot product variant turned out to be especially important because it is the basis
+                    for the attention used in Transformers. Simple and efficient.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 14: Bahdanau vs Luong Comparison -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>Bahdanau vs. Luong: Side by Side</h3>
+                <table class="comparison-table fragment">
+                    <tr>
+                        <th>Aspect</th>
+                        <th style="color: var(--blue);">Bahdanau (2014)</th>
+                        <th style="color: var(--green);">Luong (2015)</th>
+                    </tr>
+                    <tr>
+                        <td>Score function</td>
+                        <td>Additive (neural network)</td>
+                        <td>Multiplicative (dot product)</td>
+                    </tr>
+                    <tr>
+                        <td>Decoder state used</td>
+                        <td>s<sub>t-1</sub> (previous)</td>
+                        <td>s<sub>t</sub> (current)</td>
+                    </tr>
+                    <tr>
+                        <td>Encoder</td>
+                        <td>Bidirectional RNN</td>
+                        <td>Unidirectional (top layer)</td>
+                    </tr>
+                    <tr>
+                        <td>Computation speed</td>
+                        <td>Slower</td>
+                        <td>Faster (dot product)</td>
+                    </tr>
+                    <tr>
+                        <td>Flexibility</td>
+                        <td>Single score function</td>
+                        <td>Three variants</td>
+                    </tr>
+                </table>
+                <div class="fragment" style="margin-top: 25px;">
+                    <p style="font-size: 0.75em; color: var(--yellow);">
+                        Both achieve the same goal: <strong>let the decoder look at all encoder states</strong>
+                    </p>
+                    <p style="font-size: 0.65em; color: var(--grey);">
+                        The dot-product approach (Luong) became the foundation for Transformer attention
+                    </p>
+                </div>
+                <aside class="notes">
+                    Here is a clean comparison of the two attention mechanisms. Both solve the same fundamental problem,
+                    but they differ in the details. Bahdanau uses a small neural network (additive) to compute scores,
+                    while Luong uses a simple dot product (multiplicative). Luong is generally faster.
+                    In practice, the dot-product approach won out and became the basis for Transformer attention.
+                    The key idea is the same in both: don't rely on a single bottleneck vector.
+                    Let the decoder attend to all parts of the input at each step.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 15: Discussion - Why Was This So Important? -->
+            <!-- ============================================================ -->
+            <section data-state="discussion" class="discussion-slide">
+                <h3 style="color: var(--yellow);">Quick Check: Why Was Attention So Important?</h3>
+                <br>
+                <div style="font-size: 0.75em; text-align: left; max-width: 80%; margin: 0 auto;">
+                    <p class="fragment">1. Which of the three RNN problems does attention solve directly?</p>
+                    <p class="fragment" style="color: var(--green); margin-left: 30px;">
+                        &rarr; It solves the <strong>information bottleneck</strong> (no more single vector compression)
+                        and helps with <strong>long-range dependencies</strong> (direct connections to distant words)
+                    </p>
+                    <br>
+                    <p class="fragment">2. Does attention solve the sequential processing problem?</p>
+                    <p class="fragment" style="color: var(--red); margin-left: 30px;">
+                        &rarr; <strong>Not yet!</strong> The RNN encoder/decoder still processes sequentially.
+                        Attention only helps the decoder access information. We need another breakthrough...
+                    </p>
+                </div>
+                <aside class="notes">
+                    Let's pause and check understanding. Attention solves two of the three problems:
+                    the bottleneck (decoder can now access all encoder states) and long-range dependencies
+                    (direct attention connections mean information doesn't need to travel through many hidden states).
+                    But attention does NOT solve the sequential processing problem. The underlying encoder and decoder
+                    are still RNNs that must process one step at a time. To solve that, we need self-attention
+                    and Transformers, which is exactly where we are headed next.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 16: Part 3 Section Title -->
+            <!-- ============================================================ -->
+            <section>
+                <h2 class="section-title">Part 3: Self-Attention</h2>
+                <p style="color: var(--grey); font-size: 0.8em;">The breakthrough that made Transformers possible</p>
+                <aside class="notes">
+                    Now we arrive at the most important concept of the session: self-attention.
+                    While Bahdanau and Luong attention let the decoder attend to encoder states,
+                    self-attention is about a sequence attending to ITSELF.
+                    This is the core mechanism of the Transformer architecture.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 17: From Cross-Attention to Self-Attention -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>From Cross-Attention to Self-Attention</h3>
+                <div class="two-column">
+                    <div class="fragment">
+                        <p style="font-size: 0.7em; font-weight: bold; color: var(--blue);">Cross-Attention (Bahdanau/Luong)</p>
+                        <div class="diagram">
+                            <div class="box box-blue" style="min-width: 180px;">Decoder State</div>
+                            <div class="arrow-down" style="font-size: 0.8em;">attends to &darr;</div>
+                            <div class="diagram-row">
+                                <div class="box box-grey" style="min-width: 50px; font-size: 0.55em;">Enc<sub>1</sub></div>
+                                <div class="box box-grey" style="min-width: 50px; font-size: 0.55em;">Enc<sub>2</sub></div>
+                                <div class="box box-grey" style="min-width: 50px; font-size: 0.55em;">Enc<sub>3</sub></div>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.6em; color: var(--grey);">Two different sequences</p>
+                    </div>
+                    <div class="fragment">
+                        <p style="font-size: 0.7em; font-weight: bold; color: var(--green);">Self-Attention</p>
+                        <div class="diagram">
+                            <div class="box box-green" style="min-width: 180px;">Each Word</div>
+                            <div class="arrow-down" style="font-size: 0.8em;">attends to &darr;</div>
+                            <div class="diagram-row">
+                                <div class="box box-green" style="min-width: 50px; font-size: 0.55em;">Word<sub>1</sub></div>
+                                <div class="box box-green" style="min-width: 50px; font-size: 0.55em;">Word<sub>2</sub></div>
+                                <div class="box box-green" style="min-width: 50px; font-size: 0.55em;">Word<sub>3</sub></div>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.6em; color: var(--grey);">Same sequence attends to itself</p>
+                    </div>
+                </div>
+                <div class="fragment key-takeaway" style="margin-top: 20px;">
+                    <strong>Self-attention:</strong> Every word in a sentence looks at every other word
+                    (including itself) to build a richer representation.
+                </div>
+                <aside class="notes">
+                    In cross-attention (Bahdanau/Luong), we have two different sequences: the decoder attends to the encoder.
+                    Self-attention is a different idea: a single sequence attends to itself. Every word computes
+                    attention scores with every other word in the same sentence. This lets each word "look around"
+                    at its context to understand its own meaning better.
+                    For example, the word "bank" can look at nearby words to determine if it means "river bank" or "financial bank".
+                    Self-attention replaces the RNN entirely: no more sequential processing!
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 18: The QKV Analogy -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>Query, Key, Value: The Search Engine Analogy</h3>
+                <div class="analogy-box fragment">
+                    <div class="analogy-title">Analogy: Searching a Library Database</div>
+                    <p><strong style="color: var(--red);">Query (Q):</strong> "I'm looking for a book about French cooking"
+                    &mdash; this is what you're searching for.</p>
+                    <p style="margin-top: 8px;"><strong style="color: var(--blue);">Key (K):</strong> The title/keywords of each book in the catalog
+                    &mdash; these are the labels that help you match.</p>
+                    <p style="margin-top: 8px;"><strong style="color: var(--green);">Value (V):</strong> The actual content of each book
+                    &mdash; this is the information you want to retrieve.</p>
+                </div>
+                <div class="fragment" style="margin-top: 20px;">
+                    <div class="flow-horizontal">
+                        <div class="box box-red" style="padding: 12px 20px;">Query</div>
+                        <span style="font-size: 0.8em; color: var(--grey);">matches against</span>
+                        <div class="box box-blue" style="padding: 12px 20px;">Keys</div>
+                        <span style="font-size: 0.8em; color: var(--grey);">to retrieve</span>
+                        <div class="box box-green" style="padding: 12px 20px;">Values</div>
+                    </div>
+                </div>
+                <p class="fragment small" style="color: var(--yellow); margin-top: 15px;">
+                    In self-attention, every word generates its own Q, K, and V vectors.<br>
+                    Each word's Query is matched against all words' Keys to decide how much of each word's Value to collect.
+                </p>
+                <aside class="notes">
+                    The Query-Key-Value framework is central to understanding attention. Let me explain with a library analogy.
+                    When you search a library database:
+                    - Your search query (Q) represents what you are looking for.
+                    - Each book has keywords/title (K) that the system matches against your query.
+                    - The actual book content (V) is what gets returned to you.
+                    The matching between Q and K determines relevance. Higher relevance means more of that book's content (V) is returned.
+                    In self-attention, every word in the sentence plays all three roles simultaneously.
+                    Each word generates a Query (what am I looking for?), a Key (what do I advertise?),
+                    and a Value (what information do I provide?). These are computed by multiplying the word's
+                    embedding by three learned weight matrices: W_Q, W_K, and W_V.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 19: QKV Computation -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>Computing Q, K, V</h3>
+                <div class="fragment">
+                    <p style="font-size: 0.7em;">For each word embedding x<sub>i</sub>, compute three vectors:</p>
+                    <div style="margin: 20px auto;">
+                        <div class="formula formula-large">
+                            q<sub>i</sub> = W<sub>Q</sub> &middot; x<sub>i</sub> &nbsp;&nbsp;
+                            <span style="color: var(--red);">(Query)</span>
+                        </div>
+                        <br>
+                        <div class="formula formula-large">
+                            k<sub>i</sub> = W<sub>K</sub> &middot; x<sub>i</sub> &nbsp;&nbsp;
+                            <span style="color: var(--blue);">(Key)</span>
+                        </div>
+                        <br>
+                        <div class="formula formula-large">
+                            v<sub>i</sub> = W<sub>V</sub> &middot; x<sub>i</sub> &nbsp;&nbsp;
+                            <span style="color: var(--green);">(Value)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 15px;">
+                    <p style="font-size: 0.65em; color: var(--grey);">
+                        W<sub>Q</sub>, W<sub>K</sub>, W<sub>V</sub> are <span class="highlight-yellow">learned weight matrices</span><br>
+                        They are the same for all positions &mdash; shared parameters
+                    </p>
+                </div>
+                <div class="fragment" style="font-size: 0.65em; color: var(--purple); margin-top: 10px;">
+                    Think of it as: each word learns <em>three different representations</em> of itself &mdash;
+                    one for searching, one for being found, one for providing information.
+                </div>
+                <aside class="notes">
+                    Here is the concrete computation. We take the word embedding vector x_i and multiply it by three
+                    different learned weight matrices to get three different vectors:
+                    - Q: what this word is "looking for" in other words
+                    - K: what this word "advertises" about itself to other words
+                    - V: what this word "provides" when it is attended to
+                    These weight matrices are learned during training. The model figures out the best way to
+                    decompose each word into these three roles. This is one of the elegant aspects of attention:
+                    the same word can be a good match as a Key for one query but not another.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 20: Scaled Dot-Product Attention -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>Scaled Dot-Product Attention</h3>
+                <p style="font-size: 0.65em; color: var(--grey);">The core formula from "Attention Is All You Need"</p>
+                <div class="fragment">
+                    <div class="formula formula-large" style="margin: 25px auto;">
+                        Attention(Q, K, V) = softmax( Q K<sup>T</sup> / &radic;d<sub>k</sub> ) &middot; V
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 20px;">
+                    <div class="step-list" style="max-width: 85%; margin: 0 auto;">
+                        <p style="font-weight: bold; color: var(--blue);">Step by step:</p>
+                        <ol>
+                            <li><span class="highlight-yellow">Dot product:</span> Q K<sup>T</sup> &mdash; compute similarity between each query and all keys</li>
+                            <li class="fragment"><span class="highlight-yellow">Scale:</span> Divide by &radic;d<sub>k</sub> &mdash; prevent dot products from getting too large</li>
+                            <li class="fragment"><span class="highlight-yellow">Softmax:</span> Convert scores to probabilities (sum to 1)</li>
+                            <li class="fragment"><span class="highlight-yellow">Weighted sum:</span> Multiply by V &mdash; retrieve information from values</li>
+                        </ol>
+                    </div>
+                </div>
+                <p class="paper-ref fragment">Vaswani et al. "Attention Is All You Need." NeurIPS 2017</p>
+                <aside class="notes">
+                    This is THE formula. Memorize this if you memorize anything from today.
+                    Attention of Q, K, V equals softmax of Q times K-transpose divided by square root of d_k, times V.
+                    Let me walk through each step:
+                    1. Q times K-transpose: This computes the dot product between every query and every key.
+                       If a query and key point in the same direction, the score is high (they match).
+                    2. Divide by square root of d_k: This is the "scaling" part. Without this, when d_k is large,
+                       the dot products become very large, pushing softmax into regions with tiny gradients.
+                       The square root scaling keeps the values in a reasonable range.
+                    3. Softmax: Converts raw scores into a probability distribution. The highest-scoring keys
+                       get the most weight, and all weights sum to 1.
+                    4. Multiply by V: The weighted combination of Value vectors, weighted by the attention scores.
+                    This entire computation is a matrix multiplication, which GPUs can do extremely fast!
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 21: Why Scale? -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>Why Divide by <span class="highlight-yellow">&radic;d<sub>k</sub></span>?</h3>
+                <div class="two-column">
+                    <div class="fragment">
+                        <p style="font-size: 0.7em; font-weight: bold; color: var(--red);">Without scaling (d<sub>k</sub> = 512):</p>
+                        <div style="font-size: 0.65em; text-align: left; line-height: 1.8;">
+                            <p>Dot products can be huge: <span class="highlight">[-150, 200, -80, 300]</span></p>
+                            <p>After softmax: <span class="highlight">[0.00, 0.00, 0.00, 1.00]</span></p>
+                            <p style="color: var(--red);">Almost one-hot! Gradients vanish.</p>
+                        </div>
+                    </div>
+                    <div class="fragment">
+                        <p style="font-size: 0.7em; font-weight: bold; color: var(--green);">With scaling (&divide; &radic;512 &asymp; 22.6):</p>
+                        <div style="font-size: 0.65em; text-align: left; line-height: 1.8;">
+                            <p>Scaled scores: <span class="highlight-green">[-6.6, 8.8, -3.5, 13.3]</span></p>
+                            <p>After softmax: <span class="highlight-green">[0.00, 0.01, 0.00, 0.99]</span></p>
+                            <p style="color: var(--green);">Still peaked, but gradients flow.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="fragment analogy-box" style="margin-top: 20px;">
+                    <div class="analogy-title">Intuition</div>
+                    If two random vectors of dimension d<sub>k</sub> have elements drawn from a standard normal distribution,
+                    their dot product has mean 0 and variance d<sub>k</sub>. Dividing by &radic;d<sub>k</sub> brings the
+                    variance back to 1, keeping softmax in its "useful" range.
+                </div>
+                <aside class="notes">
+                    This is a practical detail that matters a lot. When you compute the dot product of two random vectors,
+                    the expected magnitude of the result grows with the dimension. For d_k = 512, the dot products
+                    can be very large. When you pass large values into softmax, you get outputs very close to 0 or 1,
+                    which means almost all the gradient flows to a single position. This makes training unstable.
+                    The fix is elegant: divide by the square root of d_k. This normalizes the variance of the dot products
+                    back to approximately 1, keeping softmax in the region where it produces useful gradients.
+                    This is why it is called SCALED dot-product attention.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 22: Self-Attention Walkthrough -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>Self-Attention: A Concrete Example</h3>
+                <p style="font-size: 0.65em; color: var(--grey);">Sentence: "The <span class="highlight">cat</span> sat on the <span class="highlight-blue">mat</span>"</p>
+                <div class="fragment" style="margin-top: 15px;">
+                    <p style="font-size: 0.65em; color: var(--yellow); font-weight: bold;">
+                        Focus on the word "cat" &mdash; what should it attend to?
+                    </p>
+                    <div style="margin: 15px auto; max-width: 70%;">
+                        <div class="weight-bar">
+                            <span style="min-width: 50px; color: var(--grey); font-size: 0.9em;">The</span>
+                            <div class="bar" style="width: 60px; background: var(--blue); opacity: 0.4;"></div>
+                            <span style="color: var(--grey);">0.08</span>
+                        </div>
+                        <div class="weight-bar">
+                            <span style="min-width: 50px; color: var(--red); font-size: 0.9em; font-weight: bold;">cat</span>
+                            <div class="bar" style="width: 200px; background: var(--red);"></div>
+                            <span style="color: var(--red); font-weight: bold;">0.35</span>
+                        </div>
+                        <div class="weight-bar">
+                            <span style="min-width: 50px; color: var(--grey); font-size: 0.9em;">sat</span>
+                            <div class="bar" style="width: 150px; background: var(--blue); opacity: 0.7;"></div>
+                            <span style="color: var(--grey);">0.28</span>
+                        </div>
+                        <div class="weight-bar">
+                            <span style="min-width: 50px; color: var(--grey); font-size: 0.9em;">on</span>
+                            <div class="bar" style="width: 30px; background: var(--blue); opacity: 0.3;"></div>
+                            <span style="color: var(--grey);">0.04</span>
+                        </div>
+                        <div class="weight-bar">
+                            <span style="min-width: 50px; color: var(--grey); font-size: 0.9em;">the</span>
+                            <div class="bar" style="width: 25px; background: var(--blue); opacity: 0.3;"></div>
+                            <span style="color: var(--grey);">0.03</span>
+                        </div>
+                        <div class="weight-bar">
+                            <span style="min-width: 50px; color: var(--blue); font-size: 0.9em;">mat</span>
+                            <div class="bar" style="width: 120px; background: var(--blue); opacity: 0.6;"></div>
+                            <span style="color: var(--grey);">0.22</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="fragment" style="font-size: 0.65em; color: var(--green);">
+                    "cat" attends strongly to itself (identity), "sat" (what it does), and "mat" (where it is).
+                    <br>Self-attention captures <strong>semantic relationships</strong> between all word pairs.
+                </p>
+                <aside class="notes">
+                    Let's trace through a concrete example. In "The cat sat on the mat", let's look at the word "cat".
+                    Using its Query vector, it computes attention scores with the Key vectors of all words.
+                    It attends most strongly to itself (words often need their own information), to "sat" (its verb),
+                    and to "mat" (semantically related - where the cat is). Function words like "the" and "on"
+                    get low attention scores. The output for "cat" is a weighted sum of all the Value vectors,
+                    with these weights. The result is a new representation of "cat" that is enriched with
+                    contextual information from the entire sentence.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 23: Attention Weight Matrix Visualization -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>Visualizing the Full Attention Matrix</h3>
+                <p style="font-size: 0.6em; color: var(--grey);">"The cat sat on the mat" &mdash; each row shows where that word attends</p>
+                <div class="fragment" style="margin: 20px auto;">
+                    <div class="attention-grid" style="grid-template-columns: 60px repeat(6, 50px); font-size: 0.6em;">
+                        <!-- Header row -->
+                        <div style="color: var(--grey);"></div>
+                        <div style="color: var(--blue); font-weight: bold;">The</div>
+                        <div style="color: var(--blue); font-weight: bold;">cat</div>
+                        <div style="color: var(--blue); font-weight: bold;">sat</div>
+                        <div style="color: var(--blue); font-weight: bold;">on</div>
+                        <div style="color: var(--blue); font-weight: bold;">the</div>
+                        <div style="color: var(--blue); font-weight: bold;">mat</div>
+                        <!-- The -->
+                        <div style="color: var(--red); font-weight: bold; text-align: right; padding-right: 8px;">The</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.5);">0.30</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.7);">0.40</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.15);">0.08</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.1);">0.05</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.1);">0.07</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.15);">0.10</div>
+                        <!-- cat -->
+                        <div style="color: var(--red); font-weight: bold; text-align: right; padding-right: 8px;">cat</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.15);">0.08</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.65);">0.35</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.5);">0.28</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.08);">0.04</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.06);">0.03</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.4);">0.22</div>
+                        <!-- sat -->
+                        <div style="color: var(--red); font-weight: bold; text-align: right; padding-right: 8px;">sat</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.1);">0.05</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.6);">0.32</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.5);">0.28</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.25);">0.15</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.06);">0.04</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.3);">0.16</div>
+                        <!-- on -->
+                        <div style="color: var(--red); font-weight: bold; text-align: right; padding-right: 8px;">on</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.08);">0.04</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.15);">0.10</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.35);">0.20</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.3);">0.18</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.2);">0.12</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.6);">0.36</div>
+                        <!-- the -->
+                        <div style="color: var(--red); font-weight: bold; text-align: right; padding-right: 8px;">the</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.3);">0.18</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.12);">0.07</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.06);">0.03</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.1);">0.06</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.35);">0.22</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.7);">0.44</div>
+                        <!-- mat -->
+                        <div style="color: var(--red); font-weight: bold; text-align: right; padding-right: 8px;">mat</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.06);">0.03</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.4);">0.24</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.3);">0.18</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.2);">0.12</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.2);">0.13</div>
+                        <div class="attention-cell" style="background: rgba(255,107,107,0.55);">0.30</div>
+                    </div>
+                </div>
+                <div class="fragment" style="font-size: 0.6em; margin-top: 10px;">
+                    <span style="color: var(--grey);">Darker = higher attention weight &nbsp;|&nbsp; Each row sums to 1.0</span>
+                    <br>
+                    <span style="color: var(--yellow);">Notice: "The" attends to "cat" (its noun), "on" attends to "mat" (its object)</span>
+                </div>
+                <aside class="notes">
+                    This is what a full attention matrix looks like. Each row represents a word's attention distribution
+                    over all words. Each row sums to 1 because of softmax.
+                    Some interesting patterns: "The" (first one) attends to "cat" because it is a determiner looking for its noun.
+                    "cat" attends to "sat" and "mat" (its verb and location). "on" strongly attends to "mat" (its prepositional object).
+                    The second "the" attends to "mat" (its noun). These patterns are learned automatically!
+                    In practice, researchers visualize these matrices as heatmaps to understand what the model has learned.
+                    Different attention heads in multi-head attention learn different patterns.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 24: Self-Attention Solves All Three Problems -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>Self-Attention Solves <span class="highlight">All Three</span> RNN Problems</h3>
+                <div style="font-size: 0.75em; text-align: left; max-width: 85%; margin: 0 auto; line-height: 1.6;">
+                    <div class="fragment" style="margin-bottom: 20px;">
+                        <p><span class="highlight">1. No vanishing gradients</span></p>
+                        <p style="font-size: 0.85em; color: var(--grey); margin-left: 20px;">
+                            Every word has a <strong>direct connection</strong> to every other word.
+                            Gradients flow directly &mdash; no long chain of multiplications.
+                        </p>
+                    </div>
+                    <div class="fragment" style="margin-bottom: 20px;">
+                        <p><span class="highlight-blue">2. No information bottleneck</span></p>
+                        <p style="font-size: 0.85em; color: var(--grey); margin-left: 20px;">
+                            Each word's representation is built from <strong>all words simultaneously</strong>.
+                            No single vector must encode everything.
+                        </p>
+                    </div>
+                    <div class="fragment" style="margin-bottom: 20px;">
+                        <p><span class="highlight-green">3. Fully parallelizable</span></p>
+                        <p style="font-size: 0.85em; color: var(--grey); margin-left: 20px;">
+                            All attention scores can be computed at once as <strong>matrix multiplications</strong>.
+                            GPUs handle this with massive parallelism.
+                        </p>
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 20px;">
+                    <p class="stat-big">O(1) path length</p>
+                    <p style="font-size: 0.6em; color: var(--grey);">
+                        Between any two words, regardless of distance in the sentence
+                    </p>
+                </div>
+                <aside class="notes">
+                    Self-attention is the key breakthrough because it solves ALL three RNN problems at once.
+                    First, no vanishing gradients: every word has a direct attention connection to every other word.
+                    The gradient only needs to pass through one attention layer, not through a chain of hidden states.
+                    Second, no bottleneck: instead of compressing everything into one vector, each word builds its
+                    representation by attending to all other words.
+                    Third, full parallelism: the attention scores for all word pairs are computed as a single
+                    matrix multiplication (Q times K-transpose). This is exactly what GPUs are optimized for.
+                    The path length between any two words is O(1), meaning a word at position 1 can directly
+                    attend to a word at position 1000. This is why Transformers handle long documents so well.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 25: Part 4 Section Title -->
+            <!-- ============================================================ -->
+            <section>
+                <h2 class="section-title">Part 4: Attention in Practice</h2>
+                <p style="color: var(--grey); font-size: 0.8em;">Computation details and multi-head attention</p>
+                <aside class="notes">
+                    Now let's go a bit deeper into how attention is used in practice.
+                    We will cover multi-head attention, computational complexity, and how attention weights
+                    can be visualized to understand model behavior.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 26: Multi-Head Attention -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>Multi-Head Attention</h3>
+                <p style="font-size: 0.65em; color: var(--grey);">
+                    "Attending to information from different representation subspaces"
+                </p>
+                <div class="fragment">
+                    <div class="analogy-box">
+                        <div class="analogy-title">Analogy: Multiple Reviewers</div>
+                        Imagine sending your code for review to 8 different experts. One checks for security issues,
+                        another for performance, another for readability. Each reviewer focuses on a <em>different aspect</em>.
+                        Multi-head attention is the same idea: multiple attention "heads" look at different patterns.
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 20px;">
+                    <div class="flow-horizontal">
+                        <div class="box box-red" style="font-size: 0.55em; min-width: 90px;">Head 1<br><span style="font-size: 0.8em;">Syntax</span></div>
+                        <div class="box box-blue" style="font-size: 0.55em; min-width: 90px;">Head 2<br><span style="font-size: 0.8em;">Coreference</span></div>
+                        <div class="box box-green" style="font-size: 0.55em; min-width: 90px;">Head 3<br><span style="font-size: 0.8em;">Semantics</span></div>
+                        <div class="box box-yellow" style="font-size: 0.55em; min-width: 90px;">Head 4<br><span style="font-size: 0.8em;">Position</span></div>
+                        <div class="box box-purple" style="font-size: 0.55em; min-width: 90px;">...</div>
+                        <div class="box box-grey" style="font-size: 0.55em; min-width: 90px;">Head 8<br><span style="font-size: 0.8em;">Rare patterns</span></div>
+                    </div>
+                    <div class="arrow-down">&darr; <span style="font-size: 0.6em;">Concatenate &amp; project</span></div>
+                    <div class="box box-red" style="min-width: 250px; margin: 0 auto;">Final output</div>
+                </div>
+                <div class="fragment formula" style="margin-top: 15px; font-size: 0.85em;">
+                    MultiHead(Q, K, V) = Concat(head<sub>1</sub>, ..., head<sub>h</sub>) W<sup>O</sup>
+                </div>
+                <aside class="notes">
+                    In practice, we do not use just one attention function. We use multiple "heads" in parallel.
+                    Each head has its own set of Q, K, V weight matrices. This means each head can learn to
+                    attend to different types of patterns. Research has shown that different heads actually do
+                    specialize: some learn syntactic dependencies, some learn coreference, some learn positional patterns.
+                    The outputs of all heads are concatenated and projected through a final weight matrix.
+                    The original Transformer uses 8 heads with d_k = 64 each (total dimension 512).
+                    This gives the model much more representational power than a single attention function.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 27: Computational Complexity -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>Computational Complexity</h3>
+                <table class="comparison-table fragment">
+                    <tr>
+                        <th>Model</th>
+                        <th>Complexity per Layer</th>
+                        <th>Sequential Ops</th>
+                        <th>Max Path Length</th>
+                    </tr>
+                    <tr>
+                        <td style="color: var(--red);">RNN</td>
+                        <td>O(n &middot; d<sup>2</sup>)</td>
+                        <td style="color: var(--red);">O(n)</td>
+                        <td style="color: var(--red);">O(n)</td>
+                    </tr>
+                    <tr>
+                        <td style="color: var(--green);">Self-Attention</td>
+                        <td>O(n<sup>2</sup> &middot; d)</td>
+                        <td style="color: var(--green);">O(1)</td>
+                        <td style="color: var(--green);">O(1)</td>
+                    </tr>
+                </table>
+                <div class="fragment" style="margin-top: 20px; font-size: 0.7em;">
+                    <p>Where <span class="highlight-blue">n</span> = sequence length, <span class="highlight-blue">d</span> = model dimension</p>
+                </div>
+                <div class="fragment key-takeaway" style="margin-top: 20px;">
+                    <strong>Trade-off:</strong> Self-attention uses more computation per layer (O(n<sup>2</sup>)),
+                    but it is fully parallel (O(1) sequential steps). For typical NLP lengths, the parallelism wins massively.
+                </div>
+                <p class="fragment" style="font-size: 0.65em; color: var(--yellow); margin-top: 15px;">
+                    The O(n<sup>2</sup>) cost is why long-context models (100K+ tokens) need special techniques
+                    like sparse attention, linear attention, or sliding window attention.
+                </p>
+                <aside class="notes">
+                    Let's compare the computational complexity. This table is from the original Transformer paper.
+                    RNNs have O(n) sequential operations, meaning you must wait n steps. Self-attention has O(1)
+                    sequential operations because everything is computed in parallel.
+                    However, self-attention has O(n-squared) total computation per layer because every word
+                    attends to every other word. For a sequence of 1000 words, that is 1 million attention scores.
+                    For typical NLP lengths (up to a few thousand tokens), the parallelism advantage dominates.
+                    But for very long sequences (100K+ tokens), the quadratic cost becomes a problem.
+                    This is why there is active research on efficient attention variants like sparse attention,
+                    linear attention, and sliding window attention used in models like Mistral.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 28: What Attention Heads Learn -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>What Do Attention Heads Actually Learn?</h3>
+                <p style="font-size: 0.65em; color: var(--grey);">Researchers have analyzed trained Transformer heads and found specialized patterns</p>
+                <div class="two-column" style="margin-top: 20px;">
+                    <div>
+                        <div class="fragment" style="margin-bottom: 15px;">
+                            <p style="font-size: 0.7em; color: var(--red); font-weight: bold;">Syntactic Heads</p>
+                            <p style="font-size: 0.6em; color: var(--grey);">
+                                Link verbs to their subjects<br>
+                                "The cat <span class="highlight">&larr;</span> sat on the mat"
+                            </p>
+                        </div>
+                        <div class="fragment" style="margin-bottom: 15px;">
+                            <p style="font-size: 0.7em; color: var(--blue); font-weight: bold;">Positional Heads</p>
+                            <p style="font-size: 0.6em; color: var(--grey);">
+                                Attend to the previous or next word<br>
+                                Simple local patterns
+                            </p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="fragment" style="margin-bottom: 15px;">
+                            <p style="font-size: 0.7em; color: var(--green); font-weight: bold;">Coreference Heads</p>
+                            <p style="font-size: 0.6em; color: var(--grey);">
+                                Link pronouns to their antecedents<br>
+                                "Mary said <span class="highlight-green">she</span> <span class="highlight-green">&larr;</span> would go"
+                            </p>
+                        </div>
+                        <div class="fragment" style="margin-bottom: 15px;">
+                            <p style="font-size: 0.7em; color: var(--yellow); font-weight: bold;">Semantic Heads</p>
+                            <p style="font-size: 0.6em; color: var(--grey);">
+                                Connect semantically related words<br>
+                                "doctor" &harr; "patient" &harr; "hospital"
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <p class="fragment small" style="color: var(--purple); margin-top: 15px;">
+                    The model <em>discovers</em> these linguistic patterns automatically through training &mdash;
+                    nobody programs them explicitly. This is what makes attention so powerful.
+                </p>
+                <aside class="notes">
+                    One of the fascinating things about multi-head attention is that different heads learn to capture
+                    different linguistic phenomena. Researchers have found heads that specialize in:
+                    - Syntax: linking subjects to verbs, objects to prepositions
+                    - Position: attending to the immediately adjacent word
+                    - Coreference: linking pronouns to the nouns they refer to
+                    - Semantics: connecting words with related meanings
+                    Nobody programs these patterns. The model discovers them through training on large amounts of text.
+                    This is strong evidence that attention is capturing something meaningful about language structure.
+                    Tools like BertViz let you explore these patterns interactively.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 29: Timeline - The Journey to Transformers -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>The Journey to Transformers</h3>
+                <div class="timeline fragment">
+                    <div class="era">
+                        <div class="year">2014</div>
+                        <div class="label">Bahdanau<br>Attention</div>
+                        <div style="font-size: 0.6em; color: var(--grey); margin-top: 5px;">Additive<br>attention<br>for seq2seq</div>
+                    </div>
+                    <div style="color: var(--grey); font-size: 1.5em; align-self: center;">&rarr;</div>
+                    <div class="era">
+                        <div class="year">2015</div>
+                        <div class="label">Luong<br>Attention</div>
+                        <div style="font-size: 0.6em; color: var(--grey); margin-top: 5px;">Dot-product<br>attention<br>variants</div>
+                    </div>
+                    <div style="color: var(--grey); font-size: 1.5em; align-self: center;">&rarr;</div>
+                    <div class="era" style="border-color: var(--yellow);">
+                        <div class="year">2017</div>
+                        <div class="label" style="color: var(--yellow);">Transformer</div>
+                        <div style="font-size: 0.6em; color: var(--grey); margin-top: 5px;">Self-attention<br>replaces<br>RNNs entirely</div>
+                    </div>
+                    <div style="color: var(--grey); font-size: 1.5em; align-self: center;">&rarr;</div>
+                    <div class="era" style="border-color: var(--red);">
+                        <div class="year">2018+</div>
+                        <div class="label" style="color: var(--red);">BERT, GPT<br>& Beyond</div>
+                        <div style="font-size: 0.6em; color: var(--grey); margin-top: 5px;">LLMs built<br>entirely on<br>attention</div>
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 30px;">
+                    <div class="quote-slide" style="font-size: 0.8em; max-width: 75%; margin: 0 auto;">
+                        "Attention Is All You Need"
+                        <br><span style="font-size: 0.7em; color: var(--grey);">&mdash; Vaswani et al., 2017</span>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Let's put everything in historical context. In 2014, Bahdanau showed that attention could
+                    dramatically improve machine translation by letting the decoder look back at all encoder states.
+                    In 2015, Luong simplified the scoring function with dot products.
+                    In 2017, Vaswani et al. published the landmark paper "Attention Is All You Need", which
+                    introduced the Transformer: an architecture built ENTIRELY on attention, with no RNNs at all.
+                    Self-attention replaced the sequential processing of RNNs. This was the paper that changed everything.
+                    From 2018 onwards, every major NLP model (BERT, GPT, T5, etc.) is based on the Transformer.
+                    Every large language model you use today, including the ones behind ChatGPT and Claude,
+                    is built on the attention mechanism we learned today.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 30: Summary - Key Takeaways -->
+            <!-- ============================================================ -->
+            <section>
+                <h3 class="section-title">Key Takeaways</h3>
+                <div style="text-align: left; max-width: 85%; margin: 0 auto; font-size: 0.72em; line-height: 1.8;">
+                    <p class="fragment">
+                        <span class="highlight">1.</span> RNNs have three fundamental limitations:
+                        <span style="color: var(--grey);">vanishing gradients, information bottleneck, sequential processing</span>
+                    </p>
+                    <p class="fragment">
+                        <span class="highlight-blue">2.</span> Attention lets models <strong>focus on relevant parts</strong> of the input
+                        instead of compressing everything into one vector
+                    </p>
+                    <p class="fragment">
+                        <span class="highlight-green">3.</span> Bahdanau (additive) and Luong (multiplicative) attention improved seq2seq models,
+                        but the RNN backbone remained
+                    </p>
+                    <p class="fragment">
+                        <span class="highlight-yellow">4.</span> Self-attention eliminated the need for RNNs entirely:
+                        every word attends to every other word in <strong>O(1) path length</strong>
+                    </p>
+                    <p class="fragment">
+                        <span class="highlight-purple">5.</span> The <strong>Query-Key-Value</strong> framework and
+                        <strong>scaled dot-product</strong> formula are the building blocks of all modern LLMs
+                    </p>
+                </div>
+                <aside class="notes">
+                    Let's recap the five key takeaways from today.
+                    First, we understood why RNNs needed to be replaced: vanishing gradients, bottleneck, slow sequential processing.
+                    Second, attention is the elegant solution: look at all parts of the input, weighted by relevance.
+                    Third, Bahdanau and Luong attention were the first steps, applied to seq2seq translation.
+                    Fourth, self-attention was the breakthrough: it removes RNNs entirely and enables full parallelism.
+                    Fifth, the QKV framework and scaled dot-product formula are what power every LLM today.
+                    Next session, we will see how self-attention is assembled into the full Transformer architecture.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 31: The Key Formula to Remember -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>The One Formula to Remember</h3>
+                <div style="margin: 40px auto;">
+                    <div class="formula formula-large" style="font-size: 1.4em; padding: 30px 50px; border-color: var(--yellow);">
+                        Attention(Q, K, V) = softmax( Q K<sup>T</sup> / &radic;d<sub>k</sub> ) &middot; V
+                    </div>
+                </div>
+                <div class="fragment" style="font-size: 0.7em; margin-top: 30px;">
+                    <div class="flow-horizontal">
+                        <div class="box box-red" style="min-width: 100px;">Q K<sup>T</sup><br><span style="font-size: 0.7em;">similarity</span></div>
+                        <span class="arrow-right">&rarr;</span>
+                        <div class="box box-yellow" style="min-width: 100px;">&divide; &radic;d<sub>k</sub><br><span style="font-size: 0.7em;">scale</span></div>
+                        <span class="arrow-right">&rarr;</span>
+                        <div class="box box-blue" style="min-width: 100px;">softmax<br><span style="font-size: 0.7em;">normalize</span></div>
+                        <span class="arrow-right">&rarr;</span>
+                        <div class="box box-green" style="min-width: 100px;">&times; V<br><span style="font-size: 0.7em;">retrieve</span></div>
+                    </div>
+                </div>
+                <p class="fragment" style="font-size: 0.7em; color: var(--grey); margin-top: 30px;">
+                    Next session: How this formula is assembled into the full <span class="highlight-yellow">Transformer</span> architecture
+                </p>
+                <aside class="notes">
+                    If you take away one thing from today, let it be this formula. Understand each component:
+                    Q times K-transpose computes similarity, dividing by sqrt(d_k) scales it to prevent gradient problems,
+                    softmax turns it into a probability distribution, and multiplying by V retrieves the relevant information.
+                    This formula is used billions of times every second across the world's AI systems.
+                    Next session, we will see how this is assembled into the full Transformer architecture
+                    with positional encodings, layer normalization, feed-forward networks, and encoder-decoder structure.
+                    Great work today! See you after the break.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 32: References -->
+            <!-- ============================================================ -->
+            <section>
+                <h3 style="color: var(--blue);">References &amp; Further Reading</h3>
+                <div style="text-align: left; max-width: 85%; margin: 0 auto; font-size: 0.6em; line-height: 2;">
+                    <p class="fragment">
+                        <span class="highlight-yellow">[1]</span> Bahdanau, Cho &amp; Bengio (2014).
+                        <em>"Neural Machine Translation by Jointly Learning to Align and Translate."</em>
+                        <span style="color: var(--grey);">ICLR 2015. arXiv:1409.0473</span>
+                    </p>
+                    <p class="fragment">
+                        <span class="highlight-yellow">[2]</span> Luong, Pham &amp; Manning (2015).
+                        <em>"Effective Approaches to Attention-based Neural Machine Translation."</em>
+                        <span style="color: var(--grey);">EMNLP 2015. arXiv:1508.04025</span>
+                    </p>
+                    <p class="fragment">
+                        <span class="highlight-yellow">[3]</span> Vaswani, Shazeer, Parmar et al. (2017).
+                        <em>"Attention Is All You Need."</em>
+                        <span style="color: var(--grey);">NeurIPS 2017. arXiv:1706.03762</span>
+                    </p>
+                    <p class="fragment">
+                        <span class="highlight-yellow">[4]</span> Jay Alammar (2018).
+                        <em>"The Illustrated Transformer."</em>
+                        <span style="color: var(--grey);">jalammar.github.io/illustrated-transformer</span>
+                    </p>
+                    <p class="fragment">
+                        <span class="highlight-yellow">[5]</span> Lilian Weng (2018).
+                        <em>"Attention? Attention!"</em>
+                        <span style="color: var(--grey);">lilianweng.github.io/posts/2018-06-24-attention</span>
+                    </p>
+                </div>
+                <aside class="notes">
+                    Here are the key references. The three foundational papers are Bahdanau 2014, Luong 2015,
+                    and Vaswani 2017 (the Transformer paper). For visual learners, Jay Alammar's Illustrated Transformer
+                    is the single best resource on the web. Lilian Weng's blog post is also excellent for a thorough
+                    mathematical treatment. I encourage you to skim at least the Illustrated Transformer before next session.
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            transition: 'slide',
+            plugins: [RevealHighlight, RevealNotes]
+        });
+    </script>
+</body>
+</html>

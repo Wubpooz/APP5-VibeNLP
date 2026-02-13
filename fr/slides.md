@@ -19,34 +19,70 @@ Des méthodes statistiques à Word2Vec
 
 ## Jour 2 - 9 mars 2026
 
-### Boîte à outils Startup
-Outils essentiels pour votre projet NLP Demo Day
+### Session 1 : Mécanismes d'attention
+Limites des RNN, Mécanisme d'attention, Auto-attention
 
-<a href="{{ site.baseurl }}/slides/day2-startup-toolbox.html" class="btn" target="_blank">Voir les diapositives</a>
+<a href="{{ site.baseurl }}/slides/day2-session1-attention.html" class="btn" target="_blank">Voir les diapositives</a>
+
+### Session 2 : Architecture Transformer
+Encodeur-Décodeur, Attention multi-têtes, Encodage positionnel
+
+<a href="{{ site.baseurl }}/slides/day2-session2-transformer.html" class="btn" target="_blank">Voir les diapositives</a>
+
+### Référence présentation de groupe : Boîte à outils Startup
+
+<a href="{{ site.baseurl }}/slides/day2-startup-toolbox.html" class="btn btn-sm" target="_blank">Voir la référence</a>
 
 ---
 
 ## Jour 3 - 13 mars 2026
 
-### IDE IA modernes
-Cursor vs Windsurf vs Cline et au-delà
+### Session 1 : Pré-entraînement
+Tâches de pré-entraînement, Modèles de langage, Lois d'échelle, MLM/CLM
 
-<a href="{{ site.baseurl }}/slides/day3-modern-ai-ides.html" class="btn" target="_blank">Voir les diapositives</a>
+<a href="{{ site.baseurl }}/slides/day3-session1-pretraining.html" class="btn" target="_blank">Voir les diapositives</a>
+
+### Session 2 : Ajustement fin (Fine-tuning)
+Techniques de fine-tuning, Instruction Tuning, Méthodes PEFT (LoRA, Adapter)
+
+<a href="{{ site.baseurl }}/slides/day3-session2-finetuning.html" class="btn" target="_blank">Voir les diapositives</a>
+
+### Référence présentation de groupe : IDE IA modernes
+
+<a href="{{ site.baseurl }}/slides/day3-modern-ai-ides.html" class="btn btn-sm" target="_blank">Voir la référence</a>
 
 ---
 
 ## Jour 4 - 19 mars 2026
 
-### Claude Code : MCP, Prompt Engineering & Pratique
-Maîtriser les fonctionnalités avancées de Claude Code
+### Session 1 : Prompting
+Zero/Few-shot, Ingénierie de prompts, ICL, Chaîne de pensée
 
-<a href="{{ site.baseurl }}/slides/day4-claude-code-mcp.html" class="btn" target="_blank">Voir les diapositives</a>
+<a href="{{ site.baseurl }}/slides/day4-session1-prompting.html" class="btn" target="_blank">Voir les diapositives</a>
+
+### Session 2 : RAG
+Génération augmentée par récupération, Bases de données vectorielles, Architecture RAG
+
+<a href="{{ site.baseurl }}/slides/day4-session2-rag.html" class="btn" target="_blank">Voir les diapositives</a>
+
+### Référence présentation de groupe : Claude Code & MCP
+
+<a href="{{ site.baseurl }}/slides/day4-claude-code-mcp.html" class="btn btn-sm" target="_blank">Voir la référence</a>
 
 ---
 
 ## Jour 5 - 20 mars 2026
 
-### OpenClaw & Agent-to-Agent
-Conception d'agents IA et communication multi-agents
+### Session 1 : Document AI & Multimodal
+Analyse de PDF, Compréhension de documents, Modèles Vision-Langage
 
-<a href="{{ site.baseurl }}/slides/day5-openclaw-a2a.html" class="btn" target="_blank">Voir les diapositives</a>
+<a href="{{ site.baseurl }}/slides/day5-session1-document-ai.html" class="btn" target="_blank">Voir les diapositives</a>
+
+### Session 2 : RLHF
+Bases du RL, Pipeline RLHF, Méthodes d'alignement (DPO/PPO), Sécurité
+
+<a href="{{ site.baseurl }}/slides/day5-session2-rlhf.html" class="btn" target="_blank">Voir les diapositives</a>
+
+### Référence présentation de groupe : OpenClaw & A2A
+
+<a href="{{ site.baseurl }}/slides/day5-openclaw-a2a.html" class="btn btn-sm" target="_blank">Voir la référence</a>

@@ -1,0 +1,1511 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-training: Teaching Machines to Read</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/moon.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --r-heading-font: 'Helvetica Neue', Arial, sans-serif;
+            --r-main-font: 'Helvetica Neue', Arial, sans-serif;
+        }
+        .reveal { font-size: 32px; }
+        .reveal h1 { font-size: 2.2em; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.2em; color: #7ec8e3; }
+        .reveal ul { text-align: left; }
+        .reveal li { margin-bottom: 0.4em; }
+
+        /* Big stat numbers */
+        .stat-big {
+            font-size: 3.5em;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin: 0.2em 0;
+        }
+        .stat-label {
+            font-size: 0.6em;
+            color: #93a1a1;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1em;
+        }
+        .stat-box {
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+        }
+        .stat-box .stat-big {
+            font-size: 2.8em;
+        }
+
+        /* Quote styling */
+        .quote-slide blockquote {
+            font-style: italic;
+            font-size: 1.2em;
+            border-left: 4px solid #7ec8e3;
+            padding-left: 1em;
+            margin: 1em auto;
+            max-width: 80%;
+            text-align: left;
+        }
+        .quote-slide .attribution {
+            text-align: right;
+            color: #93a1a1;
+            font-size: 0.7em;
+            margin-right: 10%;
+        }
+
+        /* Discussion slides */
+        .discussion-slide {
+            background: rgba(126, 200, 227, 0.08) !important;
+        }
+        .discussion-slide h2 {
+            color: #7ec8e3;
+        }
+
+        /* Two column layout */
+        .two-column {
+            display: flex;
+            gap: 2em;
+            align-items: flex-start;
+        }
+        .two-column > div {
+            flex: 1;
+        }
+
+        /* Timeline */
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1em 0;
+            position: relative;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            right: 5%;
+            height: 3px;
+            background: #7ec8e3;
+            z-index: 0;
+        }
+        .timeline .era {
+            text-align: center;
+            z-index: 1;
+            background: #002b36;
+            padding: 0.5em;
+            border-radius: 8px;
+            border: 2px solid #7ec8e3;
+            min-width: 120px;
+        }
+        .timeline .era .year {
+            font-size: 0.7em;
+            color: #93a1a1;
+        }
+        .timeline .era .label {
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+
+        /* Pipeline diagram */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3em;
+            flex-wrap: wrap;
+        }
+        .pipeline .step {
+            background: rgba(126, 200, 227, 0.15);
+            border: 2px solid #7ec8e3;
+            border-radius: 8px;
+            padding: 0.6em 1em;
+            text-align: center;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .pipeline .arrow {
+            font-size: 1.5em;
+            color: #7ec8e3;
+        }
+
+        /* Highlight text */
+        .highlight { color: #ff6b6b; }
+        .highlight-blue { color: #7ec8e3; }
+        .highlight-green { color: #98c379; }
+        .small { font-size: 0.65em; color: #93a1a1; }
+
+        /* Section divider */
+        .section-title h2 {
+            font-size: 2em;
+            margin-bottom: 0.3em;
+        }
+        .section-title h3 {
+            font-size: 0.9em;
+            color: #93a1a1;
+            font-weight: normal;
+        }
+
+        /* Model timeline - vertical */
+        .model-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3em;
+            font-size: 0.75em;
+        }
+        .model-timeline .model-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+        }
+        .model-timeline .model-year {
+            min-width: 50px;
+            color: #93a1a1;
+            font-weight: bold;
+        }
+        .model-timeline .model-name {
+            background: rgba(126, 200, 227, 0.15);
+            padding: 0.2em 0.6em;
+            border-radius: 4px;
+            border: 1px solid #7ec8e3;
+        }
+
+        /* Masking diagram */
+        .token-row {
+            display: flex;
+            justify-content: center;
+            gap: 0.4em;
+            margin: 0.5em 0;
+        }
+        .token {
+            padding: 0.4em 0.7em;
+            border-radius: 6px;
+            font-size: 0.8em;
+            font-weight: bold;
+            border: 2px solid #7ec8e3;
+            background: rgba(126, 200, 227, 0.1);
+        }
+        .token.masked {
+            background: rgba(255, 107, 107, 0.3);
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+        .token.original {
+            background: rgba(152, 195, 121, 0.2);
+            border-color: #98c379;
+            color: #98c379;
+        }
+        .token.random {
+            background: rgba(198, 120, 221, 0.2);
+            border-color: #c678dd;
+            color: #c678dd;
+        }
+
+        /* Comparison table */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75em;
+        }
+        .compare-table th {
+            background: rgba(126, 200, 227, 0.2);
+            padding: 0.5em;
+            text-align: center;
+            border: 1px solid #7ec8e3;
+        }
+        .compare-table td {
+            padding: 0.5em;
+            text-align: center;
+            border: 1px solid rgba(126, 200, 227, 0.3);
+        }
+        .compare-table tr:nth-child(even) {
+            background: rgba(126, 200, 227, 0.05);
+        }
+
+        /* Architecture diagram (CSS) */
+        .arch-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3em;
+            font-size: 0.7em;
+        }
+        .arch-block {
+            padding: 0.5em 1.5em;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            border: 2px solid;
+            min-width: 200px;
+        }
+        .arch-arrow {
+            font-size: 1.2em;
+            color: #93a1a1;
+        }
+
+        /* Scaling law chart (CSS approximate) */
+        .scaling-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1em;
+            font-size: 0.7em;
+        }
+        .scaling-card {
+            background: rgba(126, 200, 227, 0.08);
+            border: 2px solid #7ec8e3;
+            border-radius: 10px;
+            padding: 1em;
+            text-align: center;
+        }
+        .scaling-card .scaling-icon {
+            font-size: 2em;
+            margin-bottom: 0.3em;
+        }
+        .scaling-card h4 {
+            color: #7ec8e3;
+            margin: 0.3em 0;
+        }
+
+        /* Cost bars */
+        .cost-bar-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8em;
+            font-size: 0.75em;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .cost-bar-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8em;
+        }
+        .cost-bar-label {
+            min-width: 120px;
+            text-align: right;
+            font-weight: bold;
+        }
+        .cost-bar-track {
+            flex: 1;
+            height: 32px;
+            background: rgba(126, 200, 227, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+        .cost-bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            padding-left: 0.5em;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        /* Data sources */
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.6em;
+            font-size: 0.7em;
+        }
+        .data-card {
+            background: rgba(126, 200, 227, 0.08);
+            border: 1px solid #7ec8e3;
+            border-radius: 8px;
+            padding: 0.6em;
+            text-align: center;
+        }
+        .data-card .data-size {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+        .data-card .data-name {
+            font-weight: bold;
+            color: #7ec8e3;
+            margin: 0.2em 0;
+        }
+
+        /* Formula box */
+        .formula-box {
+            background: rgba(126, 200, 227, 0.08);
+            border: 2px solid #7ec8e3;
+            border-radius: 10px;
+            padding: 0.8em 1.2em;
+            margin: 0.5em auto;
+            max-width: 85%;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        .formula-box .formula-label {
+            font-size: 0.6em;
+            color: #93a1a1;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.3em;
+        }
+
+        /* Horizontal model timeline */
+        .h-timeline {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.3em;
+            font-size: 0.6em;
+            position: relative;
+            padding: 1em 0;
+        }
+        .h-timeline .h-era {
+            text-align: center;
+            background: #002b36;
+            padding: 0.4em 0.6em;
+            border-radius: 6px;
+            border: 2px solid;
+            min-width: 80px;
+        }
+        .h-timeline .h-era .h-year {
+            font-size: 0.85em;
+            color: #93a1a1;
+        }
+        .h-timeline .h-era .h-name {
+            font-weight: bold;
+            font-size: 1em;
+        }
+        .h-timeline .h-arrow {
+            display: flex;
+            align-items: center;
+            color: #93a1a1;
+            font-size: 1.2em;
+        }
+
+        /* Direction diagram */
+        .direction-diagram {
+            display: flex;
+            justify-content: center;
+            gap: 0.4em;
+            align-items: center;
+            margin: 0.5em 0;
+        }
+        .direction-diagram .d-token {
+            padding: 0.3em 0.6em;
+            border-radius: 6px;
+            font-size: 0.8em;
+            font-weight: bold;
+            border: 2px solid #7ec8e3;
+            background: rgba(126, 200, 227, 0.1);
+        }
+        .direction-diagram .d-arrow {
+            color: #98c379;
+            font-size: 1.2em;
+        }
+        .direction-diagram .d-target {
+            background: rgba(255, 107, 107, 0.2);
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ==================== SLIDE 1: TITLE ==================== -->
+
+            <section>
+                <h1>Pre-training</h1>
+                <h3>Teaching Machines to Read Before They Can Answer</h3>
+                <p style="margin-top: 2em; font-size: 0.7em; color: #93a1a1;">
+                    TAL &mdash; Day 3, Session 1<br>
+                    March 13, 2026<br>
+                    ZHANG Zheng
+                </p>
+                <aside class="notes">
+                    Welcome back to Day 3. In Day 2 you learned about the Transformer architecture:
+                    attention, multi-head attention, positional encoding. Today we answer the question:
+                    how do we actually TRAIN these Transformer models? That process is called pre-training,
+                    and it is the foundation of every modern LLM.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 2: RECAP & TODAY ==================== -->
+
+            <section>
+                <h2>Where We Are</h2>
+                <div class="pipeline">
+                    <div class="step" style="opacity: 0.5;">Day 1<br><span class="small">NLP Basics &amp; Embeddings</span></div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="opacity: 0.5;">Day 2<br><span class="small">Transformers</span></div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="border-color: #ff6b6b;">Day 3<br><span class="small" style="color: #ff6b6b;">Pre-training &amp; Fine-tuning</span></div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="opacity: 0.3;">Day 4&ndash;6<br><span class="small">LLMs &amp; Agents</span></div>
+                </div>
+                <p class="fragment" style="margin-top: 1.5em; font-size: 0.85em;">
+                    Day 2: You learned the <span class="highlight-blue">architecture</span> (the engine).<br>
+                    Day 3: Today we learn the <span class="highlight">training</span> (the fuel).
+                </p>
+                <aside class="notes">
+                    Quick context setting. We have the Transformer architecture. But architecture alone is just
+                    an empty engine. Pre-training is how we fill that engine with knowledge from text data.
+                    This session covers pre-training; the afternoon session will cover fine-tuning and alignment.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 3: TODAY'S AGENDA ==================== -->
+
+            <section>
+                <h2>Today's Session</h2>
+                <ol style="font-size: 0.85em;">
+                    <li class="fragment">What is pre-training? <span class="small">The transfer learning revolution</span></li>
+                    <li class="fragment">Language modeling objectives <span class="small">MLM vs CLM</span></li>
+                    <li class="fragment">BERT's approach: Masked Language Modeling</li>
+                    <li class="fragment">GPT's approach: Causal Language Modeling</li>
+                    <li class="fragment">MLM vs CLM comparison</li>
+                    <li class="fragment">Scaling laws <span class="small">How big? How much data? How much compute?</span></li>
+                    <li class="fragment">Pre-training data &amp; cost</li>
+                    <li class="fragment">Key models timeline</li>
+                </ol>
+                <aside class="notes">
+                    Here is our roadmap for the next 2 hours. We will move from the conceptual motivation
+                    to the specific techniques (MLM and CLM), then zoom out to talk about scaling and
+                    economics. Each section builds on the previous one.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 1: WHAT IS PRE-TRAINING? ==================== -->
+
+            <!-- SLIDE 4: Section Title -->
+            <section class="section-title">
+                <h2>Part 1</h2>
+                <h3>What Is Pre-training and Why Does It Matter?</h3>
+                <aside class="notes">
+                    Let's start with the fundamental question: why pre-train at all?
+                    This is the most important conceptual point of the session.
+                </aside>
+            </section>
+
+            <!-- SLIDE 5: The Old Way -->
+            <section>
+                <h2>Before Pre-training</h2>
+                <div class="two-column">
+                    <div>
+                        <h3 style="color: #ff6b6b;">The Old Way</h3>
+                        <ul style="font-size: 0.8em;">
+                            <li class="fragment">Collect labeled data for <em>your</em> task</li>
+                            <li class="fragment">Train a model from scratch</li>
+                            <li class="fragment">Need 10K&ndash;100K+ labeled examples</li>
+                            <li class="fragment">Model knows <em>nothing</em> about language</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="color: #98c379;">The New Way</h3>
+                        <ul style="font-size: 0.8em;">
+                            <li class="fragment">Pre-train on <em>massive</em> unlabeled text</li>
+                            <li class="fragment">Fine-tune on your specific task</li>
+                            <li class="fragment">Need only 100&ndash;1K labeled examples</li>
+                            <li class="fragment">Model already <em>understands</em> language</li>
+                        </ul>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Before 2018, if you wanted to do sentiment analysis, you needed thousands of labeled
+                    movie reviews. The model started as a blank slate. After pre-training, the model already
+                    knows grammar, facts, reasoning patterns. You just need a small number of examples to
+                    teach it YOUR specific task. This is the transfer learning revolution.
+                </aside>
+            </section>
+
+            <!-- SLIDE 6: Transfer Learning Analogy -->
+            <section class="quote-slide">
+                <h2>Transfer Learning</h2>
+                <blockquote>
+                    Pre-training is like going to school for 20 years. Fine-tuning is like your first week at a new job.
+                </blockquote>
+                <div class="pipeline fragment" style="margin-top: 1.5em;">
+                    <div class="step" style="border-color: #98c379;">
+                        <span style="color: #98c379;">Pre-train</span><br>
+                        <span class="small">Learn language from<br>billions of words</span>
+                    </div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="border-color: #e5c07b;">
+                        <span style="color: #e5c07b;">Fine-tune</span><br>
+                        <span class="small">Adapt to specific<br>task or domain</span>
+                    </div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="border-color: #ff6b6b;">
+                        <span style="color: #ff6b6b;">Deploy</span><br>
+                        <span class="small">Use on real<br>user queries</span>
+                    </div>
+                </div>
+                <aside class="notes">
+                    This analogy helps a lot. Think of pre-training as general education. The model reads the
+                    internet and learns how language works, learns facts about the world, learns reasoning patterns.
+                    Fine-tuning is like specialized training for a specific job. It is much faster because you
+                    already have a strong foundation. This is exactly the concept from Howard and Ruder's ULMFiT (2018)
+                    and was dramatically scaled up by BERT and GPT.
+                </aside>
+            </section>
+
+            <!-- SLIDE 7: Why This Works -->
+            <section>
+                <h2>Why Does Pre-training Work?</h2>
+                <ul>
+                    <li class="fragment"><strong>Self-supervised learning</strong>: Labels come <em>for free</em> from the text itself
+                        <br><span class="small">No human annotation needed &mdash; the next word IS the label</span></li>
+                    <li class="fragment"><strong>Practically infinite data</strong>: The internet has trillions of words
+                        <br><span class="small">No bottleneck of expensive human labeling</span></li>
+                    <li class="fragment"><strong>Language encodes knowledge</strong>: Predicting text forces learning of
+                        <br><span class="small">Grammar, facts, reasoning, common sense, even code</span></li>
+                    <li class="fragment"><strong>Universal representations</strong>: Same pre-trained model works for many tasks
+                        <br><span class="small">Sentiment, QA, translation, summarization, coding...</span></li>
+                </ul>
+                <aside class="notes">
+                    The key insight is SELF-SUPERVISED learning. You don't need humans to label data.
+                    The text itself provides the supervision signal. If you take a sentence and hide a word,
+                    predicting that word forces the model to understand syntax, semantics, and world knowledge.
+                    This is what makes pre-training scalable to trillions of tokens.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 2: LANGUAGE MODELING OBJECTIVES ==================== -->
+
+            <!-- SLIDE 8: Section Title -->
+            <section class="section-title">
+                <h2>Part 2</h2>
+                <h3>Language Modeling: The Pre-training Objective</h3>
+                <aside class="notes">
+                    Now let's get specific. What exactly does the model learn during pre-training?
+                    There are two main approaches, and they lead to fundamentally different models.
+                </aside>
+            </section>
+
+            <!-- SLIDE 9: Two Approaches -->
+            <section>
+                <h2>Two Approaches to Language Modeling</h2>
+                <div class="two-column" style="margin-top: 1em;">
+                    <div style="border: 2px solid #7ec8e3; border-radius: 10px; padding: 1em; text-align: center;">
+                        <h3 style="color: #7ec8e3;">Masked LM (MLM)</h3>
+                        <p style="font-size: 0.8em;">Hide some words,<br>predict them from context</p>
+                        <p style="font-size: 2em; margin: 0.3em 0;">&#x1F3AD;</p>
+                        <p style="font-size: 0.9em;"><strong>BERT</strong> (2018)</p>
+                        <p class="small">Bidirectional</p>
+                    </div>
+                    <div style="border: 2px solid #ff6b6b; border-radius: 10px; padding: 1em; text-align: center;">
+                        <h3 style="color: #ff6b6b;">Causal LM (CLM)</h3>
+                        <p style="font-size: 0.8em;">Read left-to-right,<br>predict the next word</p>
+                        <p style="font-size: 2em; margin: 0.3em 0;">&#x27A1;</p>
+                        <p style="font-size: 0.9em;"><strong>GPT</strong> (2018)</p>
+                        <p class="small">Unidirectional (autoregressive)</p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Both approaches came out around the same time (2018) and represent fundamentally
+                    different philosophies. BERT says: look at ALL the context around a word.
+                    GPT says: read left to right, one word at a time. Both are valid,
+                    but they lead to models with very different strengths. Let's dive into each.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 3: BERT's MLM ==================== -->
+
+            <!-- SLIDE 10: BERT MLM -->
+            <section>
+                <h2>Masked Language Modeling (MLM)</h2>
+                <h3>BERT's Approach &mdash; Devlin et al., 2018</h3>
+                <div style="margin-top: 1em;">
+                    <p style="font-size: 0.85em;">Input sentence:</p>
+                    <div class="token-row">
+                        <div class="token">The</div>
+                        <div class="token">cat</div>
+                        <div class="token">sat</div>
+                        <div class="token">on</div>
+                        <div class="token">the</div>
+                        <div class="token">warm</div>
+                        <div class="token">mat</div>
+                    </div>
+                    <p class="fragment" style="font-size: 0.85em; margin-top: 0.5em;">Randomly mask 15% of tokens:</p>
+                    <div class="token-row fragment">
+                        <div class="token">The</div>
+                        <div class="token masked">[MASK]</div>
+                        <div class="token">sat</div>
+                        <div class="token">on</div>
+                        <div class="token">the</div>
+                        <div class="token masked">[MASK]</div>
+                        <div class="token">mat</div>
+                    </div>
+                    <p class="fragment" style="font-size: 0.85em; margin-top: 0.5em;">Model predicts: [MASK] &rarr; <span class="highlight-green">"cat"</span>, [MASK] &rarr; <span class="highlight-green">"warm"</span></p>
+                </div>
+                <aside class="notes">
+                    Here is the core idea of BERT. Take a sentence, randomly pick 15% of the tokens,
+                    replace them with a special MASK token, and ask the model to predict what was there.
+                    The key: the model can look at BOTH sides (left and right context) to make its prediction.
+                    "The ___ sat on the ___ mat" - you need context from both directions to figure out
+                    these are "cat" and "warm".
+                </aside>
+            </section>
+
+            <!-- SLIDE 11: The 80/10/10 Strategy -->
+            <section>
+                <h2>The 80/10/10 Masking Strategy</h2>
+                <p style="font-size: 0.8em; margin-bottom: 0.5em;">Of the 15% selected tokens:</p>
+                <div style="display: flex; flex-direction: column; gap: 0.6em; max-width: 700px; margin: 0 auto;">
+                    <div class="fragment" style="display: flex; align-items: center; gap: 0.8em;">
+                        <div style="min-width: 60px; font-size: 1.8em; font-weight: bold; color: #ff6b6b;">80%</div>
+                        <div>
+                            <div class="token-row" style="justify-content: flex-start; margin: 0;">
+                                <div class="token">The</div>
+                                <div class="token masked">[MASK]</div>
+                                <div class="token">sat</div>
+                            </div>
+                            <span class="small">Replace with [MASK] token</span>
+                        </div>
+                    </div>
+                    <div class="fragment" style="display: flex; align-items: center; gap: 0.8em;">
+                        <div style="min-width: 60px; font-size: 1.8em; font-weight: bold; color: #c678dd;">10%</div>
+                        <div>
+                            <div class="token-row" style="justify-content: flex-start; margin: 0;">
+                                <div class="token">The</div>
+                                <div class="token random">dog</div>
+                                <div class="token">sat</div>
+                            </div>
+                            <span class="small">Replace with random word</span>
+                        </div>
+                    </div>
+                    <div class="fragment" style="display: flex; align-items: center; gap: 0.8em;">
+                        <div style="min-width: 60px; font-size: 1.8em; font-weight: bold; color: #98c379;">10%</div>
+                        <div>
+                            <div class="token-row" style="justify-content: flex-start; margin: 0;">
+                                <div class="token">The</div>
+                                <div class="token original">cat</div>
+                                <div class="token">sat</div>
+                            </div>
+                            <span class="small">Keep original word (unchanged)</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="fragment small" style="margin-top: 1em; max-width: 80%; margin-left: auto; margin-right: auto;">
+                    Why? If always [MASK], the model learns to only work when it sees [MASK].<br>
+                    Random + unchanged tokens force the model to maintain good representations for ALL tokens.
+                </p>
+                <aside class="notes">
+                    This is a clever trick. If you always use MASK, the model learns a shortcut: it only
+                    needs to pay attention when it sees the MASK token. By sometimes using random words and
+                    sometimes keeping the original, the model must maintain useful representations for every
+                    position, because any token MIGHT need to be predicted. The 10% random also prevents
+                    the model from just copying the input.
+                </aside>
+            </section>
+
+            <!-- SLIDE 12: NSP -->
+            <section>
+                <h2>Next Sentence Prediction (NSP)</h2>
+                <p style="font-size: 0.85em;">BERT's second pre-training objective:</p>
+                <div class="fragment" style="margin: 1em auto; max-width: 80%;">
+                    <div style="background: rgba(152, 195, 121, 0.1); border: 2px solid #98c379; border-radius: 8px; padding: 0.8em; margin-bottom: 0.5em;">
+                        <span style="color: #98c379; font-weight: bold;">IsNext (50%)</span><br>
+                        <span style="font-size: 0.8em;">[CLS] The cat sat on the mat [SEP] It was a warm afternoon [SEP]</span>
+                    </div>
+                    <div style="background: rgba(255, 107, 107, 0.1); border: 2px solid #ff6b6b; border-radius: 8px; padding: 0.8em;">
+                        <span style="color: #ff6b6b; font-weight: bold;">NotNext (50%)</span><br>
+                        <span style="font-size: 0.8em;">[CLS] The cat sat on the mat [SEP] Stock prices rose sharply [SEP]</span>
+                    </div>
+                </div>
+                <ul class="fragment" style="font-size: 0.75em;">
+                    <li>Helps the model understand <span class="highlight-blue">inter-sentence relationships</span></li>
+                    <li>Later work (RoBERTa, 2019) showed NSP may <em>not</em> be necessary</li>
+                    <li>Replaced by better objectives like Sentence Order Prediction (ALBERT)</li>
+                </ul>
+                <aside class="notes">
+                    BERT also has a second task: given two sentences, predict whether the second sentence
+                    actually follows the first in the original document. This was meant to help with
+                    tasks like question answering and natural language inference. However, later research
+                    by Liu et al. in RoBERTa showed that NSP doesn't actually help much. The MLM
+                    objective alone is powerful enough. ALBERT replaced it with Sentence Order Prediction
+                    which worked better.
+                </aside>
+            </section>
+
+            <!-- SLIDE 13: MLM Loss Function -->
+            <section>
+                <h2>MLM Training Objective</h2>
+                <div class="formula-box">
+                    <div class="formula-label">Masked Language Model Loss</div>
+                    L<sub>MLM</sub> = &minus; &sum;<sub>i &isin; masked</sub> log P(x<sub>i</sub> | x<sub>\masked</sub> ; &theta;)
+                </div>
+                <ul style="font-size: 0.8em; margin-top: 1em;">
+                    <li class="fragment"><span class="highlight-blue">x<sub>i</sub></span> = the original token at masked position <em>i</em></li>
+                    <li class="fragment"><span class="highlight-blue">x<sub>\masked</sub></span> = all <em>unmasked</em> tokens (both left AND right context)</li>
+                    <li class="fragment"><span class="highlight-blue">&theta;</span> = model parameters</li>
+                    <li class="fragment">Key: the model sees <span class="highlight">bidirectional context</span></li>
+                </ul>
+                <p class="fragment small" style="margin-top: 1em;">
+                    In plain English: maximize the probability of correctly predicting each masked token,
+                    given all the surrounding unmasked tokens.
+                </p>
+                <aside class="notes">
+                    Let's look at the math, which is straightforward. For each masked position,
+                    we compute the cross-entropy loss between the model's prediction and the true token.
+                    The critical thing to notice: the conditioning is on x_backslash_masked, meaning ALL
+                    unmasked tokens. The model looks left AND right. This is what makes BERT bidirectional.
+                    Contrast this with what GPT does, which we'll see next.
+                </aside>
+            </section>
+
+            <!-- SLIDE 14: BERT Architecture Diagram -->
+            <section>
+                <h2>BERT: Architecture Overview</h2>
+                <div class="arch-diagram">
+                    <div class="arch-block" style="border-color: #ff6b6b; background: rgba(255, 107, 107, 0.1);">
+                        Output: Predict masked tokens
+                    </div>
+                    <div class="arch-arrow">&uarr;</div>
+                    <div class="arch-block" style="border-color: #7ec8e3; background: rgba(126, 200, 227, 0.1);">
+                        Transformer Encoder &times; 12 (or 24)<br>
+                        <span class="small">Bidirectional self-attention</span>
+                    </div>
+                    <div class="arch-arrow">&uarr;</div>
+                    <div class="arch-block" style="border-color: #98c379; background: rgba(152, 195, 121, 0.1);">
+                        Token Embeddings + Position Embeddings + Segment Embeddings
+                    </div>
+                    <div class="arch-arrow">&uarr;</div>
+                    <div class="arch-block" style="border-color: #93a1a1; background: rgba(147, 161, 161, 0.1);">
+                        Input: &quot;The [MASK] sat on the [MASK] mat&quot;
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 0.8em;">
+                    <div class="stat-row">
+                        <div class="stat-box">
+                            <div class="stat-big" style="font-size: 2em;">110M</div>
+                            <div class="stat-label">BERT-Base params</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-big" style="font-size: 2em;">340M</div>
+                            <div class="stat-label">BERT-Large params</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-big" style="font-size: 2em;">16 GB</div>
+                            <div class="stat-label">Training data</div>
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    BERT uses only the Transformer ENCODER (remember, the original Transformer had both
+                    encoder and decoder). Because BERT uses the encoder, attention is bidirectional -
+                    each token attends to all other tokens. BERT-Base has 12 layers, 768 hidden size,
+                    12 attention heads. BERT-Large has 24 layers, 1024 hidden size, 16 heads.
+                    Trained on BookCorpus and English Wikipedia, about 3.3 billion words total.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 4: GPT's CLM ==================== -->
+
+            <!-- SLIDE 15: Section Title -->
+            <section class="section-title">
+                <h2>Part 3</h2>
+                <h3>Causal Language Modeling: GPT's Approach</h3>
+                <aside class="notes">
+                    Now let's look at the other approach. GPT came out slightly before BERT
+                    (GPT-1 in June 2018, BERT in October 2018), but the GPT approach became
+                    the dominant paradigm for large language models.
+                </aside>
+            </section>
+
+            <!-- SLIDE 16: Causal LM -->
+            <section>
+                <h2>Causal Language Modeling (CLM)</h2>
+                <h3>The GPT Approach &mdash; Radford et al., 2018</h3>
+                <p style="font-size: 0.85em; margin-top: 0.8em;">Predict the <span class="highlight">next token</span>, reading left-to-right:</p>
+                <div class="fragment" style="margin: 1em 0;">
+                    <div class="direction-diagram">
+                        <div class="d-token">The</div>
+                        <div class="d-arrow">&rarr;</div>
+                        <div class="d-token">cat</div>
+                        <div class="d-arrow">&rarr;</div>
+                        <div class="d-token">sat</div>
+                        <div class="d-arrow">&rarr;</div>
+                        <div class="d-token">on</div>
+                        <div class="d-arrow">&rarr;</div>
+                        <div class="d-token">the</div>
+                        <div class="d-arrow">&rarr;</div>
+                        <div class="d-target">?</div>
+                    </div>
+                </div>
+                <div class="fragment" style="font-size: 0.85em;">
+                    <p>At each position, predict the next token using <em>only</em> previous tokens:</p>
+                    <div class="token-row" style="margin-top: 0.5em;">
+                        <div class="token" style="font-size: 0.7em;">"The" &rarr; <span class="highlight-green">cat</span></div>
+                        <div class="token" style="font-size: 0.7em;">"The cat" &rarr; <span class="highlight-green">sat</span></div>
+                        <div class="token" style="font-size: 0.7em;">"The cat sat" &rarr; <span class="highlight-green">on</span></div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    GPT uses causal language modeling, also called autoregressive language modeling.
+                    The idea is simple: read a sequence of tokens from left to right, and at each step,
+                    predict the next token. The model can only look at what came BEFORE, never ahead.
+                    This is like reading a book one word at a time and constantly guessing what comes next.
+                    This constraint is enforced by a causal attention mask in the Transformer.
+                </aside>
+            </section>
+
+            <!-- SLIDE 17: CLM Loss -->
+            <section>
+                <h2>CLM Training Objective</h2>
+                <div class="formula-box">
+                    <div class="formula-label">Causal Language Model Loss</div>
+                    L<sub>CLM</sub> = &minus; &sum;<sub>t=1</sub><sup>T</sup> log P(x<sub>t</sub> | x<sub>1</sub>, x<sub>2</sub>, ..., x<sub>t&minus;1</sub> ; &theta;)
+                </div>
+                <ul style="font-size: 0.8em; margin-top: 1em;">
+                    <li class="fragment"><span class="highlight-blue">x<sub>t</sub></span> = token at position <em>t</em></li>
+                    <li class="fragment">Conditioning on <span class="highlight">x<sub>1</sub> ... x<sub>t&minus;1</sub></span> only = <strong>left context</strong></li>
+                    <li class="fragment">Every token is a training example (not just 15%)</li>
+                    <li class="fragment">Natural for <span class="highlight-green">text generation</span>: just keep predicting next tokens</li>
+                </ul>
+                <p class="fragment small" style="margin-top: 1em;">
+                    In plain English: maximize the probability of each token given everything that came before it.
+                </p>
+                <aside class="notes">
+                    Compare this formula to BERT's. The key difference: the conditioning is only on
+                    x_1 through x_{t-1}. The model can only look LEFT. Also notice: every token is a
+                    training signal, not just 15%. This means CLM is more training-efficient per token.
+                    And crucially, this objective directly corresponds to text generation: to generate text,
+                    you just keep predicting the next token, one at a time. This is why GPT-style models
+                    are so good at generation.
+                </aside>
+            </section>
+
+            <!-- SLIDE 18: Autoregressive Generation -->
+            <section>
+                <h2>Autoregressive Generation</h2>
+                <p style="font-size: 0.85em;">CLM naturally enables text generation:</p>
+                <div style="max-width: 80%; margin: 1em auto; text-align: left; font-size: 0.8em;">
+                    <p class="fragment" style="margin: 0.4em 0;">
+                        <span style="color: #93a1a1;">Prompt:</span> <span class="highlight-blue">"The capital of France is"</span>
+                    </p>
+                    <p class="fragment" style="margin: 0.4em 0;">
+                        Step 1: P(next | "The capital of France is") &rarr; <span class="highlight-green"><strong>Paris</strong></span>
+                    </p>
+                    <p class="fragment" style="margin: 0.4em 0;">
+                        Step 2: P(next | "The capital of France is Paris") &rarr; <span class="highlight-green"><strong>,</strong></span>
+                    </p>
+                    <p class="fragment" style="margin: 0.4em 0;">
+                        Step 3: P(next | "The capital of France is Paris,") &rarr; <span class="highlight-green"><strong>a</strong></span>
+                    </p>
+                    <p class="fragment" style="margin: 0.4em 0;">
+                        Step 4: P(next | "The capital of France is Paris, a") &rarr; <span class="highlight-green"><strong>city</strong></span>
+                    </p>
+                    <p class="fragment" style="margin: 0.4em 0; color: #93a1a1;">... and so on until end-of-sequence token</p>
+                </div>
+                <p class="fragment small" style="margin-top: 0.5em;">
+                    This is exactly how ChatGPT, Claude, and every modern LLM generates text.
+                    One token at a time, each conditioned on everything before it.
+                </p>
+                <aside class="notes">
+                    This is how every LLM chatbot works: it produces text one token at a time.
+                    Each new token is sampled from the probability distribution the model outputs.
+                    The model feeds each generated token back into itself to produce the next one.
+                    That streaming effect you see when ChatGPT or Claude is typing? That is literally
+                    the model generating tokens one by one. This is called autoregressive generation.
+                </aside>
+            </section>
+
+            <!-- SLIDE 19: GPT Architecture -->
+            <section>
+                <h2>GPT: Architecture Overview</h2>
+                <div class="arch-diagram">
+                    <div class="arch-block" style="border-color: #ff6b6b; background: rgba(255, 107, 107, 0.1);">
+                        Output: Predict next token at each position
+                    </div>
+                    <div class="arch-arrow">&uarr;</div>
+                    <div class="arch-block" style="border-color: #7ec8e3; background: rgba(126, 200, 227, 0.1);">
+                        Transformer Decoder &times; N layers<br>
+                        <span class="small">Causal (masked) self-attention &mdash; can only look left</span>
+                    </div>
+                    <div class="arch-arrow">&uarr;</div>
+                    <div class="arch-block" style="border-color: #98c379; background: rgba(152, 195, 121, 0.1);">
+                        Token Embeddings + Position Embeddings
+                    </div>
+                    <div class="arch-arrow">&uarr;</div>
+                    <div class="arch-block" style="border-color: #93a1a1; background: rgba(147, 161, 161, 0.1);">
+                        Input: &quot;The cat sat on the&quot;
+                    </div>
+                </div>
+                <p class="fragment small" style="margin-top: 0.8em;">
+                    Uses the Transformer <span class="highlight">Decoder</span> (not Encoder).<br>
+                    The causal attention mask ensures each position can only attend to earlier positions.
+                </p>
+                <aside class="notes">
+                    GPT uses the Transformer Decoder, unlike BERT which uses the Encoder. The key
+                    difference is the causal attention mask: a triangular mask that prevents each position
+                    from seeing future tokens. This is the same masked self-attention from the original
+                    Transformer's decoder, but without the cross-attention to an encoder. Sometimes
+                    called "decoder-only" architecture.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 5: MLM vs CLM ==================== -->
+
+            <!-- SLIDE 20: MLM vs CLM Comparison -->
+            <section>
+                <h2>MLM vs CLM: Comparison</h2>
+                <table class="compare-table">
+                    <tr>
+                        <th></th>
+                        <th style="color: #7ec8e3;">MLM (BERT)</th>
+                        <th style="color: #ff6b6b;">CLM (GPT)</th>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Direction</strong></td>
+                        <td>Bidirectional</td>
+                        <td>Left-to-right only</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Architecture</strong></td>
+                        <td>Encoder</td>
+                        <td>Decoder</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Training signal</strong></td>
+                        <td>15% of tokens</td>
+                        <td>100% of tokens</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Best for</strong></td>
+                        <td>Understanding tasks</td>
+                        <td>Generation tasks</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Example uses</strong></td>
+                        <td>Classification, NER, QA extraction</td>
+                        <td>Text generation, chatbots, coding</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Scaling winner</strong></td>
+                        <td style="color: #93a1a1;">Plateaued at ~1B</td>
+                        <td style="color: #98c379;">Scaled to 1T+</td>
+                    </tr>
+                </table>
+                <aside class="notes">
+                    Let's compare directly. BERT sees both directions, making it better at understanding.
+                    GPT sees only left context, making it natural for generation. BERT trains on only 15%
+                    of tokens per example; GPT on all tokens. In practice, CLM won the scaling race:
+                    all models above about 1 billion parameters today use CLM or variants of it.
+                    BERT-style models are still excellent for classification and extraction tasks where
+                    you need deep bidirectional understanding.
+                </aside>
+            </section>
+
+            <!-- SLIDE 21: Visual Comparison -->
+            <section>
+                <h2>Bidirectional vs Unidirectional</h2>
+                <div class="two-column" style="margin-top: 1em;">
+                    <div style="text-align: center;">
+                        <h3 style="color: #7ec8e3;">BERT (MLM)</h3>
+                        <div style="font-size: 0.75em; border: 2px solid #7ec8e3; border-radius: 8px; padding: 0.8em;">
+                            <p>&larr; context &rarr;</p>
+                            <div class="token-row" style="justify-content: center;">
+                                <div class="token" style="font-size: 0.8em;">The</div>
+                                <div class="token masked" style="font-size: 0.8em;">[MASK]</div>
+                                <div class="token" style="font-size: 0.8em;">sat</div>
+                            </div>
+                            <p style="margin-top: 0.3em;">Sees: "The __ sat"</p>
+                            <p style="color: #98c379;">Both sides help predict!</p>
+                        </div>
+                        <p class="small" style="margin-top: 0.5em;">Fills in blanks (cloze task)</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <h3 style="color: #ff6b6b;">GPT (CLM)</h3>
+                        <div style="font-size: 0.75em; border: 2px solid #ff6b6b; border-radius: 8px; padding: 0.8em;">
+                            <p>&larr; context only</p>
+                            <div class="token-row" style="justify-content: center;">
+                                <div class="token" style="font-size: 0.8em;">The</div>
+                                <div class="token" style="font-size: 0.8em;">cat</div>
+                                <div class="d-target" style="padding: 0.3em 0.6em; border-radius: 6px; font-size: 0.8em; font-weight: bold; border: 2px solid #ff6b6b;">?</div>
+                            </div>
+                            <p style="margin-top: 0.3em;">Sees: "The cat __"</p>
+                            <p style="color: #e5c07b;">Only left context!</p>
+                        </div>
+                        <p class="small" style="margin-top: 0.5em;">Continues the text (generation)</p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    This visual makes the difference clear. BERT is like a fill-in-the-blank test:
+                    you can read the whole sentence and then guess the missing word. GPT is like
+                    finishing someone's sentence: you only hear what they've said so far and predict
+                    what comes next. Both are useful skills, but generation (GPT's strength) turned
+                    out to be the more powerful paradigm at scale.
+                </aside>
+            </section>
+
+            <!-- SLIDE 22: Discussion -->
+            <section class="discussion-slide">
+                <h2>Quick Discussion</h2>
+                <p style="font-size: 0.9em; margin-bottom: 1em;">Think about this:</p>
+                <ul style="font-size: 0.85em;">
+                    <li class="fragment">Why did the <span class="highlight">CLM approach win</span> the scaling race?</li>
+                    <li class="fragment">What makes generation more versatile than classification?</li>
+                    <li class="fragment">Can a generation model <em>also</em> do classification?<br>
+                        <span class="small">Hint: "Is this review positive or negative? Answer: ___"</span></li>
+                </ul>
+                <p class="fragment" style="margin-top: 1.5em; font-size: 0.8em; color: #93a1a1;">
+                    Key insight: Generation <em>subsumes</em> understanding. A model that can generate
+                    coherent text must understand it too. The reverse is not always true.
+                </p>
+                <aside class="notes">
+                    Pause for 2-3 minutes here. Let students discuss. The key point is that generation
+                    is a harder task that requires understanding. If you can complete "Is this positive
+                    or negative? The movie was terrible. Answer:" with "Negative", then you've done
+                    classification via generation. GPT-style models showed that one model can do everything
+                    if you frame it as text generation. This was the insight behind GPT-3's in-context learning.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 6: SCALING LAWS ==================== -->
+
+            <!-- SLIDE 23: Section Title -->
+            <section class="section-title">
+                <h2>Part 4</h2>
+                <h3>Scaling Laws: Bigger Is (Predictably) Better</h3>
+                <aside class="notes">
+                    One of the most remarkable discoveries in deep learning: the performance of language
+                    models follows predictable mathematical laws as you scale up. Let's look at what
+                    Kaplan et al. and the Chinchilla team discovered.
+                </aside>
+            </section>
+
+            <!-- SLIDE 24: Scaling Laws -->
+            <section>
+                <h2>Scaling Laws</h2>
+                <h3>Kaplan et al., 2020 (OpenAI)</h3>
+                <p style="font-size: 0.85em;">Loss follows <span class="highlight">power laws</span> in three variables:</p>
+                <div class="scaling-grid fragment">
+                    <div class="scaling-card">
+                        <div class="scaling-icon" style="color: #ff6b6b;">N</div>
+                        <h4>Model Size</h4>
+                        <p>Number of parameters</p>
+                        <div class="formula-box" style="border-color: #ff6b6b; padding: 0.4em;">
+                            L(N) &prop; N<sup>&minus;0.076</sup>
+                        </div>
+                    </div>
+                    <div class="scaling-card">
+                        <div class="scaling-icon" style="color: #7ec8e3;">D</div>
+                        <h4>Dataset Size</h4>
+                        <p>Number of tokens</p>
+                        <div class="formula-box" style="border-color: #7ec8e3; padding: 0.4em;">
+                            L(D) &prop; D<sup>&minus;0.095</sup>
+                        </div>
+                    </div>
+                    <div class="scaling-card">
+                        <div class="scaling-icon" style="color: #98c379;">C</div>
+                        <h4>Compute</h4>
+                        <p>FLOPs used for training</p>
+                        <div class="formula-box" style="border-color: #98c379; padding: 0.4em;">
+                            L(C) &prop; C<sup>&minus;0.050</sup>
+                        </div>
+                    </div>
+                </div>
+                <p class="fragment small" style="margin-top: 0.8em;">
+                    These power laws hold over <strong>many orders of magnitude</strong>. Loss decreases smoothly and predictably
+                    as you increase N, D, or C &mdash; no sudden jumps or plateaus.
+                </p>
+                <aside class="notes">
+                    This was a landmark paper. They trained hundreds of models of different sizes and
+                    discovered that loss follows very clean power laws. Double the parameters, and the loss
+                    decreases by a predictable amount. Double the data, same thing. Double the compute,
+                    same thing. This means we can PREDICT how well a model will perform before training it.
+                    This is what gave labs the confidence to invest hundreds of millions of dollars in
+                    training runs. You can estimate the return before you spend the money.
+                </aside>
+            </section>
+
+            <!-- SLIDE 25: Chinchilla -->
+            <section>
+                <h2>Chinchilla: Compute-Optimal Training</h2>
+                <h3>Hoffmann et al., 2022 (DeepMind)</h3>
+                <div class="two-column" style="margin-top: 1em;">
+                    <div>
+                        <p style="font-size: 0.8em;"><strong>Key finding:</strong></p>
+                        <div class="formula-box fragment">
+                            <div class="formula-label">Chinchilla Optimal Ratio</div>
+                            Tokens &asymp; 20 &times; Parameters
+                        </div>
+                        <ul style="font-size: 0.75em; margin-top: 0.8em;">
+                            <li class="fragment">Most models were <span class="highlight">undertrained</span></li>
+                            <li class="fragment">GPT-3 (175B params) was trained on 300B tokens</li>
+                            <li class="fragment">Chinchilla optimal: should have used <span class="highlight-green">3.5T tokens</span></li>
+                        </ul>
+                    </div>
+                    <div class="fragment">
+                        <p style="font-size: 0.8em;"><strong>Example:</strong></p>
+                        <table class="compare-table" style="font-size: 0.85em;">
+                            <tr>
+                                <th></th>
+                                <th>Gopher</th>
+                                <th>Chinchilla</th>
+                            </tr>
+                            <tr>
+                                <td>Params</td>
+                                <td>280B</td>
+                                <td style="color: #98c379;">70B</td>
+                            </tr>
+                            <tr>
+                                <td>Tokens</td>
+                                <td>300B</td>
+                                <td style="color: #98c379;">1.4T</td>
+                            </tr>
+                            <tr>
+                                <td>Compute</td>
+                                <td colspan="2" style="color: #e5c07b;">Same!</td>
+                            </tr>
+                            <tr>
+                                <td>Result</td>
+                                <td></td>
+                                <td style="color: #98c379;">Chinchilla wins</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Chinchilla was a game-changer. DeepMind showed that for a given compute budget,
+                    you should balance model size and data. Most earlier models were too big for their
+                    training data. Chinchilla used 4x fewer parameters than Gopher but 4.7x more data,
+                    with the same total compute budget, and outperformed Gopher on nearly every benchmark.
+                    The rule of thumb: 20 tokens per parameter. This directly influenced the design of
+                    Llama, Mistral, and other efficient models.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 7: DATA AND COST ==================== -->
+
+            <!-- SLIDE 26: Section Title -->
+            <section class="section-title">
+                <h2>Part 5</h2>
+                <h3>Pre-training Data and Cost</h3>
+                <aside class="notes">
+                    Let's talk about what these models actually train on and how much it costs.
+                    This is where the economics of AI become very concrete.
+                </aside>
+            </section>
+
+            <!-- SLIDE 27: Pre-training Data -->
+            <section>
+                <h2>Pre-training Data Sources</h2>
+                <div class="data-grid">
+                    <div class="data-card fragment">
+                        <div class="data-name">Common Crawl</div>
+                        <div class="data-size">~3T tokens</div>
+                        <p class="small">Web pages from the entire internet. Massive but noisy.</p>
+                    </div>
+                    <div class="data-card fragment">
+                        <div class="data-name">The Pile</div>
+                        <div class="data-size">825 GB</div>
+                        <p class="small">Curated mix: books, arXiv, GitHub, StackExchange, Wikipedia</p>
+                    </div>
+                    <div class="data-card fragment">
+                        <div class="data-name">RedPajama</div>
+                        <div class="data-size">1.2T tokens</div>
+                        <p class="small">Open reproduction of LLaMA training data</p>
+                    </div>
+                    <div class="data-card fragment">
+                        <div class="data-name">Wikipedia</div>
+                        <div class="data-size">~4B tokens</div>
+                        <p class="small">High-quality, factual, multi-lingual encyclopedia</p>
+                    </div>
+                    <div class="data-card fragment">
+                        <div class="data-name">Books / BookCorpus</div>
+                        <div class="data-size">~1B tokens</div>
+                        <p class="small">Long-form coherent text, narrative structure</p>
+                    </div>
+                    <div class="data-card fragment">
+                        <div class="data-name">Code (GitHub)</div>
+                        <div class="data-size">~500B tokens</div>
+                        <p class="small">Source code in many languages. Helps with reasoning.</p>
+                    </div>
+                </div>
+                <p class="fragment small" style="margin-top: 0.8em;">
+                    Modern models use carefully curated mixtures. Llama 3 used <span class="highlight">15T+ tokens</span> after extensive filtering and deduplication.
+                </p>
+                <aside class="notes">
+                    Data is the fuel of pre-training. Common Crawl is the biggest source but very noisy:
+                    ads, spam, duplicated content. That's why data curation is critical. The Pile was one
+                    of the first open curated datasets. RedPajama aimed to reproduce Meta's LLaMA data.
+                    An interesting finding: including CODE in training data helps with reasoning even on
+                    non-code tasks. Code is highly structured and logical, which seems to help the model
+                    learn reasoning patterns. Data quality matters enormously: garbage in, garbage out.
+                </aside>
+            </section>
+
+            <!-- SLIDE 28: Cost of Pre-training -->
+            <section>
+                <h2>The Cost of Pre-training</h2>
+                <div class="cost-bar-container" style="margin-top: 1em;">
+                    <div class="cost-bar-item fragment">
+                        <div class="cost-bar-label">BERT<br><span class="small">2018</span></div>
+                        <div class="cost-bar-track">
+                            <div class="cost-bar-fill" style="width: 3%; background: #7ec8e3;">$50K</div>
+                        </div>
+                    </div>
+                    <div class="cost-bar-item fragment">
+                        <div class="cost-bar-label">GPT-3<br><span class="small">2020</span></div>
+                        <div class="cost-bar-track">
+                            <div class="cost-bar-fill" style="width: 14%; background: #98c379;">$4.6M</div>
+                        </div>
+                    </div>
+                    <div class="cost-bar-item fragment">
+                        <div class="cost-bar-label">Llama 3<br><span class="small">2024</span></div>
+                        <div class="cost-bar-track">
+                            <div class="cost-bar-fill" style="width: 40%; background: #e5c07b;">~$30M</div>
+                        </div>
+                    </div>
+                    <div class="cost-bar-item fragment">
+                        <div class="cost-bar-label">GPT-4<br><span class="small">2023</span></div>
+                        <div class="cost-bar-track">
+                            <div class="cost-bar-fill" style="width: 100%; background: #ff6b6b;">~$100M</div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="fragment" style="font-size: 0.7em; margin-top: 1em;">
+                    <li>Cost = GPU hours &times; electricity &times; cluster overhead</li>
+                    <li>GPT-4: reportedly ~25,000 A100 GPUs for ~90 days</li>
+                    <li>Llama 3 405B: 16,384 H100 GPUs, 30.84M GPU hours</li>
+                    <li>A single failed training run = millions of dollars lost</li>
+                </ul>
+                <aside class="notes">
+                    Let's make this concrete. BERT was cheap to train by today's standards. GPT-3 cost
+                    about 4.6 million dollars, which was shocking at the time. GPT-4 is estimated at around
+                    100 million dollars just for compute, not including research salaries, data, etc.
+                    Llama 3's 405B model used over 16,000 H100 GPUs for months. This is why pre-training
+                    is concentrated among a handful of well-funded labs. If your training run crashes
+                    halfway through, you might have just lost $50M. This also explains why there is so much
+                    interest in more efficient training methods.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 8: MODEL TIMELINE ==================== -->
+
+            <!-- SLIDE 29: Key Models Timeline -->
+            <section>
+                <h2>Key Models Timeline</h2>
+                <div class="h-timeline">
+                    <div class="h-era fragment" style="border-color: #7ec8e3;">
+                        <div class="h-year">2018</div>
+                        <div class="h-name">BERT</div>
+                        <div class="small">110M / 340M</div>
+                    </div>
+                    <div class="h-arrow fragment">&rarr;</div>
+                    <div class="h-era fragment" style="border-color: #ff6b6b;">
+                        <div class="h-year">2019</div>
+                        <div class="h-name">GPT-2</div>
+                        <div class="small">1.5B</div>
+                    </div>
+                    <div class="h-arrow fragment">&rarr;</div>
+                    <div class="h-era fragment" style="border-color: #98c379;">
+                        <div class="h-year">2019</div>
+                        <div class="h-name">T5</div>
+                        <div class="small">11B</div>
+                    </div>
+                    <div class="h-arrow fragment">&rarr;</div>
+                    <div class="h-era fragment" style="border-color: #e5c07b;">
+                        <div class="h-year">2020</div>
+                        <div class="h-name">GPT-3</div>
+                        <div class="small">175B</div>
+                    </div>
+                    <div class="h-arrow fragment">&rarr;</div>
+                    <div class="h-era fragment" style="border-color: #c678dd;">
+                        <div class="h-year">2022</div>
+                        <div class="h-name">PaLM</div>
+                        <div class="small">540B</div>
+                    </div>
+                </div>
+                <div class="h-timeline" style="margin-top: 0.5em;">
+                    <div class="h-era fragment" style="border-color: #7ec8e3;">
+                        <div class="h-year">2023</div>
+                        <div class="h-name">LLaMA</div>
+                        <div class="small">7B&ndash;65B</div>
+                    </div>
+                    <div class="h-arrow fragment">&rarr;</div>
+                    <div class="h-era fragment" style="border-color: #ff6b6b;">
+                        <div class="h-year">2023</div>
+                        <div class="h-name">GPT-4</div>
+                        <div class="small">~1.7T (rumored)</div>
+                    </div>
+                    <div class="h-arrow fragment">&rarr;</div>
+                    <div class="h-era fragment" style="border-color: #e5c07b;">
+                        <div class="h-year">2024</div>
+                        <div class="h-name">Llama 3</div>
+                        <div class="small">8B&ndash;405B</div>
+                    </div>
+                    <div class="h-arrow fragment">&rarr;</div>
+                    <div class="h-era fragment" style="border-color: #c678dd;">
+                        <div class="h-year">2024&ndash;25</div>
+                        <div class="h-name">Claude</div>
+                        <div class="small">Anthropic</div>
+                    </div>
+                    <div class="h-arrow fragment">&rarr;</div>
+                    <div class="h-era fragment" style="border-color: #98c379;">
+                        <div class="h-year">2024&ndash;25</div>
+                        <div class="h-name">Gemini</div>
+                        <div class="small">Google</div>
+                    </div>
+                </div>
+                <p class="fragment small" style="margin-top: 0.8em;">
+                    Trend: all major models post-2020 use <span class="highlight">CLM</span> (decoder-only). T5 uses encoder-decoder. BERT remains dominant for smaller classification tasks.
+                </p>
+                <aside class="notes">
+                    Let me walk through the key milestones. BERT (2018) showed that pre-training works
+                    amazingly well. GPT-2 (2019) showed that scaling CLM produces eerily fluent text.
+                    T5 (Google, 2019) tried a unified text-to-text framework with encoder-decoder.
+                    GPT-3 (2020) was the watershed moment: 175B parameters, in-context learning,
+                    few-shot capabilities. PaLM (Google, 2022) scaled to 540B. LLaMA (Meta, 2023)
+                    showed you can get great results with smaller, more efficiently trained models.
+                    GPT-4 (2023) set a new bar. Llama 3 (2024) pushed open models further.
+                    Claude and Gemini represent the current state of the art. Notice: everything after
+                    GPT-2 uses CLM or encoder-decoder. Pure MLM stopped scaling.
+                </aside>
+            </section>
+
+            <!-- SLIDE 30: What Models Learn -->
+            <section>
+                <h2>What Do Pre-trained Models Actually Learn?</h2>
+                <div class="two-column">
+                    <div>
+                        <h3 style="color: #98c379;">Linguistic Knowledge</h3>
+                        <ul style="font-size: 0.75em;">
+                            <li class="fragment">Syntax and grammar</li>
+                            <li class="fragment">Word meanings and relations</li>
+                            <li class="fragment">Coreference (who "he" refers to)</li>
+                            <li class="fragment">Discourse structure</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="color: #e5c07b;">World Knowledge</h3>
+                        <ul style="font-size: 0.75em;">
+                            <li class="fragment">Facts ("Paris is the capital of France")</li>
+                            <li class="fragment">Common sense reasoning</li>
+                            <li class="fragment">Mathematical reasoning</li>
+                            <li class="fragment">Coding patterns</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="fragment formula-box" style="margin-top: 1em;">
+                    <div class="formula-label">The surprising insight</div>
+                    <p style="font-size: 0.85em;">
+                        Just predicting the next word, at sufficient scale, produces models that can
+                        <span class="highlight">reason</span>, <span class="highlight-blue">translate</span>,
+                        <span class="highlight-green">code</span>, and <span style="color: #e5c07b;">answer questions</span>.
+                    </p>
+                </div>
+                <aside class="notes">
+                    This is the most remarkable thing about pre-training. All you teach the model is to
+                    predict text, and it spontaneously develops abilities that seem like understanding.
+                    Probing studies have shown that BERT's internal representations encode syntax trees,
+                    part-of-speech information, and semantic relationships, even though nobody explicitly
+                    taught it any of these things. The same is true for GPT models but at even larger scale:
+                    they learn to do arithmetic, write code, translate languages, all from next-token prediction.
+                    This is sometimes called "emergence" - capabilities that appear at scale.
+                </aside>
+            </section>
+
+            <!-- SLIDE 31: References -->
+            <section>
+                <h2>Key References</h2>
+                <ul style="font-size: 0.65em; line-height: 1.6;">
+                    <li class="fragment"><span class="highlight-blue">BERT</span>: Devlin et al. "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding" (2018)
+                        <br><span class="small">arxiv.org/abs/1810.04805</span></li>
+                    <li class="fragment"><span class="highlight">GPT</span>: Radford et al. "Improving Language Understanding by Generative Pre-Training" (2018)
+                        <br><span class="small">OpenAI Technical Report</span></li>
+                    <li class="fragment"><span class="highlight-green">GPT-2</span>: Radford et al. "Language Models are Unsupervised Multitask Learners" (2019)</li>
+                    <li class="fragment"><span style="color: #e5c07b;">GPT-3</span>: Brown et al. "Language Models are Few-Shot Learners" (2020)
+                        <br><span class="small">arxiv.org/abs/2005.14165</span></li>
+                    <li class="fragment"><span style="color: #c678dd;">Scaling Laws</span>: Kaplan et al. "Scaling Laws for Neural Language Models" (2020)
+                        <br><span class="small">arxiv.org/abs/2001.08361</span></li>
+                    <li class="fragment"><span class="highlight-blue">Chinchilla</span>: Hoffmann et al. "Training Compute-Optimal Large Language Models" (2022)
+                        <br><span class="small">arxiv.org/abs/2203.15556</span></li>
+                    <li class="fragment"><span class="highlight">RoBERTa</span>: Liu et al. "RoBERTa: A Robustly Optimized BERT Pretraining Approach" (2019)
+                        <br><span class="small">arxiv.org/abs/1907.11692</span></li>
+                </ul>
+                <aside class="notes">
+                    Here are the papers you should read if you want to go deeper. At minimum, read the
+                    BERT paper and the GPT-3 paper. The Scaling Laws paper is fascinating if you like
+                    the quantitative angle. Chinchilla is essential for understanding modern training decisions.
+                    All of these are on arXiv and freely available.
+                </aside>
+            </section>
+
+            <!-- SLIDE 32: Summary -->
+            <section>
+                <h2>Session Summary</h2>
+                <ul style="font-size: 0.85em;">
+                    <li class="fragment"><strong>Pre-training</strong> = learning language from massive unlabeled text</li>
+                    <li class="fragment"><strong>MLM (BERT)</strong>: bidirectional, mask &amp; predict, great for understanding</li>
+                    <li class="fragment"><strong>CLM (GPT)</strong>: left-to-right, predict next token, great for generation</li>
+                    <li class="fragment"><strong>CLM won</strong>: all frontier models use decoder-only CLM</li>
+                    <li class="fragment"><strong>Scaling laws</strong>: more params + more data + more compute = predictably better</li>
+                    <li class="fragment"><strong>Chinchilla</strong>: balance model size with data (20 tokens per parameter)</li>
+                    <li class="fragment"><strong>Cost</strong>: from $50K (BERT) to ~$100M (GPT-4)</li>
+                </ul>
+                <aside class="notes">
+                    Let's recap the key takeaways. Pre-training is the foundation of modern NLP.
+                    Two approaches: MLM and CLM, each with strengths. CLM became dominant.
+                    Scaling laws make the improvement predictable. The cost is enormous and growing.
+                    This afternoon in Session 2, we'll cover what happens AFTER pre-training:
+                    fine-tuning, RLHF, and how we go from a base model to ChatGPT.
+                </aside>
+            </section>
+
+            <!-- SLIDE 33: Break / Next Session -->
+            <section>
+                <h2>Break Time</h2>
+                <p style="font-size: 0.9em;">10:15 &mdash; 10:30</p>
+                <div style="border: 2px solid #7ec8e3; border-radius: 8px; padding: 1em; display: inline-block; margin-top: 1em;">
+                    <h3>Session 2: Fine-tuning &amp; Alignment</h3>
+                    <p style="font-size: 0.8em;">10:30 &mdash; 12:30</p>
+                    <ul style="font-size: 0.75em;">
+                        <li>Supervised fine-tuning (SFT)</li>
+                        <li>RLHF: Reinforcement Learning from Human Feedback</li>
+                        <li>From base model to ChatGPT</li>
+                        <li>LoRA and parameter-efficient fine-tuning</li>
+                    </ul>
+                </div>
+                <p style="margin-top: 1.5em; font-size: 0.8em; color: #93a1a1;">See you in 15 minutes</p>
+                <aside class="notes">
+                    End on time. Let students take their break. Session 2 will pick up right where
+                    we left off: we have a pre-trained model, now how do we make it useful for specific
+                    tasks and aligned with human preferences?
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            controlsTutorial: false,
+            progress: true,
+            center: true,
+            plugins: [RevealHighlight, RevealNotes]
+        });
+    </script>
+</body>
+</html>
