@@ -1,0 +1,1640 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw & Agent-to-Agent Protocols - TAL Day 5</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/moon.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --r-heading-font: 'Helvetica Neue', Arial, sans-serif;
+            --r-main-font: 'Helvetica Neue', Arial, sans-serif;
+        }
+        .reveal { font-size: 32px; }
+        .reveal h1 { font-size: 2.2em; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.2em; color: #7ec8e3; }
+        .reveal ul { text-align: left; }
+        .reveal li { margin-bottom: 0.4em; }
+
+        /* Highlight text */
+        .highlight { color: #ff6b6b; }
+        .highlight-blue { color: #7ec8e3; }
+        .highlight-green { color: #98c379; }
+        .highlight-yellow { color: #e5c07b; }
+        .highlight-purple { color: #c678dd; }
+        .small { font-size: 0.65em; color: #93a1a1; }
+
+        /* Two column layout */
+        .two-column {
+            display: flex;
+            gap: 2em;
+            align-items: flex-start;
+        }
+        .two-column > div { flex: 1; }
+
+        /* Stat numbers */
+        .stat-big {
+            font-size: 3em;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+
+        /* Section divider */
+        .section-title h2 {
+            font-size: 2em;
+            margin-bottom: 0.3em;
+        }
+        .section-title h3 {
+            font-size: 0.9em;
+            color: #93a1a1;
+            font-weight: normal;
+        }
+
+        /* Quote styling */
+        .quote-slide blockquote {
+            font-style: italic;
+            font-size: 1.1em;
+            border-left: 4px solid #7ec8e3;
+            padding-left: 1em;
+            margin: 1em auto;
+            max-width: 80%;
+            text-align: left;
+        }
+        .quote-slide .attribution {
+            text-align: right;
+            color: #93a1a1;
+            font-size: 0.7em;
+            margin-right: 10%;
+        }
+
+        /* Discussion slides */
+        .discussion-slide {
+            background: rgba(126, 200, 227, 0.08) !important;
+        }
+
+        /* Pipeline/flow diagram */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3em;
+            flex-wrap: wrap;
+        }
+        .pipeline .step {
+            background: rgba(126, 200, 227, 0.15);
+            border: 2px solid #7ec8e3;
+            border-radius: 8px;
+            padding: 0.6em 1em;
+            text-align: center;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .pipeline .arrow {
+            font-size: 1.5em;
+            color: #7ec8e3;
+        }
+
+        /* Comparison table */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7em;
+        }
+        .compare-table th {
+            background: rgba(126, 200, 227, 0.2);
+            padding: 0.5em;
+            text-align: left;
+            border-bottom: 2px solid #7ec8e3;
+        }
+        .compare-table td {
+            padding: 0.5em;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .compare-table .good { color: #98c379; }
+        .compare-table .bad { color: #ff6b6b; }
+
+        /* Context file card (from context-loading slides) */
+        .ctx-file {
+            display: flex;
+            align-items: center;
+            gap: 0.6em;
+            padding: 0.5em 0.8em;
+            margin: 0.35em 0;
+            border-radius: 8px;
+            font-size: 0.75em;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .ctx-file .num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.6em;
+            height: 1.6em;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 0.85em;
+            flex-shrink: 0;
+        }
+        .ctx-file .fname {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 1.05em;
+        }
+        .ctx-file .desc {
+            color: #93a1a1;
+            font-size: 0.85em;
+            margin-left: auto;
+        }
+
+        /* Color-coded file categories */
+        .ctx-file.universal {
+            background: rgba(126, 200, 227, 0.1);
+            border-color: #7ec8e3;
+        }
+        .ctx-file.universal .num {
+            background: #7ec8e3;
+            color: #002b36;
+        }
+        .ctx-file.personality {
+            background: rgba(198, 120, 221, 0.1);
+            border-color: #c678dd;
+        }
+        .ctx-file.personality .num {
+            background: #c678dd;
+            color: #002b36;
+        }
+        .ctx-file.identity {
+            background: rgba(229, 192, 123, 0.1);
+            border-color: #e5c07b;
+        }
+        .ctx-file.identity .num {
+            background: #e5c07b;
+            color: #002b36;
+        }
+        .ctx-file.periodic {
+            background: rgba(255, 107, 107, 0.1);
+            border-color: #ff6b6b;
+        }
+        .ctx-file.periodic .num {
+            background: #ff6b6b;
+            color: #002b36;
+        }
+        .ctx-file.memory {
+            background: rgba(152, 195, 121, 0.1);
+            border-color: #98c379;
+        }
+        .ctx-file.memory .num {
+            background: #98c379;
+            color: #002b36;
+        }
+
+        /* Arrow between files */
+        .ctx-arrow {
+            text-align: center;
+            color: #586e75;
+            font-size: 0.7em;
+            margin: 0.1em 0;
+            line-height: 1;
+        }
+
+        /* Comparison table (context loading style) */
+        .cmp-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.65em;
+        }
+        .cmp-table th {
+            background: rgba(126, 200, 227, 0.2);
+            padding: 0.5em 0.8em;
+            text-align: left;
+            border-bottom: 2px solid #7ec8e3;
+        }
+        .cmp-table td {
+            padding: 0.4em 0.8em;
+            border-bottom: 1px solid rgba(147, 161, 161, 0.2);
+        }
+        .cmp-table .yes { color: #98c379; font-weight: bold; }
+        .cmp-table .no { color: #ff6b6b; font-weight: bold; }
+        .cmp-table .special { color: #e5c07b; font-weight: bold; }
+
+        /* Sub-agent comparison */
+        .sub-file {
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+            padding: 0.4em 0.7em;
+            margin: 0.3em 0;
+            border-radius: 8px;
+            font-size: 0.7em;
+        }
+        .sub-file .fname {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+        .sub-file .status {
+            margin-left: auto;
+            font-size: 1.2em;
+        }
+        .sub-file.included {
+            background: rgba(152, 195, 121, 0.15);
+            border: 2px solid #98c379;
+        }
+        .sub-file.excluded {
+            background: rgba(255, 107, 107, 0.08);
+            border: 2px solid rgba(255, 107, 107, 0.3);
+            opacity: 0.7;
+            text-decoration: line-through;
+            text-decoration-color: #ff6b6b;
+        }
+
+        /* Insight box */
+        .insight-box {
+            background: rgba(198, 120, 221, 0.1);
+            border: 2px solid #c678dd;
+            border-radius: 12px;
+            padding: 1em 1.5em;
+            margin: 1em auto;
+            max-width: 80%;
+            text-align: left;
+            font-size: 0.8em;
+        }
+        .insight-box .title {
+            font-weight: bold;
+            color: #c678dd;
+            margin-bottom: 0.4em;
+            font-size: 1.1em;
+        }
+
+        /* Architecture diagram boxes */
+        .arch-box {
+            background: rgba(126, 200, 227, 0.12);
+            border: 2px solid #7ec8e3;
+            border-radius: 10px;
+            padding: 0.7em 1em;
+            text-align: center;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+        .arch-box.red {
+            background: rgba(255, 107, 107, 0.12);
+            border-color: #ff6b6b;
+        }
+        .arch-box.green {
+            background: rgba(152, 195, 121, 0.12);
+            border-color: #98c379;
+        }
+        .arch-box.purple {
+            background: rgba(198, 120, 221, 0.12);
+            border-color: #c678dd;
+        }
+        .arch-box.yellow {
+            background: rgba(229, 192, 123, 0.12);
+            border-color: #e5c07b;
+        }
+
+        /* Connector arrows for diagrams */
+        .conn-arrow {
+            text-align: center;
+            color: #586e75;
+            font-size: 1.2em;
+            line-height: 1;
+            margin: 0.2em 0;
+        }
+        .conn-arrow-h {
+            color: #586e75;
+            font-size: 1.2em;
+        }
+
+        /* Timeline */
+        .timeline-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8em;
+            margin: 0.5em 0;
+            font-size: 0.75em;
+        }
+        .timeline-year {
+            background: #7ec8e3;
+            color: #002b36;
+            padding: 0.2em 0.6em;
+            border-radius: 6px;
+            font-weight: bold;
+            white-space: nowrap;
+            min-width: 3.5em;
+            text-align: center;
+        }
+        .timeline-year.active {
+            background: #ff6b6b;
+        }
+        .timeline-desc {
+            text-align: left;
+        }
+
+        /* JSON code block */
+        .json-block {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 0.8em 1em;
+            font-family: 'Courier New', monospace;
+            font-size: 0.6em;
+            text-align: left;
+            overflow-x: auto;
+        }
+
+        /* Sequence diagram */
+        .seq-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+            margin: 0.3em 0;
+            font-size: 0.7em;
+        }
+        .seq-actor {
+            min-width: 7em;
+            text-align: right;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        .seq-msg {
+            flex: 1;
+            background: rgba(126, 200, 227, 0.1);
+            border: 1px solid rgba(126, 200, 227, 0.3);
+            border-radius: 6px;
+            padding: 0.3em 0.6em;
+            position: relative;
+        }
+        .seq-msg.response {
+            background: rgba(152, 195, 121, 0.1);
+            border-color: rgba(152, 195, 121, 0.3);
+        }
+        .seq-dir {
+            color: #7ec8e3;
+            font-size: 1.3em;
+            min-width: 2em;
+            text-align: center;
+        }
+        .seq-dir.back {
+            color: #98c379;
+        }
+
+        /* Quadrant diagram */
+        .quadrant {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8em;
+            max-width: 90%;
+            margin: 0 auto;
+        }
+        .quadrant-cell {
+            background: rgba(255,255,255,0.04);
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 0.8em;
+            text-align: center;
+            font-size: 0.7em;
+        }
+        .quadrant-cell h4 {
+            margin: 0 0 0.3em;
+            font-size: 1.1em;
+        }
+        .quadrant-cell p {
+            margin: 0.2em 0;
+            color: #93a1a1;
+            font-size: 0.9em;
+        }
+        .quadrant-cell.q1 { border-color: #98c379; }
+        .quadrant-cell.q1 h4 { color: #98c379; }
+        .quadrant-cell.q2 { border-color: #7ec8e3; }
+        .quadrant-cell.q2 h4 { color: #7ec8e3; }
+        .quadrant-cell.q3 { border-color: #e5c07b; }
+        .quadrant-cell.q3 h4 { color: #e5c07b; }
+        .quadrant-cell.q4 { border-color: #c678dd; }
+        .quadrant-cell.q4 h4 { color: #c678dd; }
+
+        /* Security alert box */
+        .alert-box {
+            background: rgba(255, 107, 107, 0.1);
+            border: 2px solid #ff6b6b;
+            border-radius: 10px;
+            padding: 0.8em 1.2em;
+            text-align: left;
+            font-size: 0.75em;
+        }
+        .alert-box .alert-title {
+            color: #ff6b6b;
+            font-weight: bold;
+            font-size: 1.15em;
+            margin-bottom: 0.3em;
+        }
+
+        /* Protocol comparison diagram */
+        .proto-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2em;
+            margin: 1em 0;
+        }
+        .proto-side {
+            text-align: center;
+            flex: 1;
+        }
+        .proto-side .proto-label {
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-bottom: 0.5em;
+        }
+        .proto-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3em;
+        }
+        .proto-horizontal {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3em;
+        }
+
+        /* Name saga timeline */
+        .name-step {
+            display: flex;
+            align-items: center;
+            gap: 0.8em;
+            margin: 0.6em 0;
+            font-size: 0.8em;
+        }
+        .name-date {
+            background: rgba(126, 200, 227, 0.15);
+            border: 1px solid #7ec8e3;
+            padding: 0.3em 0.7em;
+            border-radius: 6px;
+            font-size: 0.85em;
+            white-space: nowrap;
+            min-width: 6em;
+            text-align: center;
+        }
+        .name-arrow {
+            color: #586e75;
+            font-size: 1.3em;
+        }
+        .name-label {
+            font-weight: bold;
+        }
+
+        /* Ref link */
+        .ref {
+            font-size: 0.45em;
+            color: #657b83;
+            margin-top: 0.5em;
+        }
+        .ref a { color: #657b83; text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ==================== SECTION 1: THE RISE OF AI AGENTS ==================== -->
+
+            <!-- Slide 1: Title -->
+            <section>
+                <h1 style="font-size: 1.8em;">OpenClaw &<br>Agent-to-Agent Protocols</h1>
+                <h3>When AI Agents Learn to Talk to Each Other</h3>
+                <p style="margin-top: 2em; font-size: 0.7em; color: #93a1a1;">
+                    TAL &mdash; Day 5<br>
+                    March 20, 2026<br>
+                    ZHANG Zheng
+                </p>
+                <aside class="notes">
+                    Welcome to Day 5. Today is a group presentation day. Students will present
+                    on OpenClaw and Agent-to-Agent protocols. This deck provides the framing
+                    and supplementary material around their presentations.
+                </aside>
+            </section>
+
+            <!-- Slide 2: Today's Format -->
+            <section>
+                <h2>Today's Session</h2>
+                <div style="background: rgba(126, 200, 227, 0.1); border: 2px solid #7ec8e3; border-radius: 10px; padding: 1em; margin: 0.8em 0;">
+                    <p style="font-size: 0.9em; margin: 0;"><strong>Format:</strong> <span class="highlight-blue">Group Presentations</span> (20 min each)</p>
+                </div>
+                <table class="compare-table" style="margin-top: 1em;">
+                    <tr>
+                        <th>Time</th>
+                        <th>Group</th>
+                        <th>Topic</th>
+                    </tr>
+                    <tr class="fragment">
+                        <td>09:00 &ndash; 09:20</td>
+                        <td>Group 1</td>
+                        <td>OpenClaw: Architecture & Philosophy</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>09:25 &ndash; 09:45</td>
+                        <td>Group 2</td>
+                        <td>A2A Protocol & Agent Communication</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>09:50 &ndash; 10:10</td>
+                        <td>Group 3</td>
+                        <td>Multi-Agent Systems & Security</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>10:15 &ndash; 10:45</td>
+                        <td>All</td>
+                        <td>Open discussion & synthesis</td>
+                    </tr>
+                </table>
+                <p class="fragment small" style="margin-top: 0.8em;">Each group: 15 min presentation + 5 min Q&A</p>
+                <aside class="notes">
+                    Explain the format. Each group gets 20 minutes total.
+                    Encourage groups to use visuals and demos where possible.
+                    The final 30 minutes are for open discussion and connecting ideas.
+                </aside>
+            </section>
+
+            <!-- Slide 3: From Chatbots to Agents -->
+            <section>
+                <h2>From Chatbots to Agents</h2>
+                <p style="font-size: 0.75em; color: #93a1a1; margin-bottom: 0.5em;">The evolution of AI systems (2022&ndash;2026)</p>
+                <div class="timeline-item fragment">
+                    <span class="timeline-year">2022</span>
+                    <span class="timeline-desc"><strong>ChatGPT</strong> &mdash; conversational chat, responds to input</span>
+                </div>
+                <div class="timeline-item fragment">
+                    <span class="timeline-year">2023</span>
+                    <span class="timeline-desc"><strong>GPT-4 + Plugins</strong> &mdash; LLMs gain access to external tools</span>
+                </div>
+                <div class="timeline-item fragment">
+                    <span class="timeline-year">2024</span>
+                    <span class="timeline-desc"><strong>Claude Code + MCP</strong> &mdash; agentic coding, tool protocols emerge</span>
+                </div>
+                <div class="timeline-item fragment">
+                    <span class="timeline-year active">2025</span>
+                    <span class="timeline-desc"><strong>OpenClaw + Moltbook</strong> &mdash; autonomous agents on messaging platforms</span>
+                </div>
+                <div class="timeline-item fragment">
+                    <span class="timeline-year active">2026</span>
+                    <span class="timeline-desc"><strong>A2A protocols</strong> &mdash; multi-agent systems, agents talking to agents</span>
+                </div>
+                <div class="insight-box fragment" style="border-color: #ff6b6b; background: rgba(255,107,107,0.08); margin-top: 0.8em; max-width: 90%;">
+                    <div class="title" style="color: #ff6b6b;">The Key Shift</div>
+                    <p style="margin: 0;">Chatbots <strong>wait</strong> for your input. Agents <strong>act</strong> proactively &mdash; they plan, execute, use tools, and collaborate without constant human supervision.</p>
+                </div>
+                <aside class="notes">
+                    Frame the evolution for students who are new to AI.
+                    2022: ChatGPT was a chatbot - you ask, it answers.
+                    2023: GPT-4 plugins let LLMs browse the web, run code.
+                    2024: Claude Code could autonomously write and execute code. MCP standardized tool access.
+                    2025: OpenClaw turned LLMs into always-on personal assistants on messaging platforms.
+                    2026: A2A lets these agents delegate work to OTHER agents.
+                    The trajectory is clear: from reactive chatbots to proactive, collaborative agents.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 2: OPENCLAW ==================== -->
+
+            <!-- Slide 4: Section Title -->
+            <section class="section-title">
+                <h2>OpenClaw</h2>
+                <h3>The Open-Source AI Agent Framework</h3>
+                <aside class="notes">
+                    Transition to the OpenClaw deep-dive section.
+                    This is the most talked-about open-source AI project of early 2026.
+                </aside>
+            </section>
+
+            <!-- Slide 5: What is OpenClaw -->
+            <section>
+                <h2>What is OpenClaw?</h2>
+                <p style="font-size: 0.85em;">An <span class="highlight-green">open-source</span>, <span class="highlight-blue">local-first</span> AI agent framework</p>
+                <ul style="font-size: 0.8em; margin-top: 0.8em;">
+                    <li class="fragment">Turns any LLM into a <strong>proactive personal assistant</strong></li>
+                    <li class="fragment">Executes shell commands, manages files, automates web tasks</li>
+                    <li class="fragment">Runs on messaging platforms: <span class="highlight-blue">WhatsApp, Signal, Telegram, Discord</span></li>
+                    <li class="fragment">Model-agnostic: bring any API key (Claude, GPT, DeepSeek, Ollama)</li>
+                </ul>
+                <div class="fragment" style="display: flex; justify-content: center; gap: 2em; margin-top: 1.2em;">
+                    <div style="text-align: center;">
+                        <div class="stat-big" style="font-size: 2.2em;">180K+</div>
+                        <p class="small">GitHub stars</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <div class="stat-big" style="font-size: 2.2em; color: #7ec8e3;">20K+</div>
+                        <p class="small">Forks</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <div class="stat-big" style="font-size: 2.2em; color: #98c379;">100K+</div>
+                        <p class="small">Active installs</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <div class="stat-big" style="font-size: 2.2em; color: #c678dd;">3000+</div>
+                        <p class="small">Community skills</p>
+                    </div>
+                </div>
+                <p class="fragment small" style="margin-top: 0.5em;">Grew from 0 to 180K stars in roughly 3 weeks &mdash; the fastest-growing open-source project of 2025/2026</p>
+                <aside class="notes">
+                    OpenClaw is remarkable for several reasons:
+                    1. Explosive growth - 180K stars in about 3 weeks is unprecedented.
+                    2. Local-first means your data stays on your machine.
+                    3. Model-agnostic means you're not locked into one AI provider.
+                    Think of it as: your personal AI employee that lives in your chat apps.
+                    For context, VS Code has ~170K stars and took years to get there.
+                </aside>
+            </section>
+
+            <!-- Slide 6: The Name Saga -->
+            <section>
+                <h2>The Name Saga</h2>
+                <p style="font-size: 0.75em; color: #93a1a1; margin-bottom: 0.8em;"><em>"The fastest triple rebrand in open-source history"</em></p>
+
+                <div class="name-step fragment">
+                    <span class="name-date">Nov 2025</span>
+                    <span class="name-arrow">&rarr;</span>
+                    <span><span class="name-label highlight-blue">"Clawdbot"</span> &mdash; Claude + claw pun, lobster mascot</span>
+                </div>
+                <div class="name-step fragment">
+                    <span class="name-date" style="border-color: #ff6b6b;">Jan 27, 2026</span>
+                    <span class="name-arrow">&rarr;</span>
+                    <span><span class="name-label highlight-yellow">"Moltbot"</span> &mdash; Anthropic trademark complaint, lobster "molting" theme</span>
+                </div>
+                <div class="name-step fragment">
+                    <span class="name-date" style="border-color: #98c379;">Jan 30, 2026</span>
+                    <span class="name-arrow">&rarr;</span>
+                    <span><span class="name-label highlight-green">"OpenClaw"</span> &mdash; final name, keeps the claw motif</span>
+                </div>
+
+                <div class="fragment" style="margin-top: 1.5em; background: rgba(229,192,123,0.1); border: 1px solid #e5c07b; border-radius: 8px; padding: 0.8em; font-size: 0.75em;">
+                    <p style="margin: 0;"><strong>Creator:</strong> Peter Steinberger (Austrian developer)</p>
+                    <p style="margin: 0.3em 0 0;">Previously founded PSPDFKit (PDF framework for mobile), sold for <span class="highlight">$100M+</span></p>
+                </div>
+                <aside class="notes">
+                    The naming saga is a fun story that illustrates open-source dynamics.
+                    "Clawdbot" was a pun on Claude (Anthropic's AI model) - Claude sounds like "claw-d".
+                    Anthropic sent a trademark complaint because it was too close to "Claude".
+                    They renamed to Moltbot (lobsters molt their shells), then quickly settled on OpenClaw.
+                    Peter Steinberger is a well-known developer - he previously built PSPDFKit, a
+                    very successful PDF framework. This gives him credibility in the dev community.
+                </aside>
+            </section>
+
+            <!-- Slide 7: Architecture Overview -->
+            <section>
+                <h2>Architecture Overview</h2>
+                <p style="font-size: 0.7em; color: #93a1a1; margin-bottom: 0.8em;">How OpenClaw connects everything together</p>
+
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 0.4em;">
+                    <!-- User layer -->
+                    <div class="arch-box" style="width: 55%;">You (User)</div>
+                    <div class="conn-arrow">&darr; &uarr;</div>
+
+                    <!-- Messaging layer -->
+                    <div class="arch-box yellow" style="width: 70%;">
+                        Messaging Platform<br>
+                        <span style="font-size: 0.8em; color: #93a1a1;">WhatsApp / Signal / Telegram / Discord</span>
+                    </div>
+                    <div class="conn-arrow">&darr; &uarr;</div>
+
+                    <!-- Gateway -->
+                    <div class="arch-box green" style="width: 75%;">
+                        OpenClaw Gateway <span style="font-size: 0.8em; color: #98c379;">(runs locally on your machine)</span>
+                    </div>
+
+                    <!-- Connections from gateway -->
+                    <div style="display: flex; justify-content: center; gap: 1.5em; width: 90%; margin-top: 0.4em;">
+                        <div style="text-align: center; flex: 1;">
+                            <div class="conn-arrow">&darr;</div>
+                            <div class="arch-box purple" style="font-size: 0.65em;">
+                                LLM Provider<br>
+                                <span style="color: #93a1a1;">Claude / GPT / DeepSeek / Ollama</span>
+                            </div>
+                        </div>
+                        <div style="text-align: center; flex: 1;">
+                            <div class="conn-arrow">&darr;</div>
+                            <div class="arch-box" style="font-size: 0.65em; border-color: #e5c07b;">
+                                Local Filesystem<br>
+                                <span style="color: #93a1a1;">Files, tools, memory</span>
+                            </div>
+                        </div>
+                        <div style="text-align: center; flex: 1;">
+                            <div class="conn-arrow">&darr;</div>
+                            <div class="arch-box red" style="font-size: 0.65em;">
+                                Shell / Web<br>
+                                <span style="color: #93a1a1;">Commands, browsing</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="fragment small" style="margin-top: 0.8em;">Key: the gateway runs <span class="highlight-green">locally</span>. Your data stays on your machine. Only LLM API calls leave your network.</p>
+                <aside class="notes">
+                    Walk through the architecture layer by layer.
+                    You chat on WhatsApp (or another platform). The message goes to the OpenClaw
+                    gateway running on your own machine. The gateway sends the message to an LLM
+                    for reasoning, then executes actions locally.
+                    The key insight: the LLM is the "brain" (in the cloud), but the "hands" (filesystem,
+                    shell, tools) are all local. This is the "local-first" philosophy.
+                    Model-agnostic means you just swap API keys - bring your own brain.
+                </aside>
+            </section>
+
+            <!-- Slide 8: File-Based Configuration -->
+            <section>
+                <h2>File-Based Configuration</h2>
+                <p style="font-size: 0.7em; color: #93a1a1; margin-bottom: 0.3em;">The 8 core files that define an agent's world</p>
+
+                <div style="display: flex; gap: 1.5em; align-items: flex-start;">
+                    <div style="flex: 1;">
+                        <div class="ctx-file universal fragment">
+                            <span class="num">1</span>
+                            <span class="fname">AGENTS.md</span>
+                            <span class="desc">Operating instructions</span>
+                        </div>
+                        <div class="ctx-arrow fragment">&darr;</div>
+                        <div class="ctx-file personality fragment">
+                            <span class="num">2</span>
+                            <span class="fname">SOUL.md</span>
+                            <span class="desc">Persona &amp; boundaries</span>
+                        </div>
+                        <div class="ctx-arrow fragment">&darr;</div>
+                        <div class="ctx-file universal fragment">
+                            <span class="num">3</span>
+                            <span class="fname">TOOLS.md</span>
+                            <span class="desc">Tool definitions</span>
+                        </div>
+                        <div class="ctx-arrow fragment">&darr;</div>
+                        <div class="ctx-file identity fragment">
+                            <span class="num">4</span>
+                            <span class="fname">BOOTSTRAP.md</span>
+                            <span class="desc">First-run ritual</span>
+                        </div>
+                        <div class="ctx-arrow fragment">&darr;</div>
+                        <div class="ctx-file identity fragment">
+                            <span class="num">5</span>
+                            <span class="fname">IDENTITY.md</span>
+                            <span class="desc">Agent name &amp; vibe</span>
+                        </div>
+                        <div class="ctx-arrow fragment">&darr;</div>
+                        <div class="ctx-file identity fragment">
+                            <span class="num">6</span>
+                            <span class="fname">USER.md</span>
+                            <span class="desc">User profile</span>
+                        </div>
+                    </div>
+                    <div style="flex: 0.8;" class="fragment">
+                        <div class="ctx-file periodic" style="margin-top: 0.5em;">
+                            <span class="num" style="font-size: 0.7em;">~30m</span>
+                            <span class="fname">HEARTBEAT.md</span>
+                            <span class="desc">Periodic checklist</span>
+                        </div>
+                        <div style="margin-top: 0.8em;"></div>
+                        <div class="ctx-file memory">
+                            <span class="num" style="font-size: 0.7em;">M</span>
+                            <span class="fname">memory/*.md</span>
+                            <span class="desc">Daily logs</span>
+                        </div>
+                        <p style="font-size: 0.55em; color: #93a1a1; margin-top: 1em; text-align: center;"><em>All files are plain Markdown &mdash; no YAML, no JSON, no database</em></p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    This is the core of OpenClaw's design. Every aspect of the agent is
+                    defined by a Markdown file. Walk through each one:
+                    - AGENTS.md: the operating manual (rules, constraints)
+                    - SOUL.md: personality, tone, what the agent should/shouldn't do
+                    - TOOLS.md: available tools and how to use them
+                    - BOOTSTRAP.md: runs only on first launch (setup wizard)
+                    - IDENTITY.md: the agent's name and self-description
+                    - USER.md: who the user is, their preferences
+                    - HEARTBEAT.md: periodic tasks (every ~30 min)
+                    - memory/*.md: daily conversation logs in Markdown
+                </aside>
+            </section>
+
+            <!-- Slide 9: Design Philosophy -->
+            <section>
+                <h2>Design Philosophy: Files as Config</h2>
+                <p style="font-size: 0.8em;">Plain Markdown is the <span class="highlight">single source of truth</span></p>
+
+                <table class="compare-table fragment" style="margin-top: 1em;">
+                    <tr>
+                        <th></th>
+                        <th>Traditional Agent Frameworks</th>
+                        <th>OpenClaw</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Configuration</strong></td>
+                        <td>YAML / JSON / TOML configs</td>
+                        <td class="good">Markdown files (.md)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Memory</strong></td>
+                        <td>Vector database (Pinecone, etc.)</td>
+                        <td class="good">Dated .md log files</td>
+                    </tr>
+                    <tr>
+                        <td><strong>State</strong></td>
+                        <td>Opaque binary state / SQLite</td>
+                        <td class="good">Human-readable text</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Debugging</strong></td>
+                        <td>Custom logging, dashboards</td>
+                        <td class="good">grep / cat / less</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Portability</strong></td>
+                        <td>Export/import, migrations</td>
+                        <td class="good">Copy the folder</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Version control</strong></td>
+                        <td>Often difficult</td>
+                        <td class="good">git add &amp;&amp; git commit</td>
+                    </tr>
+                </table>
+
+                <div class="insight-box fragment" style="margin-top: 0.8em; max-width: 90%;">
+                    <div class="title">Why this matters</div>
+                    <p style="margin: 0;">If you can read a text file, you can understand, debug, and modify your agent. No proprietary format, no vendor lock-in, no hidden state.</p>
+                </div>
+                <aside class="notes">
+                    This is OpenClaw's most radical design decision.
+                    Every other agent framework uses structured config (YAML, JSON) and
+                    databases for memory. OpenClaw uses just plain text.
+                    Why? Because Markdown is what LLMs understand best. It's also what
+                    humans read most easily. And it works perfectly with git.
+                    Analogy for students: think of it like Unix philosophy - text is the
+                    universal interface. Pipes work because everything is text.
+                </aside>
+            </section>
+
+            <!-- Slide 10: The Ecosystem -->
+            <section>
+                <h2>The OpenClaw Ecosystem</h2>
+                <div class="two-column" style="margin-top: 0.5em;">
+                    <div>
+                        <div class="fragment" style="background: rgba(198,120,221,0.1); border: 2px solid #c678dd; border-radius: 10px; padding: 0.8em; margin-bottom: 0.8em;">
+                            <h3 style="color: #c678dd; margin: 0 0 0.3em; font-size: 1em;">Moltbook</h3>
+                            <ul style="font-size: 0.7em; margin: 0; padding-left: 1.2em;">
+                                <li>Internet forum <strong>for AI agents</strong></li>
+                                <li><span class="highlight">2.5 million</span> agent accounts</li>
+                                <li>Mimics Reddit: agents post, comment, upvote</li>
+                                <li>Launched January 2026</li>
+                                <li style="color: #ff6b6b;">Security breach: Jan 31, 2026</li>
+                            </ul>
+                        </div>
+                        <div class="fragment" style="background: rgba(126,200,227,0.1); border: 2px solid #7ec8e3; border-radius: 10px; padding: 0.8em;">
+                            <h3 style="color: #7ec8e3; margin: 0 0 0.3em; font-size: 1em;">Community</h3>
+                            <ul style="font-size: 0.7em; margin: 0; padding-left: 1.2em;">
+                                <li>Active Discord server</li>
+                                <li>Weekly contributor calls</li>
+                                <li>Plugin / skill development community</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="fragment" style="background: rgba(152,195,121,0.1); border: 2px solid #98c379; border-radius: 10px; padding: 0.8em;">
+                            <h3 style="color: #98c379; margin: 0 0 0.3em; font-size: 1em;">ClawHub (Skills Marketplace)</h3>
+                            <ul style="font-size: 0.7em; margin: 0; padding-left: 1.2em;">
+                                <li><span class="highlight-green">3,000+</span> community-built skills</li>
+                                <li>Install skills like npm packages</li>
+                                <li>Categories: productivity, coding, web, automation</li>
+                                <li style="color: #ff6b6b;">386 malicious skills identified</li>
+                            </ul>
+                            <p style="font-size: 0.6em; color: #93a1a1; margin: 0.5em 0 0;">Think: App Store, but for AI agent capabilities</p>
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Moltbook is fascinating - it's essentially Reddit but populated by AI agents.
+                    Agents discuss, share tips, and interact with each other. 2.5 million agents
+                    registered in the first weeks. But there was a security breach at the end of January.
+                    ClawHub is like an app store for agent skills. But like any marketplace,
+                    bad actors appeared fast - 386 malicious skills were found.
+                    This ecosystem illustrates both the excitement and the risks of open agent platforms.
+                </aside>
+            </section>
+
+            <!-- Slide 11: Context Loading - Main vs Sub-Agent -->
+            <section>
+                <h2>Context Loading: Main vs Sub-Agent</h2>
+                <p style="font-size: 0.7em; color: #93a1a1; margin-bottom: 0.3em;">Not all agents get the same context</p>
+                <table class="cmp-table">
+                    <thead>
+                        <tr>
+                            <th>File</th>
+                            <th>Purpose</th>
+                            <th>Main Agent</th>
+                            <th>Sub-Agent</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="fragment">
+                            <td><code>AGENTS.md</code></td>
+                            <td>Operating instructions</td>
+                            <td class="yes">&#10003; Yes</td>
+                            <td class="yes">&#10003; Yes</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><code>SOUL.md</code></td>
+                            <td>Persona &amp; tone</td>
+                            <td class="yes">&#10003; Yes</td>
+                            <td class="no">&#10007; No</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><code>TOOLS.md</code></td>
+                            <td>Tool notes</td>
+                            <td class="yes">&#10003; Yes</td>
+                            <td class="yes">&#10003; Yes</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><code>BOOTSTRAP.md</code></td>
+                            <td>First-run ritual</td>
+                            <td class="special">&#9733; First run</td>
+                            <td class="no">&#10007; No</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><code>IDENTITY.md</code></td>
+                            <td>Agent name &amp; vibe</td>
+                            <td class="yes">&#10003; Yes</td>
+                            <td class="no">&#10007; No</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><code>USER.md</code></td>
+                            <td>User profile</td>
+                            <td class="yes">&#10003; Yes</td>
+                            <td class="no">&#10007; No</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><code>HEARTBEAT.md</code></td>
+                            <td>Periodic checklist</td>
+                            <td class="special">&#8635; Every ~30m</td>
+                            <td class="no">&#10007; No</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><code>memory/*.md</code></td>
+                            <td>Session memory</td>
+                            <td class="yes">&#10003; Yes</td>
+                            <td class="no">&#10007; No</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="insight-box fragment" style="margin-top: 0.5em; max-width: 85%;">
+                    <div class="title">Sub-agents don't need a soul</div>
+                    <p style="margin: 0;">Sub-agents are <strong>task executors</strong>, not conversationalists. Lean context = better performance. Extra info comes via the <strong>spawn prompt</strong>.</p>
+                </div>
+                <aside class="notes">
+                    This is a key architectural decision. The main agent is the "face" of the system:
+                    it has personality, knows the user, has memory.
+                    Sub-agents are specialists spawned for specific tasks - they only need
+                    the rules (AGENTS.md) and the tools (TOOLS.md).
+                    Analogy: think of the main agent as the CEO and sub-agents as contractors.
+                    The CEO knows the company culture and all employees.
+                    Contractors get a task brief and the tools to do the job.
+                    Lean context means more room in the context window for the actual task.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 3: A2A PROTOCOL ==================== -->
+
+            <!-- Slide 12: Section Title -->
+            <section class="section-title">
+                <h2>A2A Protocol</h2>
+                <h3>How Agents Talk to Each Other</h3>
+                <aside class="notes">
+                    Transition to the A2A section. We've seen how a single agent works.
+                    Now: how do MULTIPLE agents communicate and collaborate?
+                </aside>
+            </section>
+
+            <!-- Slide 13: The Protocol Problem -->
+            <section>
+                <h2>The Protocol Problem</h2>
+                <p style="font-size: 0.85em;">How do <span class="highlight">independent</span> AI agents communicate?</p>
+
+                <div class="two-column fragment" style="margin-top: 1em;">
+                    <div style="text-align: center;">
+                        <div class="arch-box" style="padding: 1em;">
+                            <div style="font-size: 1.8em;">Agent A</div>
+                            <p style="margin: 0.3em 0 0; font-size: 0.8em; color: #93a1a1;">Own memory, own tools, own context</p>
+                        </div>
+                    </div>
+                    <div style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <div style="font-size: 2em; color: #ff6b6b;">?</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div class="arch-box purple" style="padding: 1em;">
+                            <div style="font-size: 1.8em;">Agent B</div>
+                            <p style="margin: 0.3em 0 0; font-size: 0.8em; color: #93a1a1;">Own memory, own tools, own context</p>
+                        </div>
+                    </div>
+                </div>
+
+                <ul style="font-size: 0.78em; margin-top: 1em;">
+                    <li class="fragment">They don't share memory or context &mdash; they're <span class="highlight">"opaque"</span> to each other</li>
+                    <li class="fragment"><strong>Discovery</strong>: How does Agent A find Agent B? What can B do?</li>
+                    <li class="fragment"><strong>Communication</strong>: What message format? What transport?</li>
+                    <li class="fragment"><strong>Task management</strong>: How to delegate work and track progress?</li>
+                    <li class="fragment"><strong>Security</strong>: How to authenticate and authorize?</li>
+                </ul>
+
+                <p class="fragment small" style="margin-top: 0.5em;">Analogy: imagine two people who speak different languages, don't know each other, and need to collaborate on a project. You need a shared protocol.</p>
+                <aside class="notes">
+                    Before A2A, there was no standard way for agents to talk to each other.
+                    Each agent framework had its own approach, if any.
+                    Imagine: your OpenClaw agent needs a specialized agent to do legal research.
+                    How does it find it? How does it send a request? How does it get the result?
+                    This is exactly the problem that networking protocols solved for computers
+                    (TCP/IP, HTTP). Now we need the same for AI agents.
+                </aside>
+            </section>
+
+            <!-- Slide 14: A2A Protocol by Google -->
+            <section>
+                <h2>A2A: The Protocol</h2>
+                <p style="font-size: 0.8em;">Open protocol by <span class="highlight-blue">Google</span> (April 2025), now under the <span class="highlight-green">Linux Foundation</span></p>
+
+                <div style="display: flex; justify-content: center; gap: 1.5em; margin: 1em 0;">
+                    <div class="fragment" style="text-align: center;">
+                        <div class="stat-big" style="font-size: 2em; color: #7ec8e3;">100+</div>
+                        <p class="small">Supporting companies</p>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1em; margin-top: 0.5em;">
+                    <div class="fragment" style="flex: 1; background: rgba(126,200,227,0.1); border: 2px solid #7ec8e3; border-radius: 10px; padding: 0.8em; text-align: center;">
+                        <h3 style="margin: 0 0 0.3em; font-size: 1em;">1. Discovery</h3>
+                        <p style="font-size: 0.7em; margin: 0; color: #93a1a1;"><strong>Agent Cards</strong><br>Published at<br><code>/.well-known/agent.json</code></p>
+                    </div>
+                    <div class="fragment" style="flex: 1; background: rgba(152,195,121,0.1); border: 2px solid #98c379; border-radius: 10px; padding: 0.8em; text-align: center;">
+                        <h3 style="margin: 0 0 0.3em; font-size: 1em; color: #98c379;">2. Communication</h3>
+                        <p style="font-size: 0.7em; margin: 0; color: #93a1a1;"><strong>HTTP + JSON-RPC 2.0</strong><br>Streaming via<br>Server-Sent Events (SSE)</p>
+                    </div>
+                    <div class="fragment" style="flex: 1; background: rgba(229,192,123,0.1); border: 2px solid #e5c07b; border-radius: 10px; padding: 0.8em; text-align: center;">
+                        <h3 style="margin: 0 0 0.3em; font-size: 1em; color: #e5c07b;">3. Task Management</h3>
+                        <p style="font-size: 0.7em; margin: 0; color: #93a1a1;"><strong>Task lifecycle</strong><br>submitted &rarr; working<br>&rarr; completed / failed</p>
+                    </div>
+                </div>
+
+                <p class="fragment small" style="margin-top: 0.8em;">Think of A2A like <strong>HTTP for agents</strong>: a standard protocol that lets any agent talk to any other agent, regardless of who built them.</p>
+                <aside class="notes">
+                    A2A has three layers, similar to how web protocols work:
+                    1. Discovery - like DNS. How do you find an agent? Agent Cards at a well-known URL.
+                    2. Communication - like HTTP. Standard message format (JSON-RPC) over HTTP.
+                    3. Task management - like job queues. Submit work, track status, get results.
+                    The three pillars map to familiar concepts for software engineers:
+                    - Agent Cards = API documentation / service discovery
+                    - JSON-RPC = REST API / gRPC
+                    - Task lifecycle = job queue (Celery, RabbitMQ)
+                </aside>
+            </section>
+
+            <!-- Slide 15: Agent Cards -->
+            <section>
+                <h2>Agent Cards</h2>
+                <p style="font-size: 0.8em;">A <span class="highlight-blue">business card</span> for AI agents</p>
+
+                <div class="two-column" style="margin-top: 0.5em;">
+                    <div class="fragment">
+                        <p style="font-size: 0.7em; color: #93a1a1;">Published at <code>/.well-known/agent.json</code></p>
+                        <div class="json-block">
+<pre>{
+  "name": "Legal Research Agent",
+  "description": "Searches case law
+    and summarizes findings",
+  "url": "https://legal.example.com/a2a",
+  "version": "1.0",
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false
+  },
+  "skills": [
+    {
+      "id": "case-search",
+      "name": "Case Law Search",
+      "description": "Search by topic,
+        jurisdiction, or citation"
+    }
+  ],
+  "authentication": {
+    "schemes": ["Bearer"]
+  }
+}</pre>
+                        </div>
+                    </div>
+                    <div class="fragment">
+                        <div style="background: rgba(126,200,227,0.08); border-radius: 10px; padding: 1em; font-size: 0.75em;">
+                            <h3 style="margin: 0 0 0.5em; font-size: 1.1em;">What it contains:</h3>
+                            <ul style="margin: 0; padding-left: 1.2em;">
+                                <li><strong>Name</strong> &amp; description</li>
+                                <li><strong>Endpoint URL</strong> (where to send requests)</li>
+                                <li><strong>Skills</strong> (what it can do)</li>
+                                <li><strong>Capabilities</strong> (streaming, push, etc.)</li>
+                                <li><strong>Authentication</strong> (how to prove identity)</li>
+                            </ul>
+                        </div>
+                        <div class="insight-box fragment" style="border-color: #7ec8e3; background: rgba(126,200,227,0.08); margin-top: 1em;">
+                            <div class="title" style="color: #7ec8e3;">The Business Card Analogy</div>
+                            <p style="margin: 0;">When you meet someone, they hand you a card: name, title, phone, email. An Agent Card does the same &mdash; but for AI agents.</p>
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Agent Cards are the first step in agent-to-agent communication.
+                    Just like /.well-known/security.txt tells you how to report security issues,
+                    /.well-known/agent.json tells other agents what this agent can do.
+                    For software engineers: think of it like an OpenAPI/Swagger spec,
+                    but for AI agents instead of REST APIs.
+                    The business card analogy makes it intuitive: at a networking event,
+                    you exchange cards to learn who does what and how to contact them.
+                </aside>
+            </section>
+
+            <!-- Slide 16: A2A Task Flow -->
+            <section>
+                <h2>A2A Task Flow</h2>
+                <p style="font-size: 0.7em; color: #93a1a1; margin-bottom: 0.5em;">How a client agent delegates work to a remote agent</p>
+
+                <div style="max-width: 85%; margin: 0 auto;">
+                    <div class="seq-row fragment">
+                        <span class="seq-actor" style="color: #7ec8e3;">Client Agent</span>
+                        <span class="seq-dir">&rarr;</span>
+                        <span class="seq-msg">GET /.well-known/agent.json &nbsp;<span class="small">(fetch Agent Card)</span></span>
+                        <span class="seq-actor" style="color: #c678dd;">Remote Agent</span>
+                    </div>
+                    <div class="seq-row fragment">
+                        <span class="seq-actor" style="color: #c678dd;"></span>
+                        <span class="seq-dir back">&larr;</span>
+                        <span class="seq-msg response">Agent Card (name, skills, auth) &nbsp;<span class="small">(JSON response)</span></span>
+                        <span class="seq-actor"></span>
+                    </div>
+                    <div class="seq-row fragment">
+                        <span class="seq-actor" style="color: #7ec8e3;">Client Agent</span>
+                        <span class="seq-dir">&rarr;</span>
+                        <span class="seq-msg">tasks/send &nbsp;<span class="small">(JSON-RPC: create task with instructions)</span></span>
+                        <span class="seq-actor" style="color: #c678dd;">Remote Agent</span>
+                    </div>
+                    <div class="seq-row fragment">
+                        <span class="seq-actor" style="color: #c678dd;"></span>
+                        <span class="seq-dir back">&larr;</span>
+                        <span class="seq-msg response">Status: <span class="highlight-yellow">working...</span> &nbsp;<span class="small">(streamed via SSE)</span></span>
+                        <span class="seq-actor"></span>
+                    </div>
+                    <div class="seq-row fragment">
+                        <span class="seq-actor" style="color: #c678dd;"></span>
+                        <span class="seq-dir back">&larr;</span>
+                        <span class="seq-msg response">Status: <span class="highlight-green">completed</span> + artifacts &nbsp;<span class="small">(final result)</span></span>
+                        <span class="seq-actor"></span>
+                    </div>
+                </div>
+
+                <div class="fragment" style="margin-top: 0.8em;">
+                    <p style="font-size: 0.7em;">Task lifecycle: <span style="color: #93a1a1;">submitted</span> &rarr; <span class="highlight-yellow">working</span> &rarr; <span class="highlight-green">completed</span> | <span class="highlight">failed</span> | <span style="color: #93a1a1;">canceled</span></p>
+                </div>
+                <aside class="notes">
+                    Walk through the flow step by step:
+                    1. Client agent discovers the remote agent by fetching its Agent Card
+                    2. Reads the card to understand what the agent can do
+                    3. Creates a task with instructions (JSON-RPC call)
+                    4. Remote agent starts working, streams progress via SSE
+                    5. Returns the final result with artifacts (documents, data, etc.)
+                    For software engineers: this is exactly like calling a REST API,
+                    but with built-in streaming (SSE) and task lifecycle management.
+                    The remote agent can take seconds or hours - the protocol handles both.
+                </aside>
+            </section>
+
+            <!-- Slide 17: MCP vs A2A -->
+            <section>
+                <h2>MCP vs A2A: Complementary Protocols</h2>
+                <p style="font-size: 0.75em; color: #93a1a1; margin-bottom: 0.5em;">Two protocols, two different jobs</p>
+
+                <!-- Visual diagram -->
+                <div class="proto-diagram fragment">
+                    <div class="proto-side" style="flex: 1;">
+                        <div class="proto-label" style="color: #7ec8e3;">MCP (Anthropic)</div>
+                        <div class="proto-vertical" style="margin-top: 0.5em;">
+                            <div class="arch-box" style="font-size: 0.7em; width: 8em;">Agent</div>
+                            <div style="font-size: 1.5em; color: #7ec8e3;">&darr; &uarr;</div>
+                            <div style="display: flex; gap: 0.3em;">
+                                <div class="arch-box" style="font-size: 0.6em; padding: 0.4em 0.6em;">Tool 1</div>
+                                <div class="arch-box" style="font-size: 0.6em; padding: 0.4em 0.6em;">Tool 2</div>
+                                <div class="arch-box" style="font-size: 0.6em; padding: 0.4em 0.6em;">Tool 3</div>
+                            </div>
+                            <p style="font-size: 0.65em; margin: 0.5em 0 0; color: #7ec8e3;"><strong>Vertical</strong>: agent &harr; tools<br>Like a <strong>USB port</strong></p>
+                        </div>
+                    </div>
+                    <div style="font-size: 1.5em; color: #93a1a1; align-self: center;">vs</div>
+                    <div class="proto-side" style="flex: 1;">
+                        <div class="proto-label" style="color: #98c379;">A2A (Google)</div>
+                        <div class="proto-horizontal" style="margin-top: 0.5em; flex-wrap: wrap; justify-content: center;">
+                            <div class="arch-box green" style="font-size: 0.7em; width: 6em;">Agent A</div>
+                            <div style="font-size: 1.5em; color: #98c379;">&harr;</div>
+                            <div class="arch-box green" style="font-size: 0.7em; width: 6em;">Agent B</div>
+                            <div style="font-size: 1.5em; color: #98c379;">&harr;</div>
+                            <div class="arch-box green" style="font-size: 0.7em; width: 6em;">Agent C</div>
+                        </div>
+                        <p style="font-size: 0.65em; margin: 0.5em 0 0; color: #98c379;"><strong>Horizontal</strong>: agent &harr; agent<br>Like a <strong>telephone network</strong></p>
+                    </div>
+                </div>
+
+                <!-- Comparison table -->
+                <table class="compare-table fragment" style="margin-top: 0.8em; font-size: 0.65em;">
+                    <tr>
+                        <th></th>
+                        <th style="color: #7ec8e3;">MCP</th>
+                        <th style="color: #98c379;">A2A</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Created by</strong></td>
+                        <td>Anthropic (Nov 2024)</td>
+                        <td>Google (Apr 2025)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Purpose</strong></td>
+                        <td>Connect agent to <strong>tools</strong></td>
+                        <td>Connect agent to <strong>agents</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transport</strong></td>
+                        <td>stdio / SSE</td>
+                        <td>HTTP / SSE / gRPC</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Key concept</strong></td>
+                        <td>Tools &amp; Resources</td>
+                        <td>Agent Cards &amp; Tasks</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Governance</strong></td>
+                        <td>Linux Foundation</td>
+                        <td>Linux Foundation</td>
+                    </tr>
+                </table>
+                <p class="fragment small" style="margin-top: 0.5em;">MCP gives an agent <strong>capabilities</strong>. A2A enables <strong>delegation</strong>. Together they form the agentic infrastructure.</p>
+                <aside class="notes">
+                    This is THE key diagram of the entire presentation.
+                    MCP is VERTICAL: it connects an agent to tools (like plugging devices into a USB port).
+                    A2A is HORIZONTAL: it connects agents to each other (like a telephone network).
+                    MCP = "what can I do?" (tools, APIs, databases)
+                    A2A = "who can help me?" (other specialized agents)
+                    For students: USB port vs telephone network is the key analogy.
+                    Both are now governed by the Linux Foundation, making them neutral standards.
+                    In practice, a sophisticated agent would use BOTH: MCP for its own tools,
+                    and A2A to delegate tasks to other agents.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 4: MULTI-AGENT SYSTEMS & SECURITY ==================== -->
+
+            <!-- Slide 18: Section Title -->
+            <section class="section-title">
+                <h2>Multi-Agent Systems in 2026</h2>
+                <h3>Patterns, trends, and security challenges</h3>
+                <aside class="notes">
+                    Now we connect everything: how do multiple agents work together in practice?
+                    And what are the security implications?
+                </aside>
+            </section>
+
+            <!-- Slide 19: Four Orchestration Patterns -->
+            <section>
+                <h2>Four Orchestration Patterns</h2>
+                <p style="font-size: 0.7em; color: #93a1a1; margin-bottom: 0.5em;">How to organize multiple agents working together</p>
+
+                <div class="quadrant">
+                    <div class="quadrant-cell q1 fragment">
+                        <h4>1. Single Agent</h4>
+                        <div style="margin: 0.3em 0; font-size: 1.5em;">
+                            <span style="color: #98c379;">&#9679;</span>
+                            <span style="font-size: 0.6em; color: #93a1a1;"> &rarr; tools</span>
+                        </div>
+                        <p>One agent, many tools</p>
+                        <p style="color: #98c379;"><strong>Simplest</strong></p>
+                        <p>e.g. Claude Code, OpenClaw single-agent</p>
+                    </div>
+                    <div class="quadrant-cell q2 fragment">
+                        <h4>2. Hub-and-Spoke</h4>
+                        <div style="margin: 0.3em 0; font-size: 1.2em;">
+                            <span style="font-size: 0.6em; color: #93a1a1;">specialist &larr;</span>
+                            <span style="color: #7ec8e3;">&#9679;</span>
+                            <span style="font-size: 0.6em; color: #93a1a1;">&rarr; specialist</span>
+                        </div>
+                        <p>Orchestrator delegates to specialists</p>
+                        <p style="color: #7ec8e3;"><strong>Most common</strong></p>
+                        <p>e.g. Manager + researcher + coder + reviewer</p>
+                    </div>
+                    <div class="quadrant-cell q3 fragment">
+                        <h4>3. Sequential Pipeline</h4>
+                        <div style="margin: 0.3em 0; font-size: 1.2em;">
+                            <span style="color: #e5c07b;">&#9679;</span>
+                            <span style="font-size: 0.6em; color: #93a1a1;">&rarr;</span>
+                            <span style="color: #e5c07b;">&#9679;</span>
+                            <span style="font-size: 0.6em; color: #93a1a1;">&rarr;</span>
+                            <span style="color: #e5c07b;">&#9679;</span>
+                        </div>
+                        <p>Chain of agents, each handles one step</p>
+                        <p style="color: #e5c07b;"><strong>Good for workflows</strong></p>
+                        <p>e.g. Extract &rarr; Analyze &rarr; Report</p>
+                    </div>
+                    <div class="quadrant-cell q4 fragment">
+                        <h4>4. Decentralized Swarm</h4>
+                        <div style="margin: 0.3em 0; font-size: 1.2em;">
+                            <span style="color: #c678dd;">&#9679;</span>
+                            <span style="font-size: 0.5em; color: #93a1a1;">&harr;</span>
+                            <span style="color: #c678dd;">&#9679;</span>
+                            <span style="font-size: 0.5em; color: #93a1a1;">&harr;</span>
+                            <span style="color: #c678dd;">&#9679;</span>
+                        </div>
+                        <p>Peer-to-peer, no central authority</p>
+                        <p style="color: #c678dd;"><strong>Most complex</strong></p>
+                        <p>e.g. Moltbook agents, autonomous markets</p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    These four patterns appear in every multi-agent system:
+                    1. Single agent: what most people use today. One agent with MCP tools.
+                    2. Hub-and-spoke: most common in production. A manager agent delegates
+                       to specialist agents (like a project manager and team).
+                    3. Pipeline: each agent does one transformation in sequence.
+                       Think of it like Unix pipes: agent1 | agent2 | agent3.
+                    4. Swarm: no central coordinator. Agents negotiate directly.
+                       Most complex but most resilient. Moltbook is a real example.
+                    For software engineers: these map to familiar architecture patterns -
+                    monolith, microservices with gateway, ETL pipeline, and P2P network.
+                </aside>
+            </section>
+
+            <!-- Slide 20: Industry Trends -->
+            <section>
+                <h2>Industry Trends</h2>
+
+                <div class="fragment" style="display: flex; justify-content: center; gap: 2em; margin: 0.5em 0;">
+                    <div style="text-align: center;">
+                        <div class="stat-big" style="font-size: 2em;">1,445%</div>
+                        <p class="small">Surge in multi-agent inquiries<br>(Gartner, 2025)</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <div class="stat-big" style="font-size: 2em; color: #7ec8e3;">40%</div>
+                        <p class="small">Enterprise apps with AI agents by 2026<br>(up from &lt;5% in 2025)</p>
+                    </div>
+                </div>
+
+                <div class="fragment" style="margin-top: 1em;">
+                    <h3 style="font-size: 0.9em; margin-bottom: 0.5em;">Example: Software Development Pipeline</h3>
+                    <div class="pipeline">
+                        <div class="step" style="font-size: 0.7em; border-color: #98c379;">Code Gen<br>Agent</div>
+                        <div class="arrow">&rarr;</div>
+                        <div class="step" style="font-size: 0.7em; border-color: #e5c07b;">Review<br>Agent</div>
+                        <div class="arrow">&rarr;</div>
+                        <div class="step" style="font-size: 0.7em; border-color: #c678dd;">Test<br>Agent</div>
+                        <div class="arrow">&rarr;</div>
+                        <div class="step" style="font-size: 0.7em; border-color: #ff6b6b;">Deploy<br>Agent</div>
+                    </div>
+                    <p class="small" style="margin-top: 0.5em;">Each agent specializes in one phase. They communicate via A2A.</p>
+                </div>
+
+                <ul style="font-size: 0.75em; margin-top: 0.8em;">
+                    <li class="fragment">Customer support: triage agent &rarr; specialist agent &rarr; escalation agent</li>
+                    <li class="fragment">Data analysis: collection agent &rarr; cleaning agent &rarr; visualization agent</li>
+                    <li class="fragment">Research: search agent &rarr; summarization agent &rarr; fact-check agent</li>
+                </ul>
+                <aside class="notes">
+                    The numbers from Gartner are striking: 1,445% surge in inquiries about
+                    multi-agent systems. This is not a niche topic anymore.
+                    The 40% prediction for enterprise apps is aggressive but reflects real momentum.
+                    The software dev pipeline example is something students can relate to:
+                    imagine each step of your CI/CD pipeline being an autonomous agent.
+                    The code gen agent writes code, the review agent checks it, the test agent
+                    runs tests, and the deploy agent pushes to production.
+                    This is already being built at companies like Cognition (Devin) and others.
+                </aside>
+            </section>
+
+            <!-- Slide 21: Security - The Dark Side -->
+            <section>
+                <h2>Security: The Dark Side</h2>
+                <p style="font-size: 0.8em; color: #93a1a1;">When 180K stars outpace security reviews</p>
+
+                <div class="alert-box fragment" style="margin: 0.8em 0;">
+                    <div class="alert-title">CVE-2026-25253 (CVSS 8.8 &mdash; HIGH)</div>
+                    <p style="margin: 0.3em 0 0;"><strong>One-Click Remote Code Execution</strong> in OpenClaw via WebSocket hijacking</p>
+                </div>
+
+                <div class="fragment" style="margin-top: 0.8em;">
+                    <h3 style="font-size: 0.85em; margin-bottom: 0.3em;">Attack Chain:</h3>
+                    <div class="pipeline" style="flex-wrap: wrap; gap: 0.2em;">
+                        <div class="step" style="font-size: 0.6em; border-color: #ff6b6b; background: rgba(255,107,107,0.1);">1. Victim clicks<br>malicious link</div>
+                        <div class="arrow" style="font-size: 1em;">&rarr;</div>
+                        <div class="step" style="font-size: 0.6em; border-color: #ff6b6b; background: rgba(255,107,107,0.1);">2. JavaScript steals<br>auth token</div>
+                        <div class="arrow" style="font-size: 1em;">&rarr;</div>
+                        <div class="step" style="font-size: 0.6em; border-color: #ff6b6b; background: rgba(255,107,107,0.1);">3. WebSocket<br>hijack</div>
+                        <div class="arrow" style="font-size: 1em;">&rarr;</div>
+                        <div class="step" style="font-size: 0.6em; border-color: #ff6b6b; background: rgba(255,107,107,0.1);">4. Disable user<br>approvals</div>
+                        <div class="arrow" style="font-size: 1em;">&rarr;</div>
+                        <div class="step" style="font-size: 0.6em; border-color: #ff6b6b; background: rgba(255,107,107,0.15);">5. Execute<br>arbitrary code</div>
+                    </div>
+                </div>
+
+                <div class="fragment" style="display: flex; gap: 1em; margin-top: 1em;">
+                    <div style="flex: 1; text-align: center; background: rgba(255,107,107,0.08); border-radius: 8px; padding: 0.6em;">
+                        <div style="font-size: 1.8em; font-weight: bold; color: #ff6b6b;">135K+</div>
+                        <p class="small">Exposed instances found<br>(Bitdefender scan)</p>
+                    </div>
+                    <div style="flex: 1; text-align: center; background: rgba(255,107,107,0.08); border-radius: 8px; padding: 0.6em;">
+                        <div style="font-size: 1.8em; font-weight: bold; color: #ff6b6b;">42,900</div>
+                        <p class="small">Exposed control panels<br>(accessible from internet)</p>
+                    </div>
+                    <div style="flex: 1; text-align: center; background: rgba(255,107,107,0.08); border-radius: 8px; padding: 0.6em;">
+                        <div style="font-size: 1.8em; font-weight: bold; color: #ff6b6b;">386</div>
+                        <p class="small">Malicious skills identified<br>(in ClawHub marketplace)</p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    This is the most important slide for software engineers to understand.
+                    CVE-2026-25253 was a critical vulnerability: a single click could give
+                    an attacker full code execution on the victim's machine.
+                    The attack chain is elegant and devastating:
+                    1. Victim clicks a link (e.g., in an email or chat)
+                    2. JavaScript on the page steals the authentication token
+                    3. Attacker hijacks the WebSocket connection to OpenClaw
+                    4. Disables the approval system (so commands run without user confirmation)
+                    5. Executes arbitrary code on the victim's machine
+                    135K exposed instances means 135K machines potentially vulnerable.
+                    The lesson: localhost is NOT a security boundary. Just because something
+                    runs on your machine doesn't mean it's safe from the internet.
+                </aside>
+            </section>
+
+            <!-- Slide 22: Security Lessons -->
+            <section>
+                <h2>Security Lessons</h2>
+                <p style="font-size: 0.8em; color: #93a1a1;">What OpenClaw teaches us about agent security</p>
+
+                <div class="fragment" style="background: rgba(255,107,107,0.08); border-left: 4px solid #ff6b6b; padding: 0.7em 1em; border-radius: 0 8px 8px 0; margin: 0.5em 0; font-size: 0.78em;">
+                    <strong class="highlight">1. Open-source velocity vs security</strong><br>
+                    180K stars in 3 weeks, but security auditing can't keep pace with adoption. Popularity is not a proxy for safety.
+                </div>
+
+                <div class="fragment" style="background: rgba(229,192,123,0.08); border-left: 4px solid #e5c07b; padding: 0.7em 1em; border-radius: 0 8px 8px 0; margin: 0.5em 0; font-size: 0.78em;">
+                    <strong class="highlight-yellow">2. Agent permissions = new attack surface</strong><br>
+                    Agents that can execute code, access files, and browse the web create attack surfaces far beyond traditional software.
+                </div>
+
+                <div class="fragment" style="background: rgba(198,120,221,0.08); border-left: 4px solid #c678dd; padding: 0.7em 1em; border-radius: 0 8px 8px 0; margin: 0.5em 0; font-size: 0.78em;">
+                    <strong class="highlight-purple">3. Supply chain attacks on skill marketplaces</strong><br>
+                    386 malicious skills in ClawHub. Just like npm/PyPI malware, AI skill stores face the same supply chain risks.
+                </div>
+
+                <div class="fragment" style="background: rgba(152,195,121,0.08); border-left: 4px solid #98c379; padding: 0.7em 1em; border-radius: 0 8px 8px 0; margin: 0.5em 0; font-size: 0.78em;">
+                    <strong class="highlight-green">4. Defensive measures</strong><br>
+                    Always update. Validate skill origins. Run agents in containers. Treat localhost as untrusted.
+                </div>
+
+                <div class="insight-box fragment" style="margin-top: 0.5em; border-color: #ff6b6b; background: rgba(255,107,107,0.05); max-width: 90%;">
+                    <div class="title" style="color: #ff6b6b;">Key Principle</div>
+                    <p style="margin: 0;"><code>localhost</code> is <strong>not</strong> a security boundary. An agent running on your machine with shell access is a powerful weapon &mdash; for you <em>or</em> an attacker.</p>
+                </div>
+                <aside class="notes">
+                    These four lessons are essential for any software engineer working with AI agents:
+                    1. Just because a project is popular doesn't mean it's secure. Open-source projects
+                       can grow faster than security reviews can happen.
+                    2. Traditional software might read/write files. Agents can execute arbitrary code,
+                       browse the web, send messages. The attack surface is enormous.
+                    3. Supply chain attacks are already a known problem (npm, PyPI).
+                       Now the same thing happens with AI skill marketplaces.
+                    4. Practical advice: update regularly, run in containers (Docker),
+                       validate where skills come from, and never assume localhost is safe.
+                    The localhost point is especially important: many developers think
+                    "it's on my machine, so it's safe." WebSocket hijacking proves this wrong.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 5: WRAP-UP ==================== -->
+
+            <!-- Slide 23: Key Takeaways -->
+            <section>
+                <h2>Key Takeaways</h2>
+                <ol style="font-size: 0.85em;">
+                    <li class="fragment" style="margin-bottom: 0.7em;">
+                        <strong>Agents are the new interface</strong><br>
+                        <span style="font-size: 0.8em; color: #93a1a1;">Beyond chatbots &mdash; AI systems that plan, act, and collaborate autonomously</span>
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.7em;">
+                        <strong>OpenClaw proves "files as config" works</strong><br>
+                        <span style="font-size: 0.8em; color: #93a1a1;">Plain Markdown files &mdash; readable, versionable, debuggable &mdash; are enough</span>
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.7em;">
+                        <strong>MCP + A2A = the agentic infrastructure</strong><br>
+                        <span style="font-size: 0.8em; color: #93a1a1;">MCP connects agents to tools (vertical). A2A connects agents to agents (horizontal).</span>
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.7em;">
+                        <strong>Security must evolve with agent capabilities</strong><br>
+                        <span style="font-size: 0.8em; color: #93a1a1;">More power = larger attack surface. Localhost is not a security boundary.</span>
+                    </li>
+                </ol>
+                <aside class="notes">
+                    Synthesize the four main themes of today's session.
+                    1. The shift from chatbots to agents is the defining trend of 2025-2026.
+                    2. OpenClaw's radical simplicity (just Markdown) actually works at scale.
+                    3. MCP and A2A are complementary building blocks of the agent ecosystem.
+                    4. Security challenges are real and growing with agent capabilities.
+                    Ask students: which of these surprised you the most?
+                </aside>
+            </section>
+
+            <!-- Slide 24: Discussion -->
+            <section class="discussion-slide">
+                <h2>Discussion</h2>
+                <div style="border: 2px solid #7ec8e3; border-radius: 12px; padding: 1.2em; margin: 1em auto; max-width: 85%;">
+                    <p style="font-size: 1.1em; margin: 0;">
+                        If you could build your own AI agent,<br>
+                        <span class="highlight-blue">what would it do?</span><br>
+                        <span class="highlight-green">What skills would it need?</span>
+                    </p>
+                </div>
+                <ul style="font-size: 0.8em; margin-top: 1em; color: #93a1a1;">
+                    <li class="fragment">What messaging platform would you deploy it on?</li>
+                    <li class="fragment">Would it work alone (single agent) or collaborate with others (multi-agent)?</li>
+                    <li class="fragment">What security measures would you implement?</li>
+                    <li class="fragment">Would you open-source it? Why or why not?</li>
+                </ul>
+                <aside class="notes">
+                    Open discussion time. Let students think creatively.
+                    Encourage concrete answers: "I would build an agent that..."
+                    Follow-up questions:
+                    - Which orchestration pattern would you use?
+                    - What would be in your SOUL.md?
+                    - What's the biggest security risk in your design?
+                    This ties together all the concepts from the session.
+                </aside>
+            </section>
+
+            <!-- Slide 25: References -->
+            <section>
+                <h2>References</h2>
+                <div style="font-size: 0.55em; text-align: left;">
+                    <h3 style="font-size: 1.3em; margin-bottom: 0.3em;">OpenClaw</h3>
+                    <ul style="margin-bottom: 0.8em;">
+                        <li>OpenClaw GitHub: <a href="https://github.com/nicepkg/openclaw" style="color: #7ec8e3;">github.com/nicepkg/openclaw</a></li>
+                        <li>OpenClaw Documentation: <a href="https://docs.openclaw.ai" style="color: #7ec8e3;">docs.openclaw.ai</a></li>
+                        <li>ClawHub Skills Marketplace: <a href="https://clawhub.ai" style="color: #7ec8e3;">clawhub.ai</a></li>
+                        <li>Moltbook: <a href="https://moltbook.com" style="color: #7ec8e3;">moltbook.com</a> (AI agent forum)</li>
+                    </ul>
+
+                    <h3 style="font-size: 1.3em; margin-bottom: 0.3em;">A2A Protocol</h3>
+                    <ul style="margin-bottom: 0.8em;">
+                        <li>A2A Specification: <a href="https://github.com/google/A2A" style="color: #7ec8e3;">github.com/google/A2A</a></li>
+                        <li>Google Blog: <a href="https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/" style="color: #7ec8e3;">"A2A: A New Era of Agent Interoperability"</a></li>
+                        <li>Linux Foundation A2A: <a href="https://www.linuxfoundation.org/press/linux-foundation-launches-open-source-a2a-protocol" style="color: #7ec8e3;">linuxfoundation.org</a></li>
+                    </ul>
+
+                    <h3 style="font-size: 1.3em; margin-bottom: 0.3em;">MCP Protocol</h3>
+                    <ul style="margin-bottom: 0.8em;">
+                        <li>MCP Specification: <a href="https://modelcontextprotocol.io" style="color: #7ec8e3;">modelcontextprotocol.io</a></li>
+                        <li>MCP GitHub: <a href="https://github.com/modelcontextprotocol" style="color: #7ec8e3;">github.com/modelcontextprotocol</a></li>
+                    </ul>
+
+                    <h3 style="font-size: 1.3em; margin-bottom: 0.3em;">Security</h3>
+                    <ul>
+                        <li>CVE-2026-25253: <a href="https://nvd.nist.gov/vuln/detail/CVE-2026-25253" style="color: #7ec8e3;">NVD NIST</a></li>
+                        <li>Bitdefender Report: <a href="https://www.bitdefender.com/blog/labs/" style="color: #7ec8e3;">bitdefender.com/blog/labs</a></li>
+                        <li>Gartner Multi-Agent Report (2025): <a href="https://www.gartner.com" style="color: #7ec8e3;">gartner.com</a></li>
+                    </ul>
+                </div>
+                <aside class="notes">
+                    These references are organized by topic for easy lookup.
+                    Students should bookmark the A2A spec on GitHub and the MCP documentation
+                    if they want to understand these protocols in depth.
+                    The security references are especially important for the security-minded students.
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            controlsTutorial: false,
+            progress: true,
+            center: true,
+            plugins: [RevealHighlight, RevealNotes]
+        });
+    </script>
+</body>
+</html>

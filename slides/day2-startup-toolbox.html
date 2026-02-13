@@ -1,0 +1,1343 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Startup Toolbox: Tools for Your NLP Project</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/moon.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --r-heading-font: 'Helvetica Neue', Arial, sans-serif;
+            --r-main-font: 'Helvetica Neue', Arial, sans-serif;
+        }
+        .reveal { font-size: 32px; }
+        .reveal h1 { font-size: 2.2em; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.2em; color: #7ec8e3; }
+        .reveal ul { text-align: left; }
+        .reveal li { margin-bottom: 0.4em; }
+
+        /* Big stat numbers */
+        .stat-big {
+            font-size: 3.5em;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin: 0.2em 0;
+        }
+        .stat-label {
+            font-size: 0.6em;
+            color: #93a1a1;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1em;
+        }
+        .stat-box {
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+        }
+        .stat-box .stat-big {
+            font-size: 2.8em;
+        }
+
+        /* Quote styling */
+        .quote-slide blockquote {
+            font-style: italic;
+            font-size: 1.2em;
+            border-left: 4px solid #7ec8e3;
+            padding-left: 1em;
+            margin: 1em auto;
+            max-width: 80%;
+            text-align: left;
+        }
+        .quote-slide .attribution {
+            text-align: right;
+            color: #93a1a1;
+            font-size: 0.7em;
+            margin-right: 10%;
+        }
+
+        /* Discussion slides */
+        .discussion-slide {
+            background: rgba(126, 200, 227, 0.08) !important;
+        }
+        .discussion-slide h2 {
+            color: #7ec8e3;
+        }
+
+        /* Two column layout */
+        .two-column {
+            display: flex;
+            gap: 2em;
+            align-items: flex-start;
+        }
+        .two-column > div {
+            flex: 1;
+        }
+
+        /* Pipeline diagram */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3em;
+            flex-wrap: wrap;
+        }
+        .pipeline .step {
+            background: rgba(126, 200, 227, 0.15);
+            border: 2px solid #7ec8e3;
+            border-radius: 8px;
+            padding: 0.6em 1em;
+            text-align: center;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .pipeline .arrow {
+            font-size: 1.5em;
+            color: #7ec8e3;
+        }
+
+        /* Highlight text */
+        .highlight { color: #ff6b6b; }
+        .highlight-blue { color: #7ec8e3; }
+        .highlight-green { color: #98c379; }
+        .small { font-size: 0.65em; color: #93a1a1; }
+
+        /* Section divider */
+        .section-title h2 {
+            font-size: 2em;
+            margin-bottom: 0.3em;
+        }
+        .section-title h3 {
+            font-size: 0.9em;
+            color: #93a1a1;
+            font-weight: normal;
+        }
+
+        /* Roadmap */
+        .roadmap {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.8em;
+            font-size: 0.7em;
+        }
+        .roadmap .day {
+            background: rgba(126, 200, 227, 0.1);
+            border: 1px solid #7ec8e3;
+            border-radius: 8px;
+            padding: 0.8em;
+            text-align: left;
+        }
+        .roadmap .day.active {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+        .roadmap .day .day-num {
+            font-weight: bold;
+            color: #7ec8e3;
+            font-size: 1.1em;
+        }
+        .roadmap .day.active .day-num {
+            color: #ff6b6b;
+        }
+
+        /* Apps grid */
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5em;
+            font-size: 0.8em;
+        }
+        .apps-grid .app {
+            background: rgba(126, 200, 227, 0.1);
+            padding: 0.5em;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        /* Comparison tables */
+        .reveal table {
+            font-size: 0.65em;
+            border-collapse: collapse;
+            width: 100%;
+            margin: 0.5em 0;
+        }
+        .reveal table th {
+            background: rgba(126, 200, 227, 0.2);
+            color: #7ec8e3;
+            padding: 0.5em 0.6em;
+            text-align: left;
+            border-bottom: 2px solid #7ec8e3;
+        }
+        .reveal table td {
+            padding: 0.4em 0.6em;
+            border-bottom: 1px solid rgba(147, 161, 161, 0.2);
+        }
+        .reveal table tr:hover {
+            background: rgba(126, 200, 227, 0.05);
+        }
+
+        /* Tool card */
+        .tool-card {
+            background: rgba(126, 200, 227, 0.08);
+            border: 1px solid rgba(126, 200, 227, 0.3);
+            border-radius: 8px;
+            padding: 0.8em;
+            margin: 0.4em 0;
+            text-align: left;
+        }
+        .tool-card .tool-name {
+            font-weight: bold;
+            color: #7ec8e3;
+            font-size: 1.05em;
+        }
+        .tool-card .tool-price {
+            color: #98c379;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        .tool-card .tool-desc {
+            font-size: 0.75em;
+            color: #93a1a1;
+            margin-top: 0.2em;
+        }
+
+        /* Architecture diagram */
+        .arch-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.4em;
+            margin: 1em 0;
+        }
+        .arch-row {
+            display: flex;
+            gap: 0.8em;
+            align-items: center;
+            justify-content: center;
+        }
+        .arch-box {
+            background: rgba(126, 200, 227, 0.15);
+            border: 2px solid #7ec8e3;
+            border-radius: 8px;
+            padding: 0.5em 1em;
+            text-align: center;
+            font-size: 0.75em;
+            font-weight: bold;
+            min-width: 130px;
+        }
+        .arch-box.frontend { border-color: #98c379; }
+        .arch-box.backend { border-color: #7ec8e3; }
+        .arch-box.llm { border-color: #ff6b6b; }
+        .arch-box.nlp { border-color: #c678dd; }
+        .arch-arrow {
+            font-size: 1.3em;
+            color: #93a1a1;
+        }
+        .arch-arrow-down {
+            font-size: 1.3em;
+            color: #93a1a1;
+        }
+
+        /* Schedule grid */
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.3em 1em;
+            font-size: 0.8em;
+            text-align: left;
+        }
+        .schedule-time {
+            color: #7ec8e3;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .schedule-active {
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ==================== SLIDE 1: TITLE ==================== -->
+
+            <section>
+                <h1 style="font-size: 1.8em;">Startup Toolbox</h1>
+                <h3 style="color: #93a1a1; font-weight: normal;">Tools for Your NLP Project</h3>
+                <p style="margin-top: 2em; font-size: 0.7em; color: #93a1a1;">
+                    TAL &mdash; Day 2, Session 1<br>
+                    March 9, 2026<br>
+                    ZHANG Zheng
+                </p>
+                <aside class="notes">
+                    Welcome back! One month since Day 1. Today is a special format: group presentations.
+                    These slides introduce the topic and serve as reference material for the rest of the course.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 2: TODAY'S FORMAT ==================== -->
+
+            <section>
+                <h2>Today's Format</h2>
+                <p style="font-size: 0.9em; margin-bottom: 1em;">
+                    Day 2 features <span class="highlight">group presentations</span> &mdash; you teach, we all learn.
+                </p>
+                <div class="schedule-grid">
+                    <span class="schedule-time schedule-active">08:15 &mdash; 08:45</span>
+                    <span><strong>Instructor intro</strong> &mdash; Startup Toolbox overview (these slides)</span>
+                    <span class="schedule-time">08:45 &mdash; 09:05</span>
+                    <span><strong>Group 1</strong> &mdash; Startup Toolbox (20 min)</span>
+                    <span class="schedule-time">09:05 &mdash; 09:25</span>
+                    <span><strong>Group 2</strong> &mdash; Modern AI IDEs (20 min)</span>
+                    <span class="schedule-time">09:25 &mdash; 09:45</span>
+                    <span><strong>Group 3</strong> &mdash; Claude Code Usage (20 min)</span>
+                    <span class="schedule-time">09:45 &mdash; 10:00</span>
+                    <span>Break</span>
+                    <span class="schedule-time">10:00 &mdash; 12:30</span>
+                    <span><strong>Session 2</strong> &mdash; Attention &amp; Transformers</span>
+                </div>
+                <p class="fragment small" style="margin-top: 1em;">
+                    Evaluation: Knowledge Transfer 40% + Learning Process 40% + Quality 20%
+                </p>
+                <aside class="notes">
+                    Remind students: the goal of presentations is knowledge SHARING. We are evaluating
+                    how well you transfer knowledge to your peers, not how polished your slides are.
+                    Each group has exactly 20 minutes, including Q&A.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 3: WHY THIS MATTERS ==================== -->
+
+            <section>
+                <h2>Why "Startup Toolbox"?</h2>
+                <ul>
+                    <li class="fragment">Your Demo Day project is <span class="highlight">a real NLP application</span></li>
+                    <li class="fragment">You need: hosting, APIs, project management, deployment</li>
+                    <li class="fragment">Good news: almost everything is <span class="highlight-green">free for students</span></li>
+                    <li class="fragment">Today's goal: <strong>remove all technical barriers</strong> so you can focus on building</li>
+                </ul>
+                <div class="fragment" style="margin-top: 1.5em; padding: 0.8em; border: 2px solid #7ec8e3; border-radius: 8px;">
+                    <p style="font-size: 0.85em; margin: 0; color: #7ec8e3;">
+                        Think of this as your startup's seed round &mdash; except the capital is free tools and API credits.
+                    </p>
+                </div>
+                <aside class="notes">
+                    Frame it: you are building a startup from scratch. The Demo Day is your pitch day.
+                    Students who set up these tools early will have a massive advantage.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION: GITHUB STUDENT PACK ==================== -->
+
+            <section class="section-title">
+                <h2>GitHub Student Developer Pack</h2>
+                <h3>Your golden ticket to free developer tools</h3>
+                <aside class="notes">
+                    This should be the FIRST thing every student signs up for. It unlocks everything else.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 4: GITHUB STUDENT PACK ==================== -->
+
+            <section>
+                <h2>GitHub Student Developer Pack</h2>
+                <div class="stat-row" style="margin-bottom: 1em;">
+                    <div class="stat-box">
+                        <div class="stat-big" style="font-size: 2.5em;">100+</div>
+                        <div class="stat-label">Free tools &amp; services</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-big" style="font-size: 2.5em; color: #98c379;">$0</div>
+                        <div class="stat-label">Cost with .edu email</div>
+                    </div>
+                </div>
+                <ul style="font-size: 0.8em;">
+                    <li class="fragment"><strong>GitHub Copilot Pro</strong> &mdash; AI pair programmer, free for students</li>
+                    <li class="fragment"><strong>Azure</strong> &mdash; $100 credit for cloud services</li>
+                    <li class="fragment"><strong>DigitalOcean</strong> &mdash; $200 credit for cloud infrastructure</li>
+                    <li class="fragment"><strong>MongoDB Atlas</strong> &mdash; $50 credit for database</li>
+                    <li class="fragment"><strong>JetBrains IDEs</strong> &mdash; all IDEs free (PyCharm, WebStorm, etc.)</li>
+                    <li class="fragment"><strong>.tech domain</strong> &mdash; free domain name for one year</li>
+                </ul>
+                <p class="fragment small" style="margin-top: 0.5em;">
+                    Sign up: <span class="highlight-blue">education.github.com/pack</span> &mdash; use your university email
+                </p>
+                <aside class="notes">
+                    If students haven't signed up yet, this is homework for tonight. Takes about 24 hours
+                    for verification. The Copilot Pro access alone is worth it -- $19/month normally.
+                    DigitalOcean $200 credit is generous and can host your entire project.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION: PROJECT MANAGEMENT ==================== -->
+
+            <section class="section-title">
+                <h2>Project Management</h2>
+                <h3>Organize your team, track your progress</h3>
+                <aside class="notes">
+                    Software engineers know project management is important, but many student teams
+                    skip it. Do not skip it. Pick ONE tool and use it consistently.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 5: PROJECT MANAGEMENT TOOLS ==================== -->
+
+            <section>
+                <h2>Project Management Tools</h2>
+                <div class="two-column">
+                    <div>
+                        <div class="tool-card fragment">
+                            <div class="tool-name">Linear</div>
+                            <div class="tool-price">Free tier available</div>
+                            <div class="tool-desc">
+                                Keyboard-first, blazing fast UI<br>
+                                Git &amp; GitHub integration<br>
+                                Cycles, projects, roadmaps<br>
+                                Built for engineering teams
+                            </div>
+                        </div>
+                        <div class="tool-card fragment">
+                            <div class="tool-name">GitHub Projects</div>
+                            <div class="tool-price">Free with GitHub</div>
+                            <div class="tool-desc">
+                                Built into your repo<br>
+                                Issues &amp; PRs auto-linked<br>
+                                Kanban boards, tables, roadmaps<br>
+                                Zero extra setup needed
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="tool-card fragment">
+                            <div class="tool-name">Notion</div>
+                            <div class="tool-price">Free Education Plus (.edu email)</div>
+                            <div class="tool-desc">
+                                Unlimited pages &amp; blocks<br>
+                                Docs + tasks + wiki in one<br>
+                                Great for meeting notes<br>
+                                AI assistant built-in
+                            </div>
+                        </div>
+                        <div class="fragment" style="margin-top: 1em; padding: 0.6em; border-radius: 8px; background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3); font-size: 0.7em;">
+                            <strong class="highlight">Recommendation:</strong> Use <strong>GitHub Projects</strong> for task tracking (it is already in your repo) + <strong>Notion</strong> for docs and meeting notes.
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Linear is what professional teams use -- it is the best tool by far, but GitHub Projects
+                    is the pragmatic choice for a course project since everything stays in one place.
+                    Notion's Education Plus plan gives unlimited AI credits too.
+                    The key message: PICK ONE and actually use it. A mediocre tool used consistently
+                    beats a perfect tool nobody opens.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION: LLM API TOKENS ==================== -->
+
+            <section class="section-title">
+                <h2>Getting Free LLM API Tokens</h2>
+                <h3>The most important section for your project</h3>
+                <aside class="notes">
+                    This is critical. Every NLP project in 2026 uses LLM APIs. Students need to know
+                    exactly where to get free credits and how much they can do with them.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 6: OPENAI & ANTHROPIC ==================== -->
+
+            <section>
+                <h2>Commercial LLM APIs</h2>
+                <div class="two-column">
+                    <div>
+                        <div class="tool-card fragment">
+                            <div class="tool-name">OpenAI</div>
+                            <div class="tool-price">$5 free credits (new users)</div>
+                            <div class="tool-desc">
+                                <strong>Sign up:</strong> platform.openai.com<br>
+                                GPT-4o Mini: $0.15 / $0.60 per M tokens<br>
+                                GPT-4o: $2.50 / $10 per M tokens<br>
+                                Best for: chat, code, general tasks<br>
+                                <em>$5 goes a long way with GPT-4o Mini</em>
+                            </div>
+                        </div>
+                        <p class="fragment small" style="margin-top: 0.3em;">$5 credit = ~33M input tokens with GPT-4o Mini</p>
+                    </div>
+                    <div>
+                        <div class="tool-card fragment">
+                            <div class="tool-name">Anthropic (Claude)</div>
+                            <div class="tool-price">$5 free credits (new users)</div>
+                            <div class="tool-desc">
+                                <strong>Sign up:</strong> console.anthropic.com<br>
+                                Haiku 4.5: $1 / $5 per M tokens<br>
+                                Sonnet 4: $3 / $15 per M tokens<br>
+                                Best for: reasoning, analysis, long docs<br>
+                                <em>200K context window</em>
+                            </div>
+                        </div>
+                        <p class="fragment small" style="margin-top: 0.3em;">$5 credit = ~5M input tokens with Haiku 4.5</p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Walk through the sign-up process. Both require a phone number for verification.
+                    The free credits expire after a few months, so students should sign up when they
+                    are ready to start building, not today. Pricing shown is input/output per million tokens.
+                    Haiku 4.5 is the sweet spot for student projects: cheap, fast, and surprisingly capable.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 7: GOOGLE & GROQ ==================== -->
+
+            <section>
+                <h2>Free &amp; Fast Alternatives</h2>
+                <div class="two-column">
+                    <div>
+                        <div class="tool-card fragment">
+                            <div class="tool-name">Google Gemini</div>
+                            <div class="tool-price">Very generous free tier</div>
+                            <div class="tool-desc">
+                                <strong>Sign up:</strong> ai.google.dev<br>
+                                Gemini 2.0 Flash: <span class="highlight-green">FREE</span><br>
+                                1,500 requests/day free<br>
+                                1M token context window<br>
+                                Best for: prototyping, high-volume tasks
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="tool-card fragment">
+                            <div class="tool-name">Groq</div>
+                            <div class="tool-price">Free tier available</div>
+                            <div class="tool-desc">
+                                <strong>Sign up:</strong> console.groq.com<br>
+                                Custom LPU hardware<br>
+                                Ultra-fast inference (~500 tok/s)<br>
+                                Open-source models (Llama 3, Mixtral)<br>
+                                Best for: speed-critical applications
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="fragment" style="margin-top: 1em; font-size: 0.85em;">
+                    <span class="highlight-green">Pro tip:</span> Use <strong>Gemini 2.0 Flash</strong> for development and testing (free),
+                    then switch to GPT-4o or Claude for production.
+                </p>
+                <aside class="notes">
+                    Google Gemini's free tier is the most generous by far. 1500 requests per day is
+                    more than enough for any student project. Gemini 2.0 Flash is surprisingly good.
+                    Groq is interesting because of its speed -- useful for real-time applications.
+                    The LPU (Language Processing Unit) is custom hardware, not GPU-based.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 8: LOCAL & UNIFIED ==================== -->
+
+            <section>
+                <h2>Local &amp; Unified Options</h2>
+                <div class="two-column">
+                    <div>
+                        <div class="tool-card fragment">
+                            <div class="tool-name">Ollama</div>
+                            <div class="tool-price">Completely FREE &mdash; runs locally</div>
+                            <div class="tool-desc">
+                                <strong>Install:</strong> ollama.com<br>
+                                Run open-source models on your laptop<br>
+                                Llama 3, Mistral, DeepSeek, Phi-3<br>
+                                No API key, no internet needed<br>
+                                <code style="font-size: 0.85em;">ollama run llama3.2</code>
+                            </div>
+                        </div>
+                        <p class="fragment small" style="margin-top: 0.3em;">Requires 8GB+ RAM; 16GB recommended for larger models</p>
+                    </div>
+                    <div>
+                        <div class="tool-card fragment">
+                            <div class="tool-name">OpenRouter</div>
+                            <div class="tool-price">Some free models available</div>
+                            <div class="tool-desc">
+                                <strong>Sign up:</strong> openrouter.ai<br>
+                                Unified API for 100+ models<br>
+                                One API key for everything<br>
+                                Auto-fallback between providers<br>
+                                Pay-as-you-go, transparent pricing
+                            </div>
+                        </div>
+                        <p class="fragment small" style="margin-top: 0.3em;">Perfect for comparing models without managing multiple API keys</p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Ollama is a game-changer for privacy and offline work. Students with M-series Macs
+                    will get great performance. Llama 3.2 (8B) runs smoothly on 16GB RAM.
+                    OpenRouter is great for experimentation -- one API, access to everything.
+                    Some models on OpenRouter have free tiers (e.g., Llama via free endpoints).
+                    DeepSeek models are especially popular on Ollama for their efficiency.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 9: LLM COMPARISON TABLE ==================== -->
+
+            <section>
+                <h2>LLM API Comparison</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Provider</th>
+                            <th>Free Credits</th>
+                            <th>Best Model (Free/Cheap)</th>
+                            <th>Best For</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="fragment">
+                            <td><strong>OpenAI</strong></td>
+                            <td>$5</td>
+                            <td>GPT-4o Mini</td>
+                            <td>General purpose, code</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Anthropic</strong></td>
+                            <td>$5</td>
+                            <td>Haiku 4.5</td>
+                            <td>Reasoning, long context</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Google</strong></td>
+                            <td>1500 req/day FREE</td>
+                            <td>Gemini 2.0 Flash</td>
+                            <td>Prototyping, high volume</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Groq</strong></td>
+                            <td>Free tier</td>
+                            <td>Llama 3 (on LPU)</td>
+                            <td>Speed-critical apps</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Ollama</strong></td>
+                            <td>Unlimited (local)</td>
+                            <td>Llama 3.2 / DeepSeek</td>
+                            <td>Privacy, offline, learning</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>OpenRouter</strong></td>
+                            <td>Some free models</td>
+                            <td>Varies</td>
+                            <td>Multi-model comparison</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="fragment" style="margin-top: 0.8em; font-size: 0.8em;">
+                    <span class="highlight">Strategy:</span> Develop with <span class="highlight-green">Gemini Flash</span> (free) or <span class="highlight-green">Ollama</span> (local)
+                    &rarr; Deploy with <span class="highlight-blue">GPT-4o Mini</span> or <span class="highlight-blue">Haiku 4.5</span> (cheap)
+                </p>
+                <aside class="notes">
+                    This is the slide students should screenshot. The strategy at the bottom is key:
+                    don't burn your credits during development. Use free options to prototype, then
+                    switch to paid APIs for the final demo. Total cost for a Demo Day project should
+                    be under $5 if you are smart about it.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION: VIBE CODING ==================== -->
+
+            <section class="section-title">
+                <h2>Vibe Coding</h2>
+                <h3>A new way to build software in 2026</h3>
+                <aside class="notes">
+                    This concept is important because it is how most of you will build your Demo Day
+                    projects. Let's understand what it means and where it is heading.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 10: WHAT IS VIBE CODING ==================== -->
+
+            <section class="quote-slide">
+                <h2>What is Vibe Coding?</h2>
+                <blockquote style="font-size: 1em;">
+                    "There's a new kind of coding I call 'vibe coding', where you fully give in to the vibes,
+                    embrace exponentials, and forget that the code even exists."
+                </blockquote>
+                <p class="attribution">&mdash; Andrej Karpathy, February 2025</p>
+                <div class="fragment" style="margin-top: 1.5em;">
+                    <p style="font-size: 0.85em; text-align: left;">In practice, this means:</p>
+                    <ul style="font-size: 0.8em;">
+                        <li class="fragment">You <strong>describe</strong> what you want in natural language</li>
+                        <li class="fragment">AI <strong>writes</strong> the code for you</li>
+                        <li class="fragment">You <strong>run</strong> it, see errors, paste them back to AI</li>
+                        <li class="fragment">You iterate until it works &mdash; often without reading the code</li>
+                    </ul>
+                </div>
+                <aside class="notes">
+                    Andrej Karpathy coined this term in a tweet that went viral. He is the former
+                    head of AI at Tesla and a Stanford professor -- when he says something, the
+                    industry listens. Note: vibe coding is NOT the same as professional software
+                    engineering. It is great for prototypes and personal projects.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 11: VIBE CODING TOOLS ==================== -->
+
+            <section>
+                <h2>Vibe Coding Tools</h2>
+                <div class="apps-grid" style="grid-template-columns: repeat(2, 1fr); gap: 0.8em;">
+                    <div class="app fragment" style="text-align: left; padding: 0.8em;">
+                        <strong style="color: #7ec8e3;">Cursor</strong><br>
+                        <span style="font-size: 0.75em; color: #93a1a1;">
+                            VS Code fork with AI built-in<br>
+                            Tab completion + chat + Composer<br>
+                            Free tier: 2,000 completions/month
+                        </span>
+                    </div>
+                    <div class="app fragment" style="text-align: left; padding: 0.8em;">
+                        <strong style="color: #7ec8e3;">Claude Code</strong><br>
+                        <span style="font-size: 0.75em; color: #93a1a1;">
+                            Terminal-based AI coding agent<br>
+                            Reads &amp; writes files directly<br>
+                            Best for large refactors &amp; new projects
+                        </span>
+                    </div>
+                    <div class="app fragment" style="text-align: left; padding: 0.8em;">
+                        <strong style="color: #7ec8e3;">GitHub Copilot</strong><br>
+                        <span style="font-size: 0.75em; color: #93a1a1;">
+                            Free for students (via Student Pack)<br>
+                            Works in VS Code, JetBrains, Neovim<br>
+                            Agent mode in Copilot Pro
+                        </span>
+                    </div>
+                    <div class="app fragment" style="text-align: left; padding: 0.8em;">
+                        <strong style="color: #7ec8e3;">Windsurf</strong><br>
+                        <span style="font-size: 0.75em; color: #93a1a1;">
+                            AI-native IDE (Codeium)<br>
+                            "Flows" for multi-file editing<br>
+                            Free tier available
+                        </span>
+                    </div>
+                </div>
+                <p class="fragment small" style="margin-top: 0.5em;">
+                    Group 2 (Modern AI IDEs) and Group 3 (Claude Code) will go deeper on these tools today.
+                </p>
+                <aside class="notes">
+                    Brief overview since Groups 2 and 3 will cover these in detail.
+                    Claude Code is what we use in this course. Cursor and Windsurf are IDE-based alternatives.
+                    GitHub Copilot is the most accessible since students get it free.
+                    All of these tools work best when you give clear, detailed instructions.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 12: FROM VIBE CODING TO AGENTIC ENGINEERING ==================== -->
+
+            <section>
+                <h2>The Evolution: Agentic Engineering</h2>
+                <div class="pipeline" style="margin: 1em 0;">
+                    <div class="step" style="border-color: #93a1a1; font-size: 0.7em;">Vibe Coding<br><span class="small">Feb 2025</span></div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step" style="border-color: #ff6b6b; font-size: 0.7em;">Agentic Engineering<br><span class="small">2026</span></div>
+                </div>
+                <div class="two-column fragment">
+                    <div style="border: 1px solid #93a1a1; border-radius: 8px; padding: 0.8em;">
+                        <h3 style="color: #93a1a1; font-size: 0.9em;">Vibe Coding</h3>
+                        <ul style="font-size: 0.7em;">
+                            <li>Human describes, AI writes</li>
+                            <li>No code review</li>
+                            <li>Works for prototypes</li>
+                            <li>Breaks on complex systems</li>
+                        </ul>
+                    </div>
+                    <div style="border: 1px solid #ff6b6b; border-radius: 8px; padding: 0.8em;">
+                        <h3 style="color: #ff6b6b; font-size: 0.9em;">Agentic Engineering</h3>
+                        <ul style="font-size: 0.7em;">
+                            <li>AI agents do implementation</li>
+                            <li>Human owns <strong>architecture + quality</strong></li>
+                            <li>Code review is essential</li>
+                            <li>Scales to production systems</li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="fragment" style="margin-top: 1em; font-size: 0.8em; color: #7ec8e3;">
+                    Karpathy now says vibe coding is "pass&eacute;" &mdash; the real skill is knowing<br>
+                    <strong>what to build</strong> and <strong>how to verify</strong> what the AI built.
+                </p>
+                <aside class="notes">
+                    This is an important distinction. Vibe coding was a fun idea but it does not scale.
+                    Agentic engineering is the mature version: you are the architect, AI is the builder.
+                    For the Demo Day project, students should aim for agentic engineering, not vibe coding.
+                    That means: define your architecture, write clear specs, let AI implement, then REVIEW.
+                    The skill that matters is judgment, not typing speed.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION: FRONTEND DEPLOYMENT ==================== -->
+
+            <section class="section-title">
+                <h2>Frontend Deployment</h2>
+                <h3>Get your app online in minutes, for free</h3>
+                <aside class="notes">
+                    Every Demo Day project needs a URL that works. These platforms make that trivial.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 13: FRONTEND PLATFORMS ==================== -->
+
+            <section>
+                <h2>Frontend Hosting Platforms</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Platform</th>
+                            <th>Free Tier</th>
+                            <th>Bandwidth</th>
+                            <th>Best For</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="fragment">
+                            <td><strong class="highlight-blue">Vercel</strong></td>
+                            <td>Hobby plan (free)</td>
+                            <td>100 GB/mo</td>
+                            <td>Next.js, React apps</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong class="highlight-green">Cloudflare Pages</strong></td>
+                            <td>Free plan</td>
+                            <td><span class="highlight-green">Unlimited(!)</span></td>
+                            <td>Any static/SSR site</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Netlify</strong></td>
+                            <td>Free starter</td>
+                            <td>100 GB/mo</td>
+                            <td>JAMstack, forms</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="fragment" style="margin-top: 1em; font-size: 0.75em;">
+                    <div class="two-column">
+                        <div style="padding: 0.6em; border-radius: 8px; background: rgba(126,200,227,0.08);">
+                            <strong class="highlight-blue">Vercel</strong>: 150K function invocations/mo, native Next.js support, automatic preview deploys. <span class="highlight">Personal/hobby use only on free tier.</span>
+                        </div>
+                        <div style="padding: 0.6em; border-radius: 8px; background: rgba(152,195,121,0.08);">
+                            <strong class="highlight-green">Cloudflare Pages</strong>: 500 builds/mo, Workers integration, <span class="highlight-green">commercial use OK</span>. Best value on the market.
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    For student projects, all three are more than enough. Vercel is the easiest if you
+                    use Next.js. Cloudflare Pages is objectively the best free tier with unlimited bandwidth.
+                    Netlify pioneered this space and has great form handling if you need it.
+                    All three support automatic deploys from GitHub -- push to main and it deploys.
+                    Vercel's free tier is personal use only, which is fine for student projects.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION: BACKEND HOSTING ==================== -->
+
+            <section class="section-title">
+                <h2>Backend Hosting for ML/NLP</h2>
+                <h3>Where to run your models and APIs</h3>
+                <aside class="notes">
+                    Frontend hosting is easy. Backend for ML is harder because you need compute.
+                    These are the best free options for student NLP projects.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 14: HUGGING FACE SPACES ==================== -->
+
+            <section>
+                <h2>Hugging Face Spaces</h2>
+                <div class="stat-row" style="margin-bottom: 1em;">
+                    <div class="stat-box">
+                        <div class="stat-big" style="font-size: 2.2em; color: #98c379;">FREE</div>
+                        <div class="stat-label">For CPU instances</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-big" style="font-size: 2.2em; color: #7ec8e3;">GPU</div>
+                        <div class="stat-label">Available (paid)</div>
+                    </div>
+                </div>
+                <ul style="font-size: 0.8em;">
+                    <li class="fragment"><strong>Perfect for NLP demos</strong> &mdash; built for ML applications</li>
+                    <li class="fragment">Supports <span class="highlight-blue">Gradio</span> and <span class="highlight-green">Streamlit</span> &mdash; build UIs in Python</li>
+                    <li class="fragment">Direct access to <strong>Hugging Face models and datasets</strong></li>
+                    <li class="fragment">Automatic <strong>Docker</strong> support for custom apps</li>
+                    <li class="fragment">Free community GPU quotas for short inference tasks</li>
+                </ul>
+                <div class="fragment" style="margin-top: 0.8em; padding: 0.6em; border: 2px solid #98c379; border-radius: 8px;">
+                    <p style="font-size: 0.8em; margin: 0;">
+                        <span class="highlight-green">Verdict:</span> The <strong>#1 recommendation</strong> for your NLP Demo Day project.
+                        Build a Gradio app, deploy to HF Spaces, get a shareable URL in minutes.
+                    </p>
+                </div>
+                <aside class="notes">
+                    Hugging Face Spaces is THE platform for NLP demos. Gradio lets you build a web UI
+                    for your model in about 10 lines of Python. No HTML, no CSS, no JavaScript needed.
+                    Students can go from a Python script to a deployed web app in under 30 minutes.
+                    For the Demo Day, a well-made Gradio app on HF Spaces is absolutely sufficient.
+                    GPU is available on a quota system for free-tier users.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 15: OTHER BACKEND OPTIONS ==================== -->
+
+            <section>
+                <h2>Other Backend Options</h2>
+                <div class="two-column">
+                    <div>
+                        <div class="tool-card fragment">
+                            <div class="tool-name">Railway</div>
+                            <div class="tool-price">$5 free credit/month</div>
+                            <div class="tool-desc">
+                                Easy Docker deploy from GitHub<br>
+                                PostgreSQL, Redis included<br>
+                                Great DX, fast cold starts<br>
+                                Good for API backends
+                            </div>
+                        </div>
+                        <div class="tool-card fragment">
+                            <div class="tool-name">Render</div>
+                            <div class="tool-price">Free static sites; $7/mo services</div>
+                            <div class="tool-desc">
+                                Free web services (with sleep)<br>
+                                Auto-deploy from GitHub<br>
+                                Managed PostgreSQL free tier<br>
+                                750 hours/month free compute
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="tool-card fragment">
+                            <div class="tool-name">Fly.io</div>
+                            <div class="tool-price">$5 free allowance/month</div>
+                            <div class="tool-desc">
+                                Global edge deployment<br>
+                                Docker-based, lightweight VMs<br>
+                                3 shared-cpu VMs free<br>
+                                Great for low-latency APIs
+                            </div>
+                        </div>
+                        <div class="fragment" style="margin-top: 1em; padding: 0.6em; border-radius: 8px; background: rgba(126,200,227,0.08); font-size: 0.7em;">
+                            <strong class="highlight-blue">When to use what:</strong><br>
+                            NLP demo &rarr; <strong>HF Spaces</strong><br>
+                            API backend &rarr; <strong>Railway</strong> or <strong>Render</strong><br>
+                            Global low-latency &rarr; <strong>Fly.io</strong>
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Railway is the most developer-friendly. Render has a generous free tier but services
+                    go to sleep after inactivity (30 second cold start). Fly.io is great for global deployment.
+                    For most student projects: HF Spaces for the NLP model + Railway for any additional
+                    backend logic is the best combination. Keep it simple.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION: RECOMMENDED STACK ==================== -->
+
+            <section class="section-title">
+                <h2>Recommended Stack</h2>
+                <h3>Putting it all together for your NLP project</h3>
+                <aside class="notes">
+                    Now let's see how all these tools fit together into a coherent project architecture.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 16: ARCHITECTURE DIAGRAM ==================== -->
+
+            <section>
+                <h2>Recommended Architecture</h2>
+                <div class="arch-diagram">
+                    <div class="arch-row">
+                        <div class="arch-box frontend" style="min-width: 250px;">
+                            <span style="color: #98c379;">Frontend</span><br>
+                            <span style="font-size: 0.85em;">Vercel / Cloudflare Pages</span><br>
+                            <span style="font-size: 0.7em; color: #93a1a1;">Next.js or React</span>
+                        </div>
+                    </div>
+                    <div class="arch-arrow-down">&darr;</div>
+                    <div class="arch-row">
+                        <div class="arch-box backend" style="min-width: 250px;">
+                            <span style="color: #7ec8e3;">Backend API</span><br>
+                            <span style="font-size: 0.85em;">Railway / Render</span><br>
+                            <span style="font-size: 0.7em; color: #93a1a1;">FastAPI (Python)</span>
+                        </div>
+                    </div>
+                    <div class="arch-arrow-down">&darr;</div>
+                    <div class="arch-row">
+                        <div class="arch-box llm">
+                            <span style="color: #ff6b6b;">LLM API</span><br>
+                            <span style="font-size: 0.85em;">OpenAI / Anthropic</span><br>
+                            <span style="font-size: 0.7em; color: #93a1a1;">GPT-4o Mini / Haiku</span>
+                        </div>
+                        <span style="font-size: 1em; color: #93a1a1;">+</span>
+                        <div class="arch-box nlp" style="border-color: #c678dd;">
+                            <span style="color: #c678dd;">NLP Models</span><br>
+                            <span style="font-size: 0.85em;">HF Spaces</span><br>
+                            <span style="font-size: 0.7em; color: #93a1a1;">Gradio / Streamlit</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="fragment small" style="margin-top: 0.5em;">
+                    Total cost: <span class="highlight-green">$0</span> for development &mdash;
+                    under <span class="highlight-green">$5</span> for Demo Day deployment
+                </p>
+                <aside class="notes">
+                    This is a clean, scalable architecture that costs nothing to start.
+                    The frontend talks to your backend API, which orchestrates calls to LLM APIs
+                    and your custom NLP models on Hugging Face Spaces.
+                    For simpler projects: skip the separate frontend entirely and just use a
+                    Gradio app on HF Spaces. That is a perfectly valid Demo Day setup.
+                    FastAPI is recommended for the backend because it is Python (same as your NLP code),
+                    has automatic OpenAPI docs, and is very fast.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 17: SIMPLER ALTERNATIVE ==================== -->
+
+            <section>
+                <h2>The Simplest Setup</h2>
+                <p style="font-size: 0.9em; margin-bottom: 1em;">
+                    Don't need a full stack? Use the <span class="highlight-green">minimal approach</span>:
+                </p>
+                <div class="arch-diagram">
+                    <div class="arch-row">
+                        <div class="arch-box nlp" style="border-color: #98c379; min-width: 350px; padding: 1em;">
+                            <span style="color: #98c379; font-size: 1.2em;">Gradio App on HF Spaces</span><br>
+                            <span style="font-size: 0.85em;">Python + Gradio + LLM API</span><br>
+                            <span style="font-size: 0.7em; color: #93a1a1;">Everything in one place</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 1em;">
+                    <pre style="font-size: 0.55em; text-align: left;"><code class="python">import gradio as gr
+from openai import OpenAI
+
+client = OpenAI()
+
+def analyze_sentiment(text):
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user",
+                   "content": f"Analyze the sentiment: {text}"}]
+    )
+    return response.choices[0].message.content
+
+demo = gr.Interface(fn=analyze_sentiment, inputs="text", outputs="text")
+demo.launch()</code></pre>
+                </div>
+                <p class="fragment small" style="margin-top: 0.5em;">
+                    10 lines of Python &rarr; deployed web app with a shareable URL
+                </p>
+                <aside class="notes">
+                    Show this code. It is a complete, deployable NLP application in 10 lines.
+                    Obviously the Demo Day project should be more sophisticated, but this demonstrates
+                    how low the barrier to entry is. Students have no excuse not to ship something.
+                    Gradio handles the entire UI: text input, submit button, output display, loading states.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 18: COMPLETE TOOLCHAIN ==================== -->
+
+            <section>
+                <h2>Your Complete Toolchain</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Recommended</th>
+                            <th>Alternative</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="fragment">
+                            <td><strong>Code</strong></td>
+                            <td>Claude Code + VS Code</td>
+                            <td>Cursor, GitHub Copilot</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Version Control</strong></td>
+                            <td>GitHub</td>
+                            <td>&mdash;</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Project Mgmt</strong></td>
+                            <td>GitHub Projects</td>
+                            <td>Linear, Notion</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>LLM API</strong></td>
+                            <td>Gemini Flash (dev) + GPT-4o Mini (prod)</td>
+                            <td>Haiku 4.5, Ollama</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>NLP Models</strong></td>
+                            <td>Hugging Face Spaces (Gradio)</td>
+                            <td>Streamlit, custom API</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Frontend</strong></td>
+                            <td>Vercel (if needed)</td>
+                            <td>Cloudflare Pages</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Backend</strong></td>
+                            <td>Railway</td>
+                            <td>Render, Fly.io</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <aside class="notes">
+                    This is the reference slide. Students can come back to this whenever they need
+                    to make a technology choice. The "Recommended" column is what I suggest for
+                    a team that wants to keep things simple and effective. The "Alternative" column
+                    is for teams with specific needs or preferences.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 19: SETUP CHECKLIST ==================== -->
+
+            <section>
+                <h2>Setup Checklist</h2>
+                <p style="font-size: 0.85em; color: #93a1a1; margin-bottom: 1em;">Do this before next class (March 13):</p>
+                <ol style="font-size: 0.8em;">
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        <span class="highlight-green">&#10003;</span> Apply for <strong>GitHub Student Developer Pack</strong>
+                        <span class="small">&mdash; education.github.com/pack</span>
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        <span class="highlight-green">&#10003;</span> Create accounts on <strong>2-3 LLM API providers</strong>
+                        <span class="small">&mdash; at minimum: Google AI Studio + one paid provider</span>
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        <span class="highlight-green">&#10003;</span> Install <strong>Ollama</strong> and run a local model
+                        <span class="small">&mdash; <code>ollama run llama3.2</code></span>
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        <span class="highlight-green">&#10003;</span> Set up <strong>GitHub Projects</strong> board for your team
+                        <span class="small">&mdash; create columns: Backlog, In Progress, Done</span>
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        <span class="highlight-green">&#10003;</span> Deploy a <strong>"Hello World" Gradio app</strong> to HF Spaces
+                        <span class="small">&mdash; prove your pipeline works end-to-end</span>
+                    </li>
+                </ol>
+                <p class="fragment" style="margin-top: 0.5em; font-size: 0.85em; color: #7ec8e3;">
+                    If you finish this list, you are 100% ready to build your Demo Day project.
+                </p>
+                <aside class="notes">
+                    This is actionable homework. Each item takes 10-15 minutes. Students who complete
+                    this checklist will have zero friction when they start building.
+                    The "Hello World" Gradio deploy is especially important: it proves the entire
+                    pipeline works before you invest time in building the real thing.
+                    Emphasize: do not wait until the week before Demo Day to figure out deployment.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 20: COST REALITY CHECK ==================== -->
+
+            <section>
+                <h2>Cost Reality Check</h2>
+                <div class="stat-row" style="margin-bottom: 1em;">
+                    <div class="stat-box fragment">
+                        <div class="stat-big" style="font-size: 2.5em; color: #98c379;">$0</div>
+                        <div class="stat-label">Development phase</div>
+                    </div>
+                    <div class="stat-box fragment">
+                        <div class="stat-big" style="font-size: 2.5em; color: #7ec8e3;">&lt;$5</div>
+                        <div class="stat-label">Demo Day deployment</div>
+                    </div>
+                    <div class="stat-box fragment">
+                        <div class="stat-big" style="font-size: 2.5em; color: #ff6b6b;">$0</div>
+                        <div class="stat-label">Hosting (ongoing)</div>
+                    </div>
+                </div>
+                <ul style="font-size: 0.75em;">
+                    <li class="fragment">Development: Gemini Flash free tier + Ollama (local) = <span class="highlight-green">$0</span></li>
+                    <li class="fragment">Demo Day: ~100 API calls with GPT-4o Mini = <span class="highlight-green">~$0.50</span></li>
+                    <li class="fragment">Hosting: HF Spaces (free) + Vercel (free) = <span class="highlight-green">$0</span></li>
+                    <li class="fragment">Total maximum budget needed: <strong>the price of a coffee</strong></li>
+                </ul>
+                <aside class="notes">
+                    This slide removes the "but it costs money" excuse. A complete NLP application
+                    can be built and deployed for less than a cup of coffee. The free tiers of these
+                    services are more than sufficient for a course project.
+                    If a student's project truly needs more compute, talk to me -- we can arrange
+                    additional credits.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 21: DISCUSSION ==================== -->
+
+            <section class="discussion-slide">
+                <h2>Discussion</h2>
+                <p style="font-size: 1.1em; margin-bottom: 1.5em;">
+                    What tools have you already tried?<br>
+                    What is your team's planned tech stack?
+                </p>
+                <ol style="font-size: 0.85em;">
+                    <li class="fragment" style="margin-bottom: 0.6em;">
+                        Has anyone used Cursor, Claude Code, or Copilot for a real project?
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.6em;">
+                        What LLM API have you found most useful so far?
+                    </li>
+                    <li class="fragment">
+                        What is your biggest concern about the Demo Day project?
+                    </li>
+                </ol>
+                <p class="fragment small" style="margin-top: 1.5em;">
+                    3 minutes &mdash; open floor, then we transition to group presentations
+                </p>
+                <aside class="notes">
+                    Quick temperature check before the presentations start. This helps gauge what
+                    students already know and what gaps the presentations need to fill.
+                    Keep it to 3 minutes. The group presentations will cover these topics in depth.
+                    If a student raises a concern about cost, point back to the previous slide.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 22: TRANSITION TO PRESENTATIONS ==================== -->
+
+            <section class="section-title">
+                <h2>Group Presentations</h2>
+                <h3>Time to learn from each other</h3>
+                <aside class="notes">
+                    Transition slide. Remind groups of the format: 20 minutes each, including Q&A.
+                    Evaluation criteria: Knowledge Transfer 40%, Learning Process 40%, Quality 20%.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 23: PRESENTATION ORDER ==================== -->
+
+            <section>
+                <h2>Presentation Order</h2>
+                <div style="font-size: 0.9em;">
+                    <div class="fragment" style="padding: 0.8em; margin: 0.5em 0; border-radius: 8px; border: 2px solid #ff6b6b; background: rgba(255,107,107,0.08);">
+                        <strong style="color: #ff6b6b;">08:45</strong> &mdash; <strong>Group 1: Startup Toolbox</strong>
+                        <span class="small" style="display: block; margin-top: 0.2em;">Deep dive into tools, hands-on demos, tips &amp; tricks</span>
+                    </div>
+                    <div class="fragment" style="padding: 0.8em; margin: 0.5em 0; border-radius: 8px; border: 2px solid #7ec8e3; background: rgba(126,200,227,0.08);">
+                        <strong style="color: #7ec8e3;">09:05</strong> &mdash; <strong>Group 2: Modern AI IDEs</strong>
+                        <span class="small" style="display: block; margin-top: 0.2em;">Cursor, Windsurf, Copilot &mdash; comparison and workflow demos</span>
+                    </div>
+                    <div class="fragment" style="padding: 0.8em; margin: 0.5em 0; border-radius: 8px; border: 2px solid #98c379; background: rgba(152,195,121,0.08);">
+                        <strong style="color: #98c379;">09:25</strong> &mdash; <strong>Group 3: Claude Code Usage</strong>
+                        <span class="small" style="display: block; margin-top: 0.2em;">Terminal-based AI coding, CLAUDE.md, best practices</span>
+                    </div>
+                </div>
+                <p class="fragment" style="margin-top: 1em; font-size: 0.85em;">
+                    <strong>Format:</strong> 15 min presentation + 5 min Q&amp;A
+                </p>
+                <aside class="notes">
+                    Call up Group 1. Remind them of the time limit: 15 minutes for their presentation,
+                    5 minutes for questions. I will give a 2-minute warning signal.
+                    For the audience: take notes, ask questions. This is peer learning.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 24: REFERENCES ==================== -->
+
+            <section>
+                <h2>References &amp; Links</h2>
+                <div class="two-column" style="font-size: 0.65em;">
+                    <div>
+                        <h3 style="font-size: 1.2em;">Free Resources</h3>
+                        <ul>
+                            <li><strong>GitHub Student Pack</strong><br><span class="highlight-blue">education.github.com/pack</span></li>
+                            <li><strong>Notion Education</strong><br><span class="highlight-blue">notion.so/education</span></li>
+                            <li><strong>Hugging Face Spaces</strong><br><span class="highlight-blue">huggingface.co/spaces</span></li>
+                            <li><strong>Gradio Docs</strong><br><span class="highlight-blue">gradio.app/docs</span></li>
+                        </ul>
+                        <h3 style="font-size: 1.2em; margin-top: 0.8em;">LLM APIs</h3>
+                        <ul>
+                            <li><strong>OpenAI</strong> &mdash; platform.openai.com</li>
+                            <li><strong>Anthropic</strong> &mdash; console.anthropic.com</li>
+                            <li><strong>Google AI</strong> &mdash; ai.google.dev</li>
+                            <li><strong>Groq</strong> &mdash; console.groq.com</li>
+                            <li><strong>Ollama</strong> &mdash; ollama.com</li>
+                            <li><strong>OpenRouter</strong> &mdash; openrouter.ai</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.2em;">Hosting</h3>
+                        <ul>
+                            <li><strong>Vercel</strong> &mdash; vercel.com</li>
+                            <li><strong>Cloudflare Pages</strong> &mdash; pages.cloudflare.com</li>
+                            <li><strong>Netlify</strong> &mdash; netlify.com</li>
+                            <li><strong>Railway</strong> &mdash; railway.app</li>
+                            <li><strong>Render</strong> &mdash; render.com</li>
+                            <li><strong>Fly.io</strong> &mdash; fly.io</li>
+                        </ul>
+                        <h3 style="font-size: 1.2em; margin-top: 0.8em;">Vibe Coding</h3>
+                        <ul>
+                            <li><strong>Karpathy's original tweet</strong><br><span class="highlight-blue">x.com/karpathy/status/1886192184808149383</span></li>
+                            <li><strong>Cursor</strong> &mdash; cursor.com</li>
+                            <li><strong>Claude Code</strong> &mdash; docs.anthropic.com/claude-code</li>
+                            <li><strong>Windsurf</strong> &mdash; codeium.com/windsurf</li>
+                        </ul>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Reference slide. Students can come back to this anytime.
+                    All links are current as of March 2026. Pricing and availability may change.
+                    Encourage students to explore these resources on their own.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 25: CLOSING ==================== -->
+
+            <section>
+                <h2>Key Takeaways</h2>
+                <ol>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        <strong>Everything you need is free</strong> &mdash; the Student Pack + free tiers cover your entire project
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        <strong>Start with the simplest setup</strong> &mdash; Gradio + HF Spaces gets you from zero to deployed in 30 minutes
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        <strong>Use free APIs for development</strong> &mdash; Gemini Flash and Ollama save your paid credits for Demo Day
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        <strong>Agentic Engineering &gt; Vibe Coding</strong> &mdash; you are the architect, AI is the builder
+                    </li>
+                    <li class="fragment">
+                        <strong>Set up your tools NOW</strong> &mdash; complete the checklist before Day 3
+                    </li>
+                </ol>
+                <p class="fragment" style="margin-top: 1.5em; font-size: 0.9em; color: #7ec8e3;">
+                    Now let's hear from the groups. Group 1, you're up!
+                </p>
+                <aside class="notes">
+                    End the instructor section and transition to Group 1's presentation.
+                    The key message: there are no barriers. Everything is free. Start building today.
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            controlsTutorial: false,
+            progress: true,
+            center: true,
+            plugins: [RevealHighlight, RevealNotes]
+        });
+    </script>
+</body>
+</html>

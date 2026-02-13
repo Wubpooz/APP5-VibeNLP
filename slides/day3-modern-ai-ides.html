@@ -1,0 +1,1278 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern AI IDEs: The AI-Assisted Coding Revolution</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/moon.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --r-heading-font: 'Helvetica Neue', Arial, sans-serif;
+            --r-main-font: 'Helvetica Neue', Arial, sans-serif;
+        }
+        .reveal { font-size: 32px; }
+        .reveal h1 { font-size: 2.2em; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.2em; color: #7ec8e3; }
+        .reveal ul { text-align: left; }
+        .reveal li { margin-bottom: 0.4em; }
+
+        /* Big stat numbers */
+        .stat-big {
+            font-size: 3.5em;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin: 0.2em 0;
+        }
+        .stat-label {
+            font-size: 0.6em;
+            color: #93a1a1;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1em;
+        }
+        .stat-box {
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+        }
+        .stat-box .stat-big {
+            font-size: 2.8em;
+        }
+
+        /* Quote styling */
+        .quote-slide blockquote {
+            font-style: italic;
+            font-size: 1.2em;
+            border-left: 4px solid #7ec8e3;
+            padding-left: 1em;
+            margin: 1em auto;
+            max-width: 80%;
+            text-align: left;
+        }
+        .quote-slide .attribution {
+            text-align: right;
+            color: #93a1a1;
+            font-size: 0.7em;
+            margin-right: 10%;
+        }
+
+        /* Discussion slides */
+        .discussion-slide {
+            background: rgba(126, 200, 227, 0.08) !important;
+        }
+        .discussion-slide h2 {
+            color: #7ec8e3;
+        }
+
+        /* Two column layout */
+        .two-column {
+            display: flex;
+            gap: 2em;
+            align-items: flex-start;
+        }
+        .two-column > div {
+            flex: 1;
+        }
+
+        /* Timeline */
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1em 0;
+            position: relative;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            right: 5%;
+            height: 3px;
+            background: #7ec8e3;
+            z-index: 0;
+        }
+        .timeline .era {
+            text-align: center;
+            z-index: 1;
+            background: #002b36;
+            padding: 0.5em;
+            border-radius: 8px;
+            border: 2px solid #7ec8e3;
+            min-width: 120px;
+        }
+        .timeline .era .year {
+            font-size: 0.7em;
+            color: #93a1a1;
+        }
+        .timeline .era .label {
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+
+        /* Pipeline diagram */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3em;
+            flex-wrap: wrap;
+        }
+        .pipeline .step {
+            background: rgba(126, 200, 227, 0.15);
+            border: 2px solid #7ec8e3;
+            border-radius: 8px;
+            padding: 0.6em 1em;
+            text-align: center;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .pipeline .arrow {
+            font-size: 1.5em;
+            color: #7ec8e3;
+        }
+
+        /* Highlight text */
+        .highlight { color: #ff6b6b; }
+        .highlight-blue { color: #7ec8e3; }
+        .highlight-green { color: #98c379; }
+        .highlight-yellow { color: #e5c07b; }
+        .highlight-purple { color: #c678dd; }
+        .small { font-size: 0.65em; color: #93a1a1; }
+
+        /* Section divider */
+        .section-title h2 {
+            font-size: 2em;
+            margin-bottom: 0.3em;
+        }
+        .section-title h3 {
+            font-size: 0.9em;
+            color: #93a1a1;
+            font-weight: normal;
+        }
+
+        /* Roadmap */
+        .roadmap {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.8em;
+            font-size: 0.7em;
+        }
+        .roadmap .day {
+            background: rgba(126, 200, 227, 0.1);
+            border: 1px solid #7ec8e3;
+            border-radius: 8px;
+            padding: 0.8em;
+            text-align: left;
+        }
+        .roadmap .day.active {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+        .roadmap .day .day-num {
+            font-weight: bold;
+            color: #7ec8e3;
+            font-size: 1.1em;
+        }
+        .roadmap .day.active .day-num {
+            color: #ff6b6b;
+        }
+
+        /* Comparison table */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.55em;
+            margin-top: 0.5em;
+        }
+        .compare-table th {
+            background: rgba(126, 200, 227, 0.2);
+            border: 1px solid rgba(126, 200, 227, 0.3);
+            padding: 0.5em 0.4em;
+            color: #7ec8e3;
+            font-weight: bold;
+            text-align: center;
+        }
+        .compare-table td {
+            border: 1px solid rgba(126, 200, 227, 0.15);
+            padding: 0.4em;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .compare-table tr:nth-child(even) {
+            background: rgba(126, 200, 227, 0.05);
+        }
+        .compare-table .tool-name {
+            font-weight: bold;
+            color: #ff6b6b;
+            text-align: left;
+            padding-left: 0.6em;
+        }
+
+        /* Spectrum diagram */
+        .spectrum {
+            position: relative;
+            margin: 1.5em auto;
+            max-width: 90%;
+        }
+        .spectrum-bar {
+            height: 12px;
+            border-radius: 6px;
+            background: linear-gradient(to right, #7ec8e3, #e5c07b, #ff6b6b);
+            margin: 0.5em 0;
+        }
+        .spectrum-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65em;
+            font-weight: bold;
+        }
+        .spectrum-items {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.8em;
+            font-size: 0.7em;
+        }
+        .spectrum-item {
+            text-align: center;
+            max-width: 30%;
+        }
+        .spectrum-item .spec-title {
+            font-weight: bold;
+            margin-bottom: 0.3em;
+        }
+
+        /* Tool card */
+        .tool-card {
+            background: rgba(126, 200, 227, 0.08);
+            border: 2px solid #7ec8e3;
+            border-radius: 10px;
+            padding: 1em;
+            text-align: left;
+        }
+        .tool-card.cursor-card { border-color: #e5c07b; }
+        .tool-card.windsurf-card { border-color: #98c379; }
+        .tool-card.cline-card { border-color: #c678dd; }
+        .tool-card.copilot-card { border-color: #7ec8e3; }
+        .tool-card.claude-card { border-color: #ff6b6b; }
+
+        /* Feature tag */
+        .tag {
+            display: inline-block;
+            padding: 0.15em 0.5em;
+            border-radius: 4px;
+            font-size: 0.7em;
+            font-weight: bold;
+            margin: 0.15em;
+        }
+        .tag-free { background: rgba(152, 195, 121, 0.2); color: #98c379; border: 1px solid #98c379; }
+        .tag-paid { background: rgba(229, 192, 123, 0.2); color: #e5c07b; border: 1px solid #e5c07b; }
+        .tag-oss { background: rgba(198, 120, 221, 0.2); color: #c678dd; border: 1px solid #c678dd; }
+        .tag-new { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; border: 1px solid #ff6b6b; }
+
+        /* Decision box */
+        .decision-box {
+            background: rgba(126, 200, 227, 0.08);
+            border: 1px solid rgba(126, 200, 227, 0.3);
+            border-radius: 8px;
+            padding: 0.6em 0.8em;
+            margin: 0.4em 0;
+            font-size: 0.8em;
+            text-align: left;
+        }
+        .decision-box .persona {
+            font-weight: bold;
+            color: #e5c07b;
+        }
+        .decision-box .recommendation {
+            color: #98c379;
+        }
+
+        /* Apps grid */
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5em;
+            font-size: 0.8em;
+        }
+        .apps-grid .app {
+            background: rgba(126, 200, 227, 0.1);
+            padding: 0.5em;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        /* Schedule grid */
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1em;
+            font-size: 0.75em;
+        }
+        .schedule-item {
+            background: rgba(126, 200, 227, 0.08);
+            border: 1px solid rgba(126, 200, 227, 0.2);
+            border-radius: 8px;
+            padding: 0.8em;
+            text-align: left;
+        }
+        .schedule-item .time {
+            color: #93a1a1;
+            font-size: 0.85em;
+        }
+        .schedule-item .topic {
+            font-weight: bold;
+            margin-top: 0.3em;
+        }
+
+        /* Context mentions */
+        .context-mention {
+            display: inline-block;
+            background: rgba(126, 200, 227, 0.15);
+            border: 1px solid #7ec8e3;
+            border-radius: 4px;
+            padding: 0.1em 0.4em;
+            font-family: monospace;
+            font-size: 0.85em;
+            margin: 0.1em;
+        }
+
+        /* Pricing row */
+        .pricing-row {
+            display: flex;
+            gap: 0.8em;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .pricing-item {
+            background: rgba(126, 200, 227, 0.08);
+            border: 1px solid rgba(126, 200, 227, 0.2);
+            border-radius: 8px;
+            padding: 0.5em 0.8em;
+            text-align: center;
+            min-width: 120px;
+        }
+        .pricing-item .price {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+        .pricing-item .tier {
+            font-size: 0.7em;
+            color: #93a1a1;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ==================== SLIDE 1: TITLE ==================== -->
+
+            <section>
+                <h1 style="font-size: 1.8em;">Modern AI IDEs</h1>
+                <h3 style="color: #93a1a1; font-weight: normal;">The AI-Assisted Coding Revolution</h3>
+                <p style="margin-top: 2em; font-size: 0.7em; color: #93a1a1;">
+                    TAL &mdash; Day 3<br>
+                    March 13, 2026<br>
+                    ZHANG Zheng
+                </p>
+                <aside class="notes">
+                    Welcome to Day 3. Today is a special format: student group presentations.
+                    This slide deck frames the topic and provides context before groups present.
+                    The topic is Modern AI IDEs — tools that are transforming how we write code.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 2: TODAY'S FORMAT ==================== -->
+
+            <section>
+                <h2>Today's Format</h2>
+                <h3 style="color: #93a1a1; font-weight: normal;">Group Presentations Day</h3>
+                <div class="schedule-grid" style="margin-top: 1em;">
+                    <div class="schedule-item" style="border-color: #ff6b6b;">
+                        <div class="time">08:15 &mdash; 08:30</div>
+                        <div class="topic">Introduction & Context Setting</div>
+                        <div class="small" style="font-size: 0.85em;">Instructor overview of AI coding tools landscape</div>
+                    </div>
+                    <div class="schedule-item">
+                        <div class="time">08:30 &mdash; 08:50</div>
+                        <div class="topic">Group Presentation #2: Modern AI IDEs</div>
+                        <div class="small" style="font-size: 0.85em;">Cursor vs Windsurf vs Cline &mdash; 20 min</div>
+                    </div>
+                    <div class="schedule-item">
+                        <div class="time">08:50 &mdash; 09:10</div>
+                        <div class="topic">Group Presentation #3: Claude Code Usage</div>
+                        <div class="small" style="font-size: 0.85em;">Deep dive into CLI-based AI coding &mdash; 20 min</div>
+                    </div>
+                    <div class="schedule-item">
+                        <div class="time">09:10 &mdash; 09:30</div>
+                        <div class="topic">Q&A + Discussion</div>
+                        <div class="small" style="font-size: 0.85em;">Open floor, tool comparisons, practical advice</div>
+                    </div>
+                </div>
+                <p class="fragment small" style="margin-top: 0.8em;">
+                    Reminder: Grading = Knowledge Transfer 40% + Learning Process 40% + Quality 20%
+                </p>
+                <aside class="notes">
+                    Set expectations for the morning. Two group presentations back to back,
+                    then open discussion. Remind students of the grading criteria.
+                    Encourage the audience to take notes and prepare questions.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 3: SECTION TITLE ==================== -->
+
+            <section class="section-title">
+                <h2>The AI Coding Revolution</h2>
+                <h3>Context before the presentations</h3>
+                <aside class="notes">
+                    Before the groups present, let's set the stage with a brief overview
+                    of how we got here and what the landscape looks like in March 2026.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 4: TIMELINE ==================== -->
+
+            <section>
+                <h2>How We Got Here</h2>
+                <div class="timeline" style="margin-top: 1em;">
+                    <div class="era fragment">
+                        <div class="year">2021</div>
+                        <div class="label">Copilot</div>
+                    </div>
+                    <div class="era fragment">
+                        <div class="year">2023</div>
+                        <div class="label">ChatGPT Era</div>
+                    </div>
+                    <div class="era fragment">
+                        <div class="year">2024</div>
+                        <div class="label">Agent Mode</div>
+                    </div>
+                    <div class="era fragment" style="border-color: #ff6b6b;">
+                        <div class="year">2025&ndash;2026</div>
+                        <div class="label" style="color: #ff6b6b;">Autonomous</div>
+                    </div>
+                </div>
+                <div style="margin-top: 1.5em; font-size: 0.7em;">
+                    <div class="fragment" style="margin-bottom: 0.3em;"><span class="highlight-blue">2021</span>: GitHub Copilot launches &mdash; basic autocomplete, one line at a time</div>
+                    <div class="fragment" style="margin-bottom: 0.3em;"><span class="highlight-blue">2023</span>: ChatGPT changes everything &mdash; AI chat panels appear in editors</div>
+                    <div class="fragment" style="margin-bottom: 0.3em;"><span class="highlight-blue">2024</span>: Agent mode arrives &mdash; Cursor Composer, Copilot Workspace, multi-file edits</div>
+                    <div class="fragment"><span class="highlight">2025&ndash;2026</span>: Full autonomous agents &mdash; Claude Code, Agentic Engineering, AI writes 90% of its own code</div>
+                </div>
+                <aside class="notes">
+                    Walk through the timeline. Key point: in just 5 years, we went from
+                    "AI suggests the next line" to "AI builds entire features autonomously."
+                    This pace of change is unprecedented in software engineering tooling.
+                    The 2025-2026 shift is particularly dramatic — agents now drive, humans review.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 5: THREE CATEGORIES ==================== -->
+
+            <section>
+                <h2>Three Categories of AI Coding Tools</h2>
+                <div class="spectrum" style="margin-top: 1em;">
+                    <div class="spectrum-labels">
+                        <span class="highlight-blue">AI assists you</span>
+                        <span style="color: #93a1a1;">&larr; &mdash; spectrum &mdash; &rarr;</span>
+                        <span class="highlight">AI drives, you review</span>
+                    </div>
+                    <div class="spectrum-bar"></div>
+                    <div class="spectrum-items">
+                        <div class="spectrum-item fragment">
+                            <div class="spec-title highlight-blue">Category 1</div>
+                            <div><strong>IDE Extensions</strong></div>
+                            <div class="small" style="font-size: 0.9em;">Copilot, Continue.dev</div>
+                            <div class="small" style="font-size: 0.9em;">Add AI to your existing editor</div>
+                        </div>
+                        <div class="spectrum-item fragment">
+                            <div class="spec-title highlight-yellow">Category 2</div>
+                            <div><strong>AI-Native IDEs</strong></div>
+                            <div class="small" style="font-size: 0.9em;">Cursor, Windsurf</div>
+                            <div class="small" style="font-size: 0.9em;">Editor rebuilt around AI</div>
+                        </div>
+                        <div class="spectrum-item fragment">
+                            <div class="spec-title highlight">Category 3</div>
+                            <div><strong>CLI Agents</strong></div>
+                            <div class="small" style="font-size: 0.9em;">Claude Code, Aider</div>
+                            <div class="small" style="font-size: 0.9em;">Terminal-first, agent-first</div>
+                        </div>
+                    </div>
+                </div>
+                <p class="fragment" style="margin-top: 1em; font-size: 0.8em; color: #7ec8e3;">
+                    The trend is moving right &rarr; but all three categories have their place
+                </p>
+                <aside class="notes">
+                    This is the key framework for understanding the landscape.
+                    Category 1: You stay in your familiar editor, AI is an add-on.
+                    Category 2: The editor itself is redesigned with AI as a first-class citizen.
+                    Category 3: No GUI at all — you work in the terminal, describe goals, AI executes.
+                    Most developers in 2026 use a combination. The spectrum is not a hierarchy.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 6: CURSOR OVERVIEW ==================== -->
+
+            <section>
+                <h2>Cursor</h2>
+                <h3 style="color: #e5c07b;">VS Code Fork, Rebuilt Around AI</h3>
+                <div class="two-column">
+                    <div>
+                        <ul style="font-size: 0.75em;">
+                            <li class="fragment"><strong>Tab Completion</strong>: predictive, multi-line, context-aware</li>
+                            <li class="fragment"><strong>Chat</strong>: @ mentions for precise context</li>
+                            <li class="fragment"><strong>Composer / Agent Mode</strong>: multi-file edits with a single prompt</li>
+                            <li class="fragment"><strong>Familiar UX</strong>: all VS Code extensions work</li>
+                        </ul>
+                    </div>
+                    <div class="fragment">
+                        <div class="tool-card cursor-card" style="font-size: 0.7em;">
+                            <p style="margin: 0 0 0.3em 0; font-weight: bold; color: #e5c07b;">Context System</p>
+                            <span class="context-mention">@file</span>
+                            <span class="context-mention">@folder</span>
+                            <span class="context-mention">@web</span>
+                            <span class="context-mention">@docs</span>
+                            <span class="context-mention">@codebase</span>
+                            <span class="context-mention">@git</span>
+                            <p style="margin: 0.5em 0 0 0; color: #93a1a1; font-size: 0.9em;">
+                                Tell the AI exactly what to look at
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Cursor is probably the most well-known AI-native IDE right now.
+                    It's a fork of VS Code, so all your extensions, keybindings, and settings carry over.
+                    The @ mention system is one of its best features — you can point the AI at specific
+                    files, folders, documentation, or the entire codebase for context.
+                    Composer mode is where it gets really powerful — describe a feature and it edits
+                    multiple files at once, showing you a diff to approve.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 7: CURSOR DETAILS ==================== -->
+
+            <section>
+                <h2>Cursor &mdash; Pricing & Models</h2>
+                <div class="pricing-row fragment">
+                    <div class="pricing-item">
+                        <div class="price" style="color: #98c379;">Free</div>
+                        <div class="tier">Hobby</div>
+                        <div class="small" style="font-size: 0.8em;">2000 completions<br>50 slow premium requests</div>
+                    </div>
+                    <div class="pricing-item" style="border-color: #e5c07b;">
+                        <div class="price" style="color: #e5c07b;">$20/mo</div>
+                        <div class="tier">Pro</div>
+                        <div class="small" style="font-size: 0.8em;">Unlimited completions<br>500 fast premium requests</div>
+                    </div>
+                    <div class="pricing-item">
+                        <div class="price">$40/mo</div>
+                        <div class="tier">Business</div>
+                        <div class="small" style="font-size: 0.8em;">Admin controls<br>Centralized billing</div>
+                    </div>
+                </div>
+                <ul style="font-size: 0.75em; margin-top: 1em;">
+                    <li class="fragment">Backend models: <span class="highlight-blue">Claude Sonnet 4.5</span>, <span class="highlight-green">GPT-4o</span>, and others</li>
+                    <li class="fragment">You choose which model to use per request</li>
+                    <li class="fragment"><strong>Strengths</strong>: smooth UX, familiar VS Code, great inline edits</li>
+                    <li class="fragment"><strong>Weakness</strong>: can struggle with very large codebases without manual context</li>
+                </ul>
+                <aside class="notes">
+                    The Pro tier at $20/month is where most serious users land.
+                    Key insight: Cursor is a frontend — the AI power comes from the backend models.
+                    Students should know that switching models changes the quality of responses.
+                    Claude Sonnet 4.5 tends to be better for complex reasoning tasks,
+                    while GPT-4o can be faster for simpler completions.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 8: WINDSURF ==================== -->
+
+            <section>
+                <h2>Windsurf</h2>
+                <h3 style="color: #98c379;">By Codeium &mdash; The Agentic Competitor</h3>
+                <div class="two-column">
+                    <div>
+                        <ul style="font-size: 0.75em;">
+                            <li class="fragment"><strong>Also a VS Code fork</strong> &mdash; familiar feel</li>
+                            <li class="fragment"><strong>Cascade</strong>: multi-step agentic flow &mdash; chains actions autonomously</li>
+                            <li class="fragment"><strong>Flows</strong>: learns and remembers your coding patterns</li>
+                            <li class="fragment"><strong>Generous free tier</strong> &mdash; great for students</li>
+                        </ul>
+                    </div>
+                    <div class="fragment">
+                        <div class="tool-card windsurf-card" style="font-size: 0.7em;">
+                            <p style="margin: 0 0 0.5em 0; font-weight: bold; color: #98c379;">Cascade in Action</p>
+                            <div style="font-size: 0.85em;">
+                                <div>1. You: "Add user auth to this app"</div>
+                                <div style="color: #93a1a1; margin: 0.2em 0;">&#8595;</div>
+                                <div>2. Cascade reads your codebase</div>
+                                <div style="color: #93a1a1; margin: 0.2em 0;">&#8595;</div>
+                                <div>3. Creates routes, models, middleware</div>
+                                <div style="color: #93a1a1; margin: 0.2em 0;">&#8595;</div>
+                                <div>4. Runs tests, fixes errors</div>
+                                <div style="color: #93a1a1; margin: 0.2em 0;">&#8595;</div>
+                                <div style="color: #98c379;">5. Done &mdash; multiple files changed</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Windsurf is Codeium's answer to Cursor. The key differentiator is Cascade,
+                    which feels more "agentic" — it can chain multiple steps without you
+                    having to prompt each one individually.
+                    Flows is their feature for learning your patterns over time, so suggestions
+                    become more personalized the more you use it.
+                    The free tier is notably more generous than Cursor's free tier.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 9: WINDSURF DETAILS ==================== -->
+
+            <section>
+                <h2>Windsurf &mdash; Pricing & Differentiators</h2>
+                <div class="pricing-row fragment">
+                    <div class="pricing-item">
+                        <div class="price" style="color: #98c379;">Free</div>
+                        <div class="tier">Individual</div>
+                        <div class="small" style="font-size: 0.8em;">Generous usage limits<br>Access to premium models</div>
+                    </div>
+                    <div class="pricing-item" style="border-color: #98c379;">
+                        <div class="price" style="color: #98c379;">$15/mo</div>
+                        <div class="tier">Pro</div>
+                        <div class="small" style="font-size: 0.8em;">Unlimited Flows<br>Priority access</div>
+                    </div>
+                    <div class="pricing-item">
+                        <div class="price">$30/mo</div>
+                        <div class="tier">Teams</div>
+                        <div class="small" style="font-size: 0.8em;">Admin dashboard<br>Usage analytics</div>
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 1.5em;">
+                    <h3 style="font-size: 0.9em; color: #93a1a1;">Key Differentiators vs Cursor</h3>
+                    <ul style="font-size: 0.75em;">
+                        <li class="fragment">More <span class="highlight-green">autonomous</span> &mdash; Cascade chains actions without re-prompting</li>
+                        <li class="fragment">Better <span class="highlight-green">context awareness</span> &mdash; Flows learn your patterns</li>
+                        <li class="fragment"><span class="highlight-green">$5/mo cheaper</span> at the Pro tier</li>
+                        <li class="fragment">Slightly less mature ecosystem than Cursor</li>
+                    </ul>
+                </div>
+                <aside class="notes">
+                    The price advantage is real — $15 vs $20 per month for Pro.
+                    The Cascade feature is genuinely impressive for multi-step tasks.
+                    However, Cursor has a larger community and more tutorials available.
+                    For students, the free tier is a great way to get started.
+                    Honest assessment: both are excellent, the differences are narrowing.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 10: CLINE ==================== -->
+
+            <section>
+                <h2>Cline</h2>
+                <h3 style="color: #c678dd;">Open Source &mdash; VS Code Extension</h3>
+                <div class="two-column">
+                    <div>
+                        <ul style="font-size: 0.75em;">
+                            <li class="fragment"><strong>Not a fork!</strong> &mdash; installs as a VS Code extension</li>
+                            <li class="fragment"><span class="highlight-purple">Fully open source</span> on GitHub</li>
+                            <li class="fragment"><strong>Bring your own key</strong> &mdash; works with any LLM provider</li>
+                            <li class="fragment">Reads/writes files, runs terminal commands</li>
+                            <li class="fragment"><strong>No vendor lock-in</strong>, transparent, customizable</li>
+                        </ul>
+                    </div>
+                    <div class="fragment">
+                        <div class="tool-card cline-card" style="font-size: 0.7em;">
+                            <p style="margin: 0 0 0.5em 0; font-weight: bold; color: #c678dd;">Cost Model</p>
+                            <div style="font-size: 0.85em;">
+                                <div><span class="tag tag-oss">Tool</span> Free &amp; open source</div>
+                                <div style="margin-top: 0.3em;"><span class="tag tag-paid">API</span> Pay per use</div>
+                                <div style="margin-top: 0.5em; color: #93a1a1;">
+                                    Example: Claude API at ~$3/$15 per 1M tokens (input/output)
+                                </div>
+                                <div style="margin-top: 0.3em; color: #93a1a1;">
+                                    Typical session: $0.10 &mdash; $2.00
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Cline is the open-source champion in this space.
+                    The key difference: it's a VS Code EXTENSION, not a fork. So you keep
+                    your exact VS Code installation, with all your settings.
+                    The bring-your-own-key model means you can use Claude, GPT-4o, Llama,
+                    or any other model. You pay the API provider directly.
+                    For students who want to understand how these tools work under the hood,
+                    Cline's open source code is a great learning resource.
+                    Cost can be unpredictable though — heavy usage days can get expensive.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 11: GITHUB COPILOT ==================== -->
+
+            <section>
+                <h2>GitHub Copilot</h2>
+                <h3 style="color: #7ec8e3;">The Original &mdash; Now With Agent Mode</h3>
+                <div class="two-column">
+                    <div>
+                        <ul style="font-size: 0.75em;">
+                            <li class="fragment">The <strong>original</strong> AI coding assistant (2021)</li>
+                            <li class="fragment">Now has <span class="highlight-blue">Agent mode</span>, Chat, workspace understanding</li>
+                            <li class="fragment"><span class="highlight-green">FREE for students</span> via GitHub Education</li>
+                            <li class="fragment">Deepest <strong>GitHub integration</strong>: code review, PR summaries, issue linking</li>
+                        </ul>
+                    </div>
+                    <div class="fragment">
+                        <div class="pricing-row" style="flex-direction: column; gap: 0.4em;">
+                            <div class="pricing-item" style="min-width: auto;">
+                                <div class="price" style="font-size: 1.1em; color: #98c379;">Free</div>
+                                <div class="small" style="font-size: 0.8em;">2000 completions/mo, 50 chat messages</div>
+                            </div>
+                            <div class="pricing-item" style="min-width: auto;">
+                                <div class="price" style="font-size: 1.1em; color: #e5c07b;">$10/mo</div>
+                                <div class="small" style="font-size: 0.8em;">Individual &mdash; unlimited completions</div>
+                            </div>
+                            <div class="pricing-item" style="min-width: auto;">
+                                <div class="price" style="font-size: 1.1em;">$19/mo</div>
+                                <div class="small" style="font-size: 0.8em;">Business &mdash; admin controls, policy</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="fragment" style="margin-top: 0.5em; font-size: 0.75em; color: #7ec8e3;">
+                    Tip: Apply for GitHub Education Pack for free Copilot access
+                </p>
+                <aside class="notes">
+                    Copilot is the most widely used AI coding tool in the world.
+                    The free tier is very usable, and students get it free through GitHub Education.
+                    Agent mode was added in late 2024 and has improved significantly.
+                    Its biggest advantage is seamless GitHub integration — it understands your repos,
+                    issues, and PRs natively. For the NLP project, this integration is very useful.
+                    Weakness: less flexible than Cursor/Windsurf for complex agent-style workflows.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 12: OTHER TOOLS ==================== -->
+
+            <section>
+                <h2>Other Notable Tools</h2>
+                <div class="apps-grid" style="grid-template-columns: repeat(2, 1fr); font-size: 0.7em; gap: 0.6em;">
+                    <div class="app fragment" style="text-align: left; padding: 0.6em;">
+                        <strong style="color: #e5c07b;">Augment Code</strong><br>
+                        Enterprise-focused, 400K+ file context engine<br>
+                        <span class="small" style="font-size: 0.9em;">From $20/mo &mdash; great for massive codebases</span>
+                    </div>
+                    <div class="app fragment" style="text-align: left; padding: 0.6em;">
+                        <strong style="color: #c678dd;">Aider</strong> <span class="tag tag-oss">OSS</span><br>
+                        CLI tool, Git-first (auto-commits every change)<br>
+                        <span class="small" style="font-size: 0.9em;">Free tool + API costs &mdash; works with any model</span>
+                    </div>
+                    <div class="app fragment" style="text-align: left; padding: 0.6em;">
+                        <strong style="color: #98c379;">Continue.dev</strong> <span class="tag tag-oss">OSS</span><br>
+                        VS Code/JetBrains extension, model-agnostic<br>
+                        <span class="small" style="font-size: 0.9em;">Chat + autocomplete + edit &mdash; fully open source</span>
+                    </div>
+                    <div class="app fragment" style="text-align: left; padding: 0.6em;">
+                        <strong style="color: #ff6b6b;">JetBrains Junie</strong> <span class="tag tag-new">New</span><br>
+                        Autonomous agent for IntelliJ/PyCharm/WebStorm<br>
+                        <span class="small" style="font-size: 0.9em;">MCP support &mdash; for JetBrains users who want agent mode</span>
+                    </div>
+                    <div class="app fragment" style="text-align: left; padding: 0.6em; grid-column: span 2; max-width: 50%; margin: 0 auto;">
+                        <strong style="color: #7ec8e3;">Amazon Q Developer</strong><br>
+                        Free tier with 50 agentic requests/mo<br>
+                        <span class="small" style="font-size: 0.9em;">Excellent for AWS projects &mdash; deep AWS integration</span>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Quick overview of tools the groups might not cover.
+                    Augment Code is interesting for enterprise — it can index massive codebases.
+                    Aider is beloved by open-source developers for its Git-first approach.
+                    Continue.dev is the best open-source alternative to Copilot as an extension.
+                    Junie is JetBrains' answer to agent mode — relevant if students use IntelliJ.
+                    Amazon Q is free and great if you're building on AWS.
+                    Don't dwell here — this is a quick reference slide.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 13: SECTION TITLE - CLAUDE CODE ==================== -->
+
+            <section class="section-title">
+                <h2>Claude Code</h2>
+                <h3>A Different Approach: Terminal-First, Agent-First</h3>
+                <aside class="notes">
+                    Now let's look at Claude Code separately because it represents a fundamentally
+                    different paradigm. It's not an IDE and not an extension — it's a CLI agent.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 14: CLAUDE CODE ==================== -->
+
+            <section>
+                <h2>Claude Code &mdash; How It Differs</h2>
+                <div class="two-column">
+                    <div>
+                        <ul style="font-size: 0.75em;">
+                            <li class="fragment"><strong>Terminal-first</strong>: no GUI, runs in your shell</li>
+                            <li class="fragment">You describe the <span class="highlight">goal</span>, Claude drives, you <span class="highlight-blue">review</span></li>
+                            <li class="fragment"><span class="highlight-green">5.5x fewer tokens</span> than Cursor for same tasks</li>
+                            <li class="fragment">Best for: large refactors, test suites, documentation, understanding codebases</li>
+                        </ul>
+                    </div>
+                    <div class="fragment">
+                        <div class="tool-card claude-card" style="font-size: 0.65em;">
+                            <p style="margin: 0 0 0.5em 0; font-weight: bold; color: #ff6b6b;">Typical Workflow</p>
+                            <pre style="margin: 0; font-size: 0.95em; background: rgba(0,0,0,0.3); padding: 0.5em; border-radius: 4px;"><code>$ claude
+> Add authentication to this Flask app
+  using JWT tokens. Include tests.
+
+Claude reads your codebase...
+Claude creates auth/routes.py...
+Claude creates auth/models.py...
+Claude creates tests/test_auth.py...
+Claude runs pytest... all pass ✓
+
+> Looks good, commit it.</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Claude Code is the tool students are using in this course.
+                    The key mental model: you are the architect, Claude is the builder.
+                    You describe what you want at a high level, Claude figures out the implementation.
+                    The 5.5x token efficiency comes from Anthropic's internal benchmarks —
+                    because the agent plans before acting, it wastes fewer tokens.
+                    The terminal-first approach means it works with ANY editor — no lock-in.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 15: CLAUDE CODE STATS ==================== -->
+
+            <section>
+                <h2>Claude Code &mdash; By the Numbers</h2>
+                <div class="stat-row">
+                    <div class="stat-box fragment">
+                        <div class="stat-big" style="font-size: 2.5em;">$1B</div>
+                        <div class="stat-label">Annual run rate<br>6 months after launch</div>
+                    </div>
+                    <div class="stat-box fragment">
+                        <div class="stat-big" style="font-size: 2.5em; color: #7ec8e3;">90%</div>
+                        <div class="stat-label">Of its own code<br>written by itself</div>
+                    </div>
+                    <div class="stat-box fragment">
+                        <div class="stat-big" style="font-size: 2.5em; color: #98c379;">5.5x</div>
+                        <div class="stat-label">Fewer tokens<br>than IDE-based tools</div>
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 1.5em;">
+                    <h3 style="font-size: 0.85em; color: #93a1a1;">How to Access</h3>
+                    <div class="pricing-row" style="font-size: 0.8em;">
+                        <div class="pricing-item">
+                            <div class="price" style="font-size: 1.1em; color: #e5c07b;">$20/mo</div>
+                            <div class="tier">Claude Max plan</div>
+                        </div>
+                        <div class="pricing-item">
+                            <div class="price" style="font-size: 1.1em; color: #7ec8e3;">API</div>
+                            <div class="tier">Pay per token</div>
+                        </div>
+                    </div>
+                </div>
+                <p class="fragment small" style="margin-top: 0.5em;">
+                    Best combo for this course: Claude Code + an IDE tool (Cursor, Copilot, or Cline)
+                </p>
+                <aside class="notes">
+                    The $1B run rate and the 90% self-written stat are from Anthropic's public statements.
+                    The recursive nature — AI writing its own code — is a fascinating aspect.
+                    For students: emphasize that Claude Code COMPLEMENTS IDE tools.
+                    Use Claude Code for big-picture tasks (refactors, new features, understanding code),
+                    use your IDE tool for moment-to-moment coding (completions, small edits).
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 16: SECTION TITLE - COMPARISON ==================== -->
+
+            <section class="section-title">
+                <h2>Side-by-Side Comparison</h2>
+                <h3>Choosing the right tool for your NLP project</h3>
+                <aside class="notes">
+                    Now let's put them all together in a comparison table.
+                    This is the slide students will want to reference later.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 17: COMPARISON TABLE ==================== -->
+
+            <section>
+                <h2>Comparison Table</h2>
+                <table class="compare-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Cursor</th>
+                            <th>Windsurf</th>
+                            <th>Cline</th>
+                            <th>GitHub Copilot</th>
+                            <th>Claude Code</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="fragment">
+                            <td class="tool-name">Type</td>
+                            <td>AI-Native IDE</td>
+                            <td>AI-Native IDE</td>
+                            <td>VS Code Extension</td>
+                            <td>IDE Extension</td>
+                            <td>CLI Agent</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td class="tool-name">Price</td>
+                            <td>Free / $20/mo</td>
+                            <td>Free / $15/mo</td>
+                            <td>Free + API costs</td>
+                            <td>Free / $10/mo</td>
+                            <td>$20/mo or API</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td class="tool-name">Agent Mode</td>
+                            <td style="color: #98c379;">Yes (Composer)</td>
+                            <td style="color: #98c379;">Yes (Cascade)</td>
+                            <td style="color: #98c379;">Yes</td>
+                            <td style="color: #e5c07b;">Yes (newer)</td>
+                            <td style="color: #98c379;">Native</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td class="tool-name">Model Flexibility</td>
+                            <td>Multiple (curated)</td>
+                            <td>Multiple (curated)</td>
+                            <td style="color: #98c379;">Any (BYOK)</td>
+                            <td>GPT-4o + Claude</td>
+                            <td>Claude only</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td class="tool-name">Open Source</td>
+                            <td style="color: #ff6b6b;">No</td>
+                            <td style="color: #ff6b6b;">No</td>
+                            <td style="color: #98c379;">Yes</td>
+                            <td style="color: #ff6b6b;">No</td>
+                            <td style="color: #ff6b6b;">No</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td class="tool-name">Best For</td>
+                            <td>Daily coding<br>inline edits</td>
+                            <td>Agentic flows<br>multi-step tasks</td>
+                            <td>Customization<br>no lock-in</td>
+                            <td>GitHub users<br>students (free)</td>
+                            <td>Large refactors<br>understanding code</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <aside class="notes">
+                    Let this table sink in. Walk through each row briefly.
+                    Key takeaways from the table:
+                    1. There is no single "best" tool — it depends on your needs.
+                    2. Cline is the only fully open-source option.
+                    3. GitHub Copilot is the cheapest paid option and free for students.
+                    4. Claude Code is fundamentally different — it's an agent, not an IDE.
+                    5. All of them now have some form of agent mode — that's the trend.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 18: HOW TO CHOOSE ==================== -->
+
+            <section>
+                <h2>How to Choose</h2>
+                <h3 style="color: #93a1a1; font-weight: normal;">A Decision Framework</h3>
+                <div class="decision-box fragment">
+                    <span class="persona">Budget-conscious student?</span><br>
+                    <span class="recommendation">&rarr; GitHub Copilot (free via Education) + Cline (free + your API key)</span>
+                </div>
+                <div class="decision-box fragment">
+                    <span class="persona">Want the best IDE experience?</span><br>
+                    <span class="recommendation">&rarr; Cursor Pro ($20/mo) &mdash; smoothest UX, largest community</span>
+                </div>
+                <div class="decision-box fragment">
+                    <span class="persona">Want agentic power?</span><br>
+                    <span class="recommendation">&rarr; Claude Code ($20/mo Claude Max) &mdash; best for complex, multi-file tasks</span>
+                </div>
+                <div class="decision-box fragment">
+                    <span class="persona">Want open source?</span><br>
+                    <span class="recommendation">&rarr; Cline + Aider + Continue.dev &mdash; full stack, no vendor lock-in</span>
+                </div>
+                <div class="decision-box fragment" style="border-color: #ff6b6b;">
+                    <span class="persona" style="color: #ff6b6b;">Best combo for this course?</span><br>
+                    <span class="recommendation">&rarr; IDE tool (Cursor or Copilot) + Claude Code = daily coding + big tasks</span>
+                </div>
+                <aside class="notes">
+                    This is the practical slide. Students need actionable advice.
+                    The combo recommendation is key — these tools are complementary, not competing.
+                    Use an IDE tool for the moment-to-moment coding experience (completions, quick edits).
+                    Use Claude Code when you need to understand a large codebase, do a major refactor,
+                    write a test suite, or generate documentation.
+                    For the NLP project specifically, Claude Code is excellent for setting up
+                    the project structure, writing boilerplate, and generating tests.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 19: PRACTICAL TIPS ==================== -->
+
+            <section>
+                <h2>Practical Tips for AI-Assisted Coding</h2>
+                <ol style="font-size: 0.8em;">
+                    <li class="fragment" style="margin-bottom: 0.6em;">
+                        <strong>Be specific in your prompts</strong><br>
+                        <span class="small" style="font-size: 0.85em;">Bad: "Fix the bug" &mdash; Good: "Fix the authentication timeout error in login.py line 42"</span>
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.6em;">
+                        <strong>Provide context</strong><br>
+                        <span class="small" style="font-size: 0.85em;">Use @file, @docs, or paste error messages &mdash; the AI cannot read your mind</span>
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.6em;">
+                        <strong>Review every change</strong><br>
+                        <span class="small" style="font-size: 0.85em;">AI is fast but not infallible &mdash; always read the diff before accepting</span>
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.6em;">
+                        <strong>Use Git frequently</strong><br>
+                        <span class="small" style="font-size: 0.85em;">Commit before AI edits so you can revert &mdash; small commits, clear messages</span>
+                    </li>
+                    <li class="fragment">
+                        <strong>Learn the shortcuts</strong><br>
+                        <span class="small" style="font-size: 0.85em;">Tab to accept, Cmd+K for inline edits, Cmd+L for chat &mdash; speed matters</span>
+                    </li>
+                </ol>
+                <aside class="notes">
+                    These tips apply to ALL the tools we've discussed.
+                    The Git tip is crucial — students should commit frequently when using AI tools.
+                    An AI can make sweeping changes that are hard to undo without Git.
+                    The prompt quality tip is the single most impactful advice:
+                    the quality of AI output is directly proportional to the quality of your prompt.
+                    Encourage students to practice prompt engineering as a skill.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 20: COMMON PITFALLS ==================== -->
+
+            <section>
+                <h2>Common Pitfalls</h2>
+                <div class="two-column">
+                    <div>
+                        <h3 style="color: #ff6b6b; font-size: 1em;">Don't...</h3>
+                        <ul style="font-size: 0.75em;">
+                            <li class="fragment">Blindly accept all suggestions</li>
+                            <li class="fragment">Use AI without understanding the code</li>
+                            <li class="fragment">Paste sensitive data (API keys, passwords)</li>
+                            <li class="fragment">Expect it to work perfectly first time</li>
+                            <li class="fragment">Skip writing tests because "AI wrote it"</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="color: #98c379; font-size: 1em;">Do...</h3>
+                        <ul style="font-size: 0.75em;">
+                            <li class="fragment">Read and understand every line</li>
+                            <li class="fragment">Use AI to learn &mdash; ask "explain this code"</li>
+                            <li class="fragment">Set up <code>.gitignore</code> and <code>.env</code> first</li>
+                            <li class="fragment">Iterate: prompt &rarr; review &rarr; refine</li>
+                            <li class="fragment">Write tests WITH AI, then verify them</li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="fragment" style="margin-top: 1em; font-size: 0.85em; color: #7ec8e3;">
+                    The goal: <strong>AI amplifies your skills</strong>, it doesn't replace understanding
+                </p>
+                <aside class="notes">
+                    This slide is important for setting the right mindset.
+                    Students might be tempted to let AI do everything — but that's a trap.
+                    If you don't understand the code, you can't debug it when things break.
+                    The security tip is critical — never paste API keys or credentials into AI chat.
+                    The test tip: AI-written tests are better than no tests, but verify they
+                    actually test what they claim to test. AI loves writing tests that always pass.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 21: FOR YOUR NLP PROJECT ==================== -->
+
+            <section>
+                <h2>For Your NLP Project</h2>
+                <h3 style="color: #93a1a1; font-weight: normal;">Recommended tool usage</h3>
+                <div style="font-size: 0.8em;">
+                    <div class="decision-box fragment">
+                        <span class="persona" style="color: #7ec8e3;">Project Setup</span><br>
+                        Use <strong>Claude Code</strong> to scaffold your project structure, create requirements.txt, set up GitHub Actions
+                    </div>
+                    <div class="decision-box fragment">
+                        <span class="persona" style="color: #7ec8e3;">Daily Coding</span><br>
+                        Use <strong>Cursor / Copilot / Windsurf</strong> for writing code, inline completions, quick edits
+                    </div>
+                    <div class="decision-box fragment">
+                        <span class="persona" style="color: #7ec8e3;">Data Processing</span><br>
+                        Use <strong>Claude Code</strong> to write data pipelines, tokenization scripts, preprocessing
+                    </div>
+                    <div class="decision-box fragment">
+                        <span class="persona" style="color: #7ec8e3;">Model Training</span><br>
+                        Use your <strong>IDE tool</strong> for iterating on model code, debugging training loops
+                    </div>
+                    <div class="decision-box fragment">
+                        <span class="persona" style="color: #7ec8e3;">Testing & Docs</span><br>
+                        Use <strong>Claude Code</strong> to generate test suites and documentation in bulk
+                    </div>
+                </div>
+                <aside class="notes">
+                    Make this concrete for students. They have Demo Day projects to build.
+                    The pattern: Claude Code for big, structural tasks; IDE tools for interactive coding.
+                    For NLP specifically, data preprocessing and pipeline code is perfect for Claude Code
+                    because it's often boilerplate-heavy and well-specified.
+                    Model training iteration is better in an IDE because you want fast feedback loops.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 22: THE FUTURE ==================== -->
+
+            <section class="quote-slide">
+                <h2>Where This Is Heading</h2>
+                <blockquote>
+                    "In the near future, every line of code will be written, reviewed, or optimized by AI.
+                    The developer's role shifts from typist to architect."
+                </blockquote>
+                <p class="attribution">&mdash; The emerging consensus, 2026</p>
+                <ul style="font-size: 0.8em; margin-top: 1em;">
+                    <li class="fragment">AI tools will <strong>converge</strong> &mdash; every IDE will have agent mode</li>
+                    <li class="fragment"><strong>MCP</strong> (Model Context Protocol) will standardize tool &harr; model communication</li>
+                    <li class="fragment">The best developers will be the best <span class="highlight">AI collaborators</span></li>
+                </ul>
+                <aside class="notes">
+                    This is the forward-looking slide. The tools we discussed today are just
+                    the beginning. MCP (Model Context Protocol by Anthropic) is a standard for
+                    how AI tools communicate with external systems — think of it as USB for AI.
+                    The convergence point: in 2-3 years, the distinction between Cursor, Windsurf,
+                    and Copilot may not matter — they'll all offer similar capabilities.
+                    What WILL matter is your ability to work effectively with AI.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 23: DISCUSSION ==================== -->
+
+            <section class="discussion-slide">
+                <h2>Discussion</h2>
+                <p style="font-size: 1.1em; margin-bottom: 1.5em;">
+                    Which AI coding tools does your group use?<br>
+                    What surprised you?
+                </p>
+                <ol style="font-size: 0.85em;">
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        Have you tried any of these tools? What was your experience?
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        Do you think AI coding tools help you <em>learn</em> or make you <em>lazy</em>?
+                    </li>
+                    <li class="fragment">
+                        What would your ideal AI coding tool look like?
+                    </li>
+                </ol>
+                <p class="fragment small" style="margin-top: 1.5em;">5 minutes &mdash; open floor</p>
+                <aside class="notes">
+                    Open discussion after the group presentations.
+                    Encourage honest sharing of experiences — both positive and negative.
+                    The "learn vs lazy" question usually generates good debate.
+                    If students haven't tried any tools yet, ask what's holding them back.
+                    Use this to gauge the class's comfort level with AI tools.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 24: REFERENCES ==================== -->
+
+            <section>
+                <h2>References & Resources</h2>
+                <div class="two-column" style="font-size: 0.65em;">
+                    <div>
+                        <h3 style="font-size: 1.3em; color: #e5c07b;">Tools</h3>
+                        <ul>
+                            <li><strong>Cursor</strong> &mdash; <a href="https://cursor.com" style="color: #7ec8e3;">cursor.com</a></li>
+                            <li><strong>Windsurf</strong> &mdash; <a href="https://codeium.com/windsurf" style="color: #7ec8e3;">codeium.com/windsurf</a></li>
+                            <li><strong>Cline</strong> &mdash; <a href="https://github.com/cline/cline" style="color: #7ec8e3;">github.com/cline/cline</a></li>
+                            <li><strong>GitHub Copilot</strong> &mdash; <a href="https://github.com/features/copilot" style="color: #7ec8e3;">github.com/features/copilot</a></li>
+                            <li><strong>Claude Code</strong> &mdash; <a href="https://docs.anthropic.com/en/docs/claude-code" style="color: #7ec8e3;">docs.anthropic.com</a></li>
+                            <li><strong>Aider</strong> &mdash; <a href="https://aider.chat" style="color: #7ec8e3;">aider.chat</a></li>
+                            <li><strong>Continue.dev</strong> &mdash; <a href="https://continue.dev" style="color: #7ec8e3;">continue.dev</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.3em; color: #e5c07b;">Further Reading</h3>
+                        <ul>
+                            <li><strong>GitHub Education</strong> &mdash; <a href="https://education.github.com" style="color: #7ec8e3;">education.github.com</a></li>
+                            <li><strong>Augment Code</strong> &mdash; <a href="https://augmentcode.com" style="color: #7ec8e3;">augmentcode.com</a></li>
+                            <li><strong>JetBrains Junie</strong> &mdash; <a href="https://www.jetbrains.com/junie/" style="color: #7ec8e3;">jetbrains.com/junie</a></li>
+                            <li><strong>Amazon Q</strong> &mdash; <a href="https://aws.amazon.com/q/developer/" style="color: #7ec8e3;">aws.amazon.com/q/developer</a></li>
+                            <li><strong>MCP Protocol</strong> &mdash; <a href="https://modelcontextprotocol.io" style="color: #7ec8e3;">modelcontextprotocol.io</a></li>
+                        </ul>
+                        <h3 style="font-size: 1.3em; color: #e5c07b; margin-top: 0.8em;">For Students</h3>
+                        <ul>
+                            <li>Apply for <strong>GitHub Education Pack</strong> for free Copilot</li>
+                            <li>Try free tiers of Cursor &amp; Windsurf before paying</li>
+                        </ul>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Reference slide for students to revisit later.
+                    Encourage them to try at least two different tools during the course.
+                    The GitHub Education Pack is essential — free Copilot access.
+                    MCP is worth reading about — it's the emerging standard for AI tool integration.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 25: NEXT UP ==================== -->
+
+            <section>
+                <h2>Next Up</h2>
+                <div style="margin: 1.5em 0;">
+                    <div style="border: 2px solid #ff6b6b; border-radius: 8px; padding: 1em; display: inline-block;">
+                        <h3 style="color: #ff6b6b;">Group Presentation #2</h3>
+                        <p style="font-size: 0.85em;"><strong>Modern AI IDEs: Cursor vs Windsurf vs Cline</strong></p>
+                        <p style="font-size: 0.7em; color: #93a1a1;">20 minutes + Q&A</p>
+                    </div>
+                </div>
+                <p class="fragment" style="font-size: 0.9em; color: #93a1a1;">
+                    Followed by Group Presentation #3: Claude Code Usage
+                </p>
+                <div class="fragment" style="margin-top: 1.5em; font-size: 0.8em;">
+                    <p style="color: #7ec8e3;">Audience: take notes and prepare questions!</p>
+                    <p style="color: #93a1a1; font-size: 0.85em;">
+                        Think about: What tool would you choose for your Demo Day project? Why?
+                    </p>
+                </div>
+                <aside class="notes">
+                    Hand off to the presenting group. Remind the audience to be active listeners.
+                    The question about Demo Day projects is deliberate — it keeps the discussion practical.
+                    After both presentations, we'll have open Q&A and discussion time.
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            controlsTutorial: false,
+            progress: true,
+            center: true,
+            plugins: [RevealHighlight, RevealNotes]
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1478 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code: MCP, Prompt Engineering & Practice - TAL Day 4</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/moon.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --r-heading-font: 'Helvetica Neue', Arial, sans-serif;
+            --r-main-font: 'Helvetica Neue', Arial, sans-serif;
+        }
+        .reveal { font-size: 32px; }
+        .reveal h1 { font-size: 2.2em; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.2em; color: #7ec8e3; }
+        .reveal ul { text-align: left; }
+        .reveal li { margin-bottom: 0.4em; }
+
+        .highlight { color: #ff6b6b; }
+        .highlight-blue { color: #7ec8e3; }
+        .highlight-green { color: #98c379; }
+        .highlight-yellow { color: #e5c07b; }
+        .highlight-purple { color: #c678dd; }
+        .small { font-size: 0.65em; color: #93a1a1; }
+
+        /* Big stat numbers */
+        .stat-big {
+            font-size: 3.5em;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin: 0.2em 0;
+        }
+        .stat-label {
+            font-size: 0.6em;
+            color: #93a1a1;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1em;
+        }
+        .stat-box {
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+        }
+        .stat-box .stat-big {
+            font-size: 2.8em;
+        }
+
+        /* Quote styling */
+        .quote-slide blockquote {
+            font-style: italic;
+            font-size: 1.2em;
+            border-left: 4px solid #7ec8e3;
+            padding-left: 1em;
+            margin: 1em auto;
+            max-width: 80%;
+            text-align: left;
+        }
+        .quote-slide .attribution {
+            text-align: right;
+            color: #93a1a1;
+            font-size: 0.7em;
+            margin-right: 10%;
+        }
+
+        /* Discussion slides */
+        .discussion-slide {
+            background: rgba(126, 200, 227, 0.08) !important;
+        }
+        .discussion-slide h2 {
+            color: #7ec8e3;
+        }
+
+        .section-title h2 {
+            font-size: 2em;
+            margin-bottom: 0.3em;
+        }
+        .section-title h3 {
+            font-size: 0.9em;
+            color: #93a1a1;
+            font-weight: normal;
+        }
+
+        /* Two column layout */
+        .two-column {
+            display: flex;
+            gap: 2em;
+            align-items: flex-start;
+        }
+        .two-column > div {
+            flex: 1;
+        }
+
+        /* Pipeline / flow diagram */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3em;
+            flex-wrap: wrap;
+        }
+        .pipeline .step {
+            background: rgba(126, 200, 227, 0.15);
+            border: 2px solid #7ec8e3;
+            border-radius: 8px;
+            padding: 0.6em 1em;
+            text-align: center;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .pipeline .arrow {
+            font-size: 1.5em;
+            color: #7ec8e3;
+        }
+
+        /* Key insight box */
+        .insight-box {
+            background: rgba(198, 120, 221, 0.1);
+            border: 2px solid #c678dd;
+            border-radius: 12px;
+            padding: 1em 1.5em;
+            margin: 1em auto;
+            max-width: 85%;
+            text-align: left;
+            font-size: 0.8em;
+        }
+        .insight-box .title {
+            font-weight: bold;
+            color: #c678dd;
+            margin-bottom: 0.4em;
+            font-size: 1.1em;
+        }
+
+        /* Comparison table */
+        .cmp-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.65em;
+        }
+        .cmp-table th {
+            background: rgba(126, 200, 227, 0.2);
+            padding: 0.5em 0.8em;
+            text-align: left;
+            border-bottom: 2px solid #7ec8e3;
+        }
+        .cmp-table td {
+            padding: 0.4em 0.8em;
+            border-bottom: 1px solid rgba(147, 161, 161, 0.2);
+        }
+        .cmp-table .yes { color: #98c379; font-weight: bold; }
+        .cmp-table .no { color: #ff6b6b; font-weight: bold; }
+        .cmp-table .special { color: #e5c07b; font-weight: bold; }
+
+        /* MCP diagram boxes */
+        .mcp-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5em;
+            margin: 1.5em 0;
+        }
+        .mcp-box {
+            border-radius: 12px;
+            padding: 0.8em 1.2em;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.8em;
+            min-width: 140px;
+        }
+        .mcp-box.model {
+            background: rgba(198, 120, 221, 0.2);
+            border: 2px solid #c678dd;
+            color: #c678dd;
+        }
+        .mcp-box.protocol {
+            background: rgba(229, 192, 123, 0.2);
+            border: 2px solid #e5c07b;
+            color: #e5c07b;
+        }
+        .mcp-box.tools {
+            background: rgba(152, 195, 121, 0.2);
+            border: 2px solid #98c379;
+            color: #98c379;
+        }
+        .mcp-arrow {
+            font-size: 1.8em;
+            color: #93a1a1;
+        }
+
+        /* Memory hierarchy */
+        .mem-row {
+            display: flex;
+            align-items: center;
+            gap: 0.8em;
+            padding: 0.4em 0.8em;
+            margin: 0.25em 0;
+            border-radius: 8px;
+            font-size: 0.65em;
+        }
+        .mem-row .scope {
+            display: inline-block;
+            padding: 0.2em 0.6em;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85em;
+            min-width: 80px;
+            text-align: center;
+        }
+        .mem-row .path {
+            font-family: 'Courier New', monospace;
+            color: #e5c07b;
+        }
+        .mem-row .desc {
+            color: #93a1a1;
+            margin-left: auto;
+        }
+
+        /* Bad/Good comparison */
+        .comparison-pair {
+            display: flex;
+            gap: 1.5em;
+            margin: 1em 0;
+        }
+        .comparison-box {
+            flex: 1;
+            border-radius: 10px;
+            padding: 0.8em 1em;
+            font-size: 0.7em;
+            text-align: left;
+        }
+        .comparison-box.bad {
+            background: rgba(255, 107, 107, 0.1);
+            border: 2px solid #ff6b6b;
+        }
+        .comparison-box.bad .label {
+            color: #ff6b6b;
+            font-weight: bold;
+            margin-bottom: 0.5em;
+            font-size: 1.1em;
+        }
+        .comparison-box.good {
+            background: rgba(152, 195, 121, 0.1);
+            border: 2px solid #98c379;
+        }
+        .comparison-box.good .label {
+            color: #98c379;
+            font-weight: bold;
+            margin-bottom: 0.5em;
+            font-size: 1.1em;
+        }
+
+        /* Tool permission table */
+        .tool-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.6em;
+        }
+        .tool-table th {
+            background: rgba(126, 200, 227, 0.2);
+            padding: 0.4em 0.6em;
+            text-align: left;
+            border-bottom: 2px solid #7ec8e3;
+        }
+        .tool-table td {
+            padding: 0.35em 0.6em;
+            border-bottom: 1px solid rgba(147, 161, 161, 0.2);
+        }
+        .tool-table code {
+            background: rgba(147, 161, 161, 0.15);
+            padding: 0.1em 0.3em;
+            border-radius: 3px;
+            font-size: 0.95em;
+        }
+
+        /* Presentation schedule */
+        .schedule-row {
+            display: flex;
+            align-items: center;
+            gap: 1em;
+            padding: 0.5em 0.8em;
+            margin: 0.3em 0;
+            border-radius: 8px;
+            font-size: 0.75em;
+        }
+        .schedule-row .time {
+            font-family: 'Courier New', monospace;
+            color: #e5c07b;
+            min-width: 100px;
+            font-weight: bold;
+        }
+        .schedule-row .group {
+            font-weight: bold;
+            min-width: 80px;
+        }
+        .schedule-row .topic {
+            color: #93a1a1;
+        }
+
+        /* Hook event cards */
+        .hook-card {
+            display: flex;
+            align-items: center;
+            gap: 0.6em;
+            padding: 0.4em 0.8em;
+            margin: 0.25em 0;
+            border-radius: 8px;
+            font-size: 0.65em;
+            background: rgba(126, 200, 227, 0.08);
+            border: 1px solid rgba(126, 200, 227, 0.3);
+        }
+        .hook-card .event {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #7ec8e3;
+            min-width: 120px;
+        }
+        .hook-card .desc {
+            color: #93a1a1;
+        }
+
+        /* Workflow phase boxes */
+        .phase-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8em;
+            margin: 1em 0;
+        }
+        .phase-box {
+            border-radius: 10px;
+            padding: 0.7em 1em;
+            text-align: center;
+            font-size: 0.75em;
+        }
+        .phase-box .phase-num {
+            font-size: 1.8em;
+            font-weight: bold;
+            line-height: 1;
+        }
+        .phase-box .phase-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin: 0.2em 0;
+        }
+        .phase-box .phase-desc {
+            color: #93a1a1;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 1: Title -->
+            <!-- ============================================================ -->
+            <section class="section-title">
+                <h2>Claude Code</h2>
+                <h3>MCP, Prompt Engineering &amp; Practice</h3>
+                <p style="margin-top: 2em; font-size: 0.7em;">
+                    TAL (NLP) &mdash; Day 4 &mdash; March 19, 2026
+                </p>
+                <p style="font-size: 0.65em; color: #93a1a1;">ZHANG Zheng</p>
+                <aside class="notes">
+                    Welcome to Day 4 of the TAL course. Today is dedicated to group presentations
+                    on Claude Code -- Anthropic's agentic coding tool. Each group has prepared a
+                    20-minute presentation on a specific aspect of Claude Code.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 2: Today's Format -->
+            <!-- ============================================================ -->
+            <section>
+                <h2>Today's Format: <span class="highlight">Group Presentations</span></h2>
+                <p style="font-size: 0.75em; color: #93a1a1; margin-bottom: 0.8em;">Each group presents for 20 minutes + Q&amp;A</p>
+
+                <div class="schedule-row fragment" style="background: rgba(198, 120, 221, 0.1); border: 1px solid #c678dd;">
+                    <span class="time">09:00 - 09:20</span>
+                    <span class="group" style="color: #c678dd;">Group 1</span>
+                    <span class="topic">Claude Code Fundamentals &amp; Getting Started</span>
+                </div>
+                <div class="schedule-row fragment" style="background: rgba(126, 200, 227, 0.1); border: 1px solid #7ec8e3;">
+                    <span class="time">09:25 - 09:45</span>
+                    <span class="group" style="color: #7ec8e3;">Group 2</span>
+                    <span class="topic">MCP &mdash; Model Context Protocol</span>
+                </div>
+                <div class="schedule-row fragment" style="background: rgba(152, 195, 121, 0.1); border: 1px solid #98c379;">
+                    <span class="time">09:50 - 10:10</span>
+                    <span class="group" style="color: #98c379;">Group 3</span>
+                    <span class="topic">CLAUDE.md &amp; Prompt Engineering</span>
+                </div>
+                <div class="schedule-row fragment" style="background: rgba(229, 192, 123, 0.1); border: 1px solid #e5c07b;">
+                    <span class="time">10:15 - 10:35</span>
+                    <span class="group" style="color: #e5c07b;">Group 4</span>
+                    <span class="topic">Skills, Hooks &amp; Advanced Workflows</span>
+                </div>
+                <div class="schedule-row fragment" style="background: rgba(255, 107, 107, 0.1); border: 1px solid #ff6b6b;">
+                    <span class="time">10:40 - 11:00</span>
+                    <span class="group" style="color: #ff6b6b;">All</span>
+                    <span class="topic">Discussion &amp; Wrap-up</span>
+                </div>
+
+                <aside class="notes">
+                    The session is structured around 4 group presentations of 20 minutes each,
+                    followed by a wrap-up discussion. Groups should aim for clarity and include
+                    live demos where possible. Remind students to keep time.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 3: Claude Code Overview -->
+            <!-- ============================================================ -->
+            <section>
+                <h2>What is <span class="highlight">Claude Code</span>?</h2>
+                <p style="font-size: 0.75em;">Anthropic's <span class="highlight-blue">agentic coding tool</span> that lives in your terminal</p>
+
+                <div class="two-column" style="margin-top: 1em;">
+                    <div>
+                        <ul style="font-size: 0.7em;">
+                            <li class="fragment"><span class="highlight-green">Reads &amp; writes</span> code in your project</li>
+                            <li class="fragment"><span class="highlight-green">Executes</span> terminal commands</li>
+                            <li class="fragment"><span class="highlight-green">Manages</span> git operations</li>
+                            <li class="fragment"><span class="highlight-green">Searches</span> across your codebase</li>
+                            <li class="fragment"><span class="highlight-green">Debugs</span> errors end-to-end</li>
+                        </ul>
+                    </div>
+                    <div class="fragment">
+                        <p style="font-size: 0.65em; color: #93a1a1; margin-bottom: 0.3em;">Available in:</p>
+                        <ul style="font-size: 0.65em;">
+                            <li>Terminal CLI</li>
+                            <li>VS Code extension</li>
+                            <li>JetBrains plugin</li>
+                            <li>Web: <span class="highlight-blue">claude.ai/code</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="stat-row fragment" style="margin-top: 1.2em;">
+                    <div class="stat-box">
+                        <div class="stat-big" style="font-size: 2em;">Opus 4.6</div>
+                        <div class="stat-label">Powered by</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-big" style="font-size: 2em;">1M</div>
+                        <div class="stat-label">Token Context Window</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-big" style="font-size: 2em;">~4%</div>
+                        <div class="stat-label">of GitHub Public Commits</div>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    Claude Code is not just an autocomplete tool -- it is an autonomous agent that
+                    can understand your entire project, plan changes, execute them, and verify the
+                    results. Powered by Claude Opus 4.6 with a 1 million token context window, it
+                    can hold your entire codebase in memory. The stat about 4% of GitHub commits
+                    shows how quickly AI-assisted coding is growing. Anthropic reports a $1B annual
+                    run rate for Claude Code.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 4: Getting Started -->
+            <!-- ============================================================ -->
+            <section>
+                <h2>Getting Started</h2>
+                <p style="font-size: 0.7em; color: #93a1a1;">Three ways to install, then just <code>cd</code> into your project</p>
+
+                <div style="font-size: 0.7em; margin-top: 0.8em;">
+                    <p class="fragment" style="margin-bottom: 0.3em;"><span class="highlight-blue">Install:</span></p>
+                    <pre class="fragment"><code class="language-bash" data-trim>
+# Pick one:
+curl -fsSL https://cli.claude.ai/install.sh | sh
+brew install claude-code
+npm install -g @anthropic-ai/claude-code
+                    </code></pre>
+
+                    <p class="fragment" style="margin-top: 0.8em; margin-bottom: 0.3em;"><span class="highlight-blue">Use:</span></p>
+                    <pre class="fragment"><code class="language-bash" data-trim>
+cd your-project
+claude                          # start interactive session
+                    </code></pre>
+
+                    <p class="fragment" style="margin-top: 0.8em; margin-bottom: 0.3em;"><span class="highlight-blue">One-shot commands:</span></p>
+                    <pre class="fragment"><code class="language-bash" data-trim>
+claude "fix the build error"
+claude "write tests for the auth module"
+cat error.log | claude -p "analyze this error"
+                    </code></pre>
+                </div>
+
+                <aside class="notes">
+                    Installation is simple -- choose whichever package manager you prefer. The key
+                    pattern is: cd into your project directory, then run claude. It will automatically
+                    read the project structure. You can also use it in one-shot mode for quick tasks
+                    by passing the prompt as a string argument, or pipe input to it for analysis.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 5: 4-Phase Workflow -->
+            <!-- ============================================================ -->
+            <section>
+                <h2>The <span class="highlight">4-Phase</span> Workflow</h2>
+                <p style="font-size: 0.7em; color: #93a1a1;">The mental model for working with Claude Code</p>
+
+                <div class="phase-grid fragment">
+                    <div class="phase-box" style="background: rgba(126, 200, 227, 0.12); border: 2px solid #7ec8e3;">
+                        <div class="phase-num" style="color: #7ec8e3;">1</div>
+                        <div class="phase-name" style="color: #7ec8e3;">Explore</div>
+                        <div class="phase-desc">Understand the codebase structure, dependencies, patterns</div>
+                    </div>
+                    <div class="phase-box" style="background: rgba(229, 192, 123, 0.12); border: 2px solid #e5c07b;">
+                        <div class="phase-num" style="color: #e5c07b;">2</div>
+                        <div class="phase-name" style="color: #e5c07b;">Plan</div>
+                        <div class="phase-desc">Design the approach<br><code style="font-size: 0.85em;">Shift+Tab</code> for plan mode</div>
+                    </div>
+                    <div class="phase-box" style="background: rgba(152, 195, 121, 0.12); border: 2px solid #98c379;">
+                        <div class="phase-num" style="color: #98c379;">3</div>
+                        <div class="phase-name" style="color: #98c379;">Implement</div>
+                        <div class="phase-desc">Write code, run tests, iterate on errors</div>
+                    </div>
+                    <div class="phase-box" style="background: rgba(198, 120, 221, 0.12); border: 2px solid #c678dd;">
+                        <div class="phase-num" style="color: #c678dd;">4</div>
+                        <div class="phase-name" style="color: #c678dd;">Commit</div>
+                        <div class="phase-desc">Review changes, write commit message, push</div>
+                    </div>
+                </div>
+
+                <div class="pipeline fragment" style="margin-top: 1em;">
+                    <div class="step" style="border-color: #7ec8e3;">Explore</div>
+                    <span class="arrow">&rarr;</span>
+                    <div class="step" style="border-color: #e5c07b;">Plan</div>
+                    <span class="arrow">&rarr;</span>
+                    <div class="step" style="border-color: #98c379;">Implement</div>
+                    <span class="arrow">&rarr;</span>
+                    <div class="step" style="border-color: #c678dd;">Commit</div>
+                </div>
+
+                <div class="insight-box fragment" style="border-color: #e5c07b; background: rgba(229, 192, 123, 0.08); margin-top: 0.8em;">
+                    <div class="title" style="color: #e5c07b;">Pro Tip</div>
+                    <p>Always start with <strong>plan mode</strong> (<code>Shift+Tab</code>) for complex tasks. This tells Claude to think first, code later.</p>
+                </div>
+
+                <aside class="notes">
+                    This 4-phase workflow is the key mental model. Most beginners jump straight to
+                    "implement" -- but the best results come from letting Claude explore the codebase
+                    first, then plan its approach, then implement, then commit. Plan mode is
+                    activated with Shift+Tab and tells Claude to think through the approach without
+                    writing code yet. Think of it like a surgeon who studies the X-ray before operating.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SECTION 2: MCP -->
+            <!-- ============================================================ -->
+
+            <!-- SLIDE 6: MCP Section Title -->
+            <section class="section-title">
+                <h2 style="color: #e5c07b;">MCP</h2>
+                <h3>The USB Port for AI</h3>
+                <p class="small" style="margin-top: 2em;">Model Context Protocol &mdash; connecting AI to the real world</p>
+                <aside class="notes">
+                    Now we move to MCP, which is arguably the most important infrastructure
+                    concept in modern AI tooling. The USB analogy is deliberate -- just as USB
+                    gave us one standard port for all devices, MCP gives AI one standard
+                    protocol for all tools.
+                </aside>
+            </section>
+
+            <!-- SLIDE 7: What is MCP -->
+            <section>
+                <h2>What is <span class="highlight-yellow">MCP</span>?</h2>
+                <p style="font-size: 0.75em;"><span class="highlight">Open standard</span> by Anthropic (Nov 2024) for AI-to-tool integration</p>
+
+                <div class="insight-box fragment" style="border-color: #7ec8e3; background: rgba(126, 200, 227, 0.08);">
+                    <div class="title" style="color: #7ec8e3;">The LSP Analogy</div>
+                    <p>Remember <strong>LSP</strong> (Language Server Protocol)? Before LSP, every IDE needed a custom plugin for every language. LSP standardized this: <em>one protocol, all languages</em>.</p>
+                    <p style="margin-top: 0.5em;"><strong>MCP does the same for AI:</strong> one protocol to connect <em>any</em> AI model to <em>any</em> tool.</p>
+                </div>
+
+                <div class="mcp-diagram fragment">
+                    <div class="mcp-box model">
+                        AI Model<br>
+                        <span style="font-size: 0.7em; font-weight: normal;">(Claude, GPT, ...)</span>
+                    </div>
+                    <span class="mcp-arrow">&harr;</span>
+                    <div class="mcp-box protocol">
+                        MCP Protocol<br>
+                        <span style="font-size: 0.7em; font-weight: normal;">(JSON-RPC)</span>
+                    </div>
+                    <span class="mcp-arrow">&harr;</span>
+                    <div class="mcp-box tools">
+                        Tools / APIs / Data<br>
+                        <span style="font-size: 0.7em; font-weight: normal;">(GitHub, DB, Slack, ...)</span>
+                    </div>
+                </div>
+
+                <p class="fragment small" style="margin-top: 0.8em;">Without MCP: every AI tool needs custom integrations for every service (N x M problem)<br>
+                With MCP: build <span class="highlight-green">one server</span>, connect to <span class="highlight-blue">any AI client</span></p>
+
+                <aside class="notes">
+                    For students who know LSP, this analogy should click immediately. Before LSP,
+                    if you had 10 IDEs and 10 languages, you needed 100 integrations. LSP reduced
+                    that to 10+10. MCP does the same thing: if you have 5 AI models and 20 tools,
+                    instead of 100 custom integrations, each tool builds one MCP server and each
+                    AI model implements one MCP client. The protocol uses JSON-RPC for communication.
+                </aside>
+            </section>
+
+            <!-- SLIDE 8: MCP Architecture -->
+            <section>
+                <h2>MCP Architecture</h2>
+
+                <div class="two-column">
+                    <div>
+                        <h3 style="font-size: 0.9em;">How it works</h3>
+                        <ul style="font-size: 0.65em;">
+                            <li class="fragment"><span class="highlight-blue">MCP Client</span> = your AI tool (Claude Code, Cursor, etc.)</li>
+                            <li class="fragment"><span class="highlight-green">MCP Server</span> = service wrapper (GitHub, Notion, DB, etc.)</li>
+                            <li class="fragment">Client discovers server <span class="highlight-yellow">capabilities</span> at connection</li>
+                            <li class="fragment">AI decides <em>when</em> to call tools based on your request</li>
+                        </ul>
+                    </div>
+                    <div class="fragment">
+                        <h3 style="font-size: 0.9em;">Two Transport Types</h3>
+                        <div style="margin-top: 0.5em;">
+                            <div style="background: rgba(126, 200, 227, 0.1); border: 2px solid #7ec8e3; border-radius: 8px; padding: 0.5em 0.8em; margin: 0.4em 0; font-size: 0.7em;">
+                                <strong style="color: #7ec8e3;">Remote (HTTP/SSE)</strong><br>
+                                Cloud services, shared servers<br>
+                                <span class="small">e.g., Notion, GitHub, Sentry</span>
+                            </div>
+                            <div style="background: rgba(152, 195, 121, 0.1); border: 2px solid #98c379; border-radius: 8px; padding: 0.5em 0.8em; margin: 0.4em 0; font-size: 0.7em;">
+                                <strong style="color: #98c379;">Local (stdio)</strong><br>
+                                Local processes, file access<br>
+                                <span class="small">e.g., filesystem, local DB, scripts</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="fragment small" style="margin-top: 1em;">
+                    MCP is now governed by the <span class="highlight-blue">Linux Foundation</span> (Agentic AI Foundation) &mdash; ensuring it remains an open, vendor-neutral standard.
+                </p>
+
+                <aside class="notes">
+                    The architecture is client-server. Claude Code acts as the MCP client. When you
+                    connect an MCP server (like GitHub), Claude discovers what tools are available --
+                    for example, create_issue, list_pull_requests, etc. Then when you ask Claude
+                    to do something related, it decides which MCP tool to call. There are two
+                    transport types: remote (HTTP with Server-Sent Events for streaming) for cloud
+                    services, and local (stdio) for processes running on your machine. The fact that
+                    it is now under the Linux Foundation signals long-term industry commitment.
+                </aside>
+            </section>
+
+            <!-- SLIDE 9: Key MCP Servers -->
+            <section>
+                <h2>Key MCP Servers</h2>
+                <p style="font-size: 0.7em; color: #93a1a1;">A growing ecosystem of ready-to-use integrations</p>
+
+                <table class="cmp-table" style="margin-top: 0.8em;">
+                    <thead>
+                        <tr>
+                            <th>Server</th>
+                            <th>What It Does</th>
+                            <th>Example Use</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="fragment">
+                            <td><strong style="color: #7ec8e3;">GitHub</strong></td>
+                            <td>PRs, issues, code review</td>
+                            <td>"Review the latest PR"</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong style="color: #ff6b6b;">Sentry</strong></td>
+                            <td>Error monitoring</td>
+                            <td>"What are today's top errors?"</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong style="color: #98c379;">PostgreSQL</strong></td>
+                            <td>Database queries</td>
+                            <td>"How many users signed up this week?"</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong style="color: #e5c07b;">Notion</strong></td>
+                            <td>Documentation</td>
+                            <td>"Find the API spec document"</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong style="color: #c678dd;">Linear</strong></td>
+                            <td>Project management</td>
+                            <td>"Create an issue for this bug"</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong style="color: #7ec8e3;">Slack</strong></td>
+                            <td>Team chat</td>
+                            <td>"Post a deploy notification"</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong style="color: #98c379;">Filesystem</strong></td>
+                            <td>Local file access</td>
+                            <td>"Read the config from ~/data"</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong style="color: #e5c07b;">Google Drive</strong></td>
+                            <td>Docs &amp; sheets</td>
+                            <td>"Summarize the meeting notes"</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <aside class="notes">
+                    This table shows the most commonly used MCP servers. The key insight is that
+                    once connected, you talk to these services in natural language. You do not need
+                    to know the GitHub API or SQL syntax -- Claude translates your intent into the
+                    right tool calls. The PostgreSQL example is particularly powerful: you can ask
+                    business questions in plain English and get SQL-backed answers.
+                </aside>
+            </section>
+
+            <!-- SLIDE 10: Configuring MCP -->
+            <section>
+                <h2>Configuring MCP in Claude Code</h2>
+
+                <div style="font-size: 0.7em;">
+                    <p class="fragment" style="margin-bottom: 0.3em;"><span class="highlight-blue">Add remote servers:</span></p>
+                    <pre class="fragment"><code class="language-bash" data-trim>
+# Add Notion MCP server
+claude mcp add --transport http notion \
+  https://mcp.notion.com/mcp
+
+# Add GitHub MCP server
+claude mcp add --transport http github \
+  https://api.githubcopilot.com/mcp/
+                    </code></pre>
+
+                    <p class="fragment" style="margin-top: 0.8em; margin-bottom: 0.3em;"><span class="highlight-blue">Manage servers:</span></p>
+                    <pre class="fragment"><code class="language-bash" data-trim>
+claude mcp list         # list all configured servers
+/mcp                    # check status inside a session
+                    </code></pre>
+                </div>
+
+                <div class="fragment" style="margin-top: 0.8em;">
+                    <h3 style="font-size: 0.85em;">Three Configuration Scopes</h3>
+                    <div style="display: flex; gap: 0.8em; font-size: 0.65em; margin-top: 0.4em;">
+                        <div style="flex: 1; background: rgba(126, 200, 227, 0.1); border: 1px solid #7ec8e3; border-radius: 8px; padding: 0.5em; text-align: center;">
+                            <strong style="color: #7ec8e3;">Local</strong><br>
+                            This machine only<br>
+                            <code class="small">--scope local</code>
+                        </div>
+                        <div style="flex: 1; background: rgba(152, 195, 121, 0.1); border: 1px solid #98c379; border-radius: 8px; padding: 0.5em; text-align: center;">
+                            <strong style="color: #98c379;">Project</strong><br>
+                            Shared via <code>.mcp.json</code><br>
+                            <code class="small">--scope project</code>
+                        </div>
+                        <div style="flex: 1; background: rgba(198, 120, 221, 0.1); border: 1px solid #c678dd; border-radius: 8px; padding: 0.5em; text-align: center;">
+                            <strong style="color: #c678dd;">User</strong><br>
+                            All your projects<br>
+                            <code class="small">--scope user</code>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    Configuration is done with the claude mcp add command. The transport flag tells
+                    Claude Code how to connect -- http for cloud services, stdio for local processes.
+                    There are three scopes: local (just your machine, not committed), project (stored
+                    in .mcp.json which you commit to share with your team), and user (in your home
+                    directory, applies to all projects). Use /mcp inside a session to check which
+                    servers are connected and their status.
+                </aside>
+            </section>
+
+            <!-- SLIDE 11: Practical MCP Example -->
+            <section>
+                <h2>MCP in Action</h2>
+                <p style="font-size: 0.7em; color: #93a1a1;">Natural language meets real tools</p>
+
+                <div class="two-column" style="margin-top: 0.8em;">
+                    <div>
+                        <h3 style="font-size: 0.85em; color: #ff6b6b;">Example 1: Sentry</h3>
+                        <pre class="fragment" style="font-size: 0.65em;"><code class="language-bash" data-trim>
+# Connect Sentry
+claude mcp add --transport http \
+  sentry https://mcp.sentry.dev/sse
+
+# Then in a session:
+> "What are the most common errors
+   in the last 24 hours?"
+                        </code></pre>
+                        <p class="fragment small">Claude calls Sentry API, groups errors, and suggests fixes</p>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 0.85em; color: #98c379;">Example 2: PostgreSQL</h3>
+                        <pre class="fragment" style="font-size: 0.65em;"><code class="language-bash" data-trim>
+# Connect your database
+claude mcp add --transport stdio \
+  postgres -- npx @modelcontextprotocol\
+  /server-postgres $DATABASE_URL
+
+# Then ask in plain English:
+> "How many users registered
+   this month vs last month?"
+                        </code></pre>
+                        <p class="fragment small">Claude writes SQL, executes it safely, and formats results</p>
+                    </div>
+                </div>
+
+                <div class="insight-box fragment" style="border-color: #98c379; background: rgba(152, 195, 121, 0.08); margin-top: 0.8em;">
+                    <div class="title" style="color: #98c379;">Why this matters</div>
+                    <p>You no longer need to switch between tools. Ask questions in English, get answers backed by <strong>real data</strong> from your actual systems.</p>
+                </div>
+
+                <aside class="notes">
+                    These two examples show the transformative power of MCP. With Sentry, instead
+                    of logging into the Sentry dashboard and manually triaging errors, you ask
+                    Claude and it does the analysis for you. With PostgreSQL, you can ask business
+                    questions in plain English and Claude writes the SQL, runs it, and presents
+                    the results. This is a huge productivity boost, especially for developers who
+                    are not SQL experts or who need quick answers without context-switching.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SECTION 3: CLAUDE.md & Prompt Engineering -->
+            <!-- ============================================================ -->
+
+            <!-- SLIDE 12: Section Title -->
+            <section class="section-title">
+                <h2 style="color: #98c379;">CLAUDE.md &amp; Prompt Engineering</h2>
+                <h3>Teaching Claude how to work on your project</h3>
+                <aside class="notes">
+                    This section covers two related topics: CLAUDE.md (persistent project
+                    instructions) and prompt engineering (how to write effective prompts
+                    for Claude Code). Both are about communication -- giving Claude the
+                    right context to do its best work.
+                </aside>
+            </section>
+
+            <!-- SLIDE 13: What is CLAUDE.md -->
+            <section>
+                <h2>What is <span class="highlight-green">CLAUDE.md</span>?</h2>
+                <p style="font-size: 0.75em;">A special markdown file <span class="highlight">automatically read</span> at every session start</p>
+
+                <p class="fragment" style="font-size: 0.7em; margin: 0.5em 0;">Think of it as <span class="highlight-blue">persistent project instructions</span> &mdash; your team's knowledge base for the AI.</p>
+
+                <div style="font-size: 0.6em; margin-top: 0.5em;">
+                    <p style="color: #93a1a1; margin-bottom: 0.3em;">Memory Hierarchy (highest to lowest priority):</p>
+
+                    <div class="mem-row fragment" style="background: rgba(255, 107, 107, 0.08); border: 1px solid rgba(255, 107, 107, 0.3);">
+                        <span class="scope" style="background: #ff6b6b; color: #002b36;">Org</span>
+                        <span>Managed policy</span>
+                        <span class="desc">Organization-wide rules</span>
+                    </div>
+                    <div class="mem-row fragment" style="background: rgba(126, 200, 227, 0.08); border: 1px solid rgba(126, 200, 227, 0.3);">
+                        <span class="scope" style="background: #7ec8e3; color: #002b36;">Team</span>
+                        <span class="path">./CLAUDE.md</span>
+                        <span class="desc">Project memory (committed)</span>
+                    </div>
+                    <div class="mem-row fragment" style="background: rgba(198, 120, 221, 0.08); border: 1px solid rgba(198, 120, 221, 0.3);">
+                        <span class="scope" style="background: #c678dd; color: #002b36;">Team</span>
+                        <span class="path">.claude/rules/*.md</span>
+                        <span class="desc">Project rules (topic-specific)</span>
+                    </div>
+                    <div class="mem-row fragment" style="background: rgba(229, 192, 123, 0.08); border: 1px solid rgba(229, 192, 123, 0.3);">
+                        <span class="scope" style="background: #e5c07b; color: #002b36;">Personal</span>
+                        <span class="path">~/.claude/CLAUDE.md</span>
+                        <span class="desc">User-wide memory</span>
+                    </div>
+                    <div class="mem-row fragment" style="background: rgba(152, 195, 121, 0.08); border: 1px solid rgba(152, 195, 121, 0.3);">
+                        <span class="scope" style="background: #98c379; color: #002b36;">Local</span>
+                        <span class="path">./CLAUDE.local.md</span>
+                        <span class="desc">Project local (not committed)</span>
+                    </div>
+                    <div class="mem-row fragment" style="background: rgba(147, 161, 161, 0.08); border: 1px solid rgba(147, 161, 161, 0.3);">
+                        <span class="scope" style="background: #93a1a1; color: #002b36;">Auto</span>
+                        <span class="path">~/.claude/projects/.../memory/</span>
+                        <span class="desc">Automatic session memory</span>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    CLAUDE.md is the single most important file for Claude Code productivity. It is
+                    auto-loaded every time Claude Code starts in your project directory. The memory
+                    hierarchy shows that there are multiple levels: organization policies at the top,
+                    then project-level CLAUDE.md shared with your team, then project rules for
+                    specific topics, then personal preferences, then local overrides, and finally
+                    automatic memory that Claude manages itself. The key distinction is team vs
+                    personal: CLAUDE.md is committed to git, CLAUDE.local.md is not.
+                </aside>
+            </section>
+
+            <!-- SLIDE 14: CLAUDE.md Best Practices -->
+            <section>
+                <h2>Writing a Good CLAUDE.md</h2>
+
+                <ul style="font-size: 0.7em;">
+                    <li class="fragment">Keep it <span class="highlight">under 300 lines</span> &mdash; concise is better</li>
+                    <li class="fragment">Include commands Claude <span class="highlight-blue">can't guess</span>: build, test, lint, deploy</li>
+                    <li class="fragment">Document <span class="highlight-green">code style deviations</span> from common patterns</li>
+                    <li class="fragment">Use emphasis for critical rules: <code>IMPORTANT:</code>, <code>YOU MUST</code></li>
+                    <li class="fragment">Bootstrap with <code class="highlight-yellow">/init</code> &mdash; Claude scans your project and generates one</li>
+                </ul>
+
+                <pre class="fragment" style="font-size: 0.55em; margin-top: 0.8em;"><code class="language-markdown" data-trim>
+# CLAUDE.md
+
+## Build & Test
+- Build: `npm run build`
+- Test: `npm test -- --watch`
+- Lint: `npm run lint` (MUST pass before committing)
+
+## Code Style
+- Use TypeScript strict mode everywhere
+- Prefer functional components with hooks (no class components)
+- IMPORTANT: All API responses must use the Result&lt;T&gt; type
+
+## Architecture
+- /src/api/ -- REST endpoints (Express)
+- /src/services/ -- Business logic (no direct DB access)
+- /src/repositories/ -- Database layer (Prisma)
+                </code></pre>
+
+                <aside class="notes">
+                    A good CLAUDE.md is like a good onboarding document for a new team member.
+                    It should tell Claude things it cannot figure out by reading the code alone:
+                    custom build commands, style rules that deviate from convention, architecture
+                    decisions. Use /init to let Claude generate an initial CLAUDE.md by scanning
+                    your project -- then refine it. Keep it under 300 lines because it is loaded
+                    into every conversation and uses context window space.
+                </aside>
+            </section>
+
+            <!-- SLIDE 15: Prompt Tip 1 - Verification -->
+            <section>
+                <h2>Prompt Tip #1: <span class="highlight">Verify the Work</span></h2>
+                <p style="font-size: 0.7em; color: #93a1a1;">Always give Claude a way to check its own output</p>
+
+                <div class="comparison-pair fragment">
+                    <div class="comparison-box bad">
+                        <div class="label">Bad Prompt</div>
+                        <pre style="font-size: 0.85em; margin: 0;"><code data-trim>
+implement email validation
+                        </code></pre>
+                        <p style="margin-top: 0.5em; color: #93a1a1;">No success criteria. Claude guesses what "correct" means.</p>
+                    </div>
+                    <div class="comparison-box good">
+                        <div class="label">Good Prompt</div>
+                        <pre style="font-size: 0.85em; margin: 0;"><code data-trim>
+Write a validateEmail function.
+
+Test cases:
+- user@example.com -> true
+- invalid -> false
+- test@.com -> false
+
+Run the tests after implementing.
+                        </code></pre>
+                        <p style="margin-top: 0.5em; color: #93a1a1;">Claude can verify its own work.</p>
+                    </div>
+                </div>
+
+                <div class="insight-box fragment" style="border-color: #ff6b6b; background: rgba(255, 107, 107, 0.08);">
+                    <div class="title" style="color: #ff6b6b;">Key Principle</div>
+                    <p>If Claude can <strong>run tests, check output, or validate results</strong>, it will catch its own mistakes. Think of it as giving the AI a <strong>feedback loop</strong>.</p>
+                </div>
+
+                <aside class="notes">
+                    This is the single most impactful prompt engineering tip. When you give Claude
+                    test cases and tell it to run them, it creates a feedback loop: write code,
+                    run tests, see failures, fix code, run tests again. Without this, Claude writes
+                    code and hopes it works. With this, Claude iterates until it verifiably works.
+                    This mirrors how good software engineers work -- write tests first, then implement.
+                </aside>
+            </section>
+
+            <!-- SLIDE 16: Prompt Tip 2 - Specificity -->
+            <section>
+                <h2>Prompt Tip #2: <span class="highlight-blue">Be Specific, Give Context</span></h2>
+
+                <ul style="font-size: 0.7em;">
+                    <li class="fragment">Use <code class="highlight-yellow">@filename</code> to reference specific files
+                        <pre style="font-size: 0.8em; margin: 0.3em 0;"><code data-trim>
+"refactor @src/auth/login.ts to use async/await"
+                        </code></pre>
+                    </li>
+                    <li class="fragment"><span class="highlight-green">Paste images</span> &mdash; screenshots of errors, UI mockups, diagrams</li>
+                    <li class="fragment">Give <span class="highlight-blue">URLs</span> &mdash; Claude can fetch and read web pages
+                        <pre style="font-size: 0.8em; margin: 0.3em 0;"><code data-trim>
+"implement the API from https://docs.example.com/api/v2"
+                        </code></pre>
+                    </li>
+                    <li class="fragment">For complex features, <span class="highlight">let Claude interview you</span></li>
+                </ul>
+
+                <div class="comparison-pair fragment" style="margin-top: 0.5em;">
+                    <div class="comparison-box bad">
+                        <div class="label">Vague</div>
+                        <p style="font-size: 0.9em;">"add authentication"</p>
+                    </div>
+                    <div class="comparison-box good">
+                        <div class="label">Specific</div>
+                        <p style="font-size: 0.9em;">"add JWT authentication to @src/api/routes.ts using the existing User model in @src/models/user.ts. Use bcrypt for password hashing. Include refresh token rotation."</p>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    The more context you give Claude, the better the output. The @ syntax is a
+                    shortcut to reference files -- Claude will read them before starting. You can
+                    also paste screenshots of errors or UI mockups directly into the conversation.
+                    URLs work too -- Claude will fetch the page and use the content. The key mental
+                    shift: treat Claude like a skilled developer who just joined your team today.
+                    They can write great code, but they need to know your specific context.
+                </aside>
+            </section>
+
+            <!-- SLIDE 17: Context Management -->
+            <section>
+                <h2>Context Management</h2>
+                <p style="font-size: 0.7em; color: #93a1a1;">Claude has a <span class="highlight">1M token</span> context window &mdash; but managing it well matters</p>
+
+                <div class="two-column" style="margin-top: 0.5em;">
+                    <div>
+                        <h3 style="font-size: 0.85em;">Essential Commands</h3>
+                        <ul style="font-size: 0.65em;">
+                            <li class="fragment"><code class="highlight-yellow">/compact</code> &mdash; Summarize conversation, free up space</li>
+                            <li class="fragment"><code class="highlight-yellow">/clear</code> &mdash; Full reset between tasks</li>
+                            <li class="fragment">Auto-compaction at <span class="highlight">~83%</span> capacity</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 0.85em;">Advanced Techniques</h3>
+                        <ul style="font-size: 0.65em;">
+                            <li class="fragment"><span class="highlight-blue">Subagents</span> &mdash; Separate context for investigation tasks</li>
+                            <li class="fragment"><span class="highlight-green">Extended thinking</span> &mdash; Use <code>"ultrathink"</code> keyword for complex reasoning</li>
+                            <li class="fragment"><span class="highlight-purple">--continue</span> &mdash; Resume previous conversations</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="insight-box fragment" style="margin-top: 0.8em;">
+                    <div class="title">When to /compact vs /clear</div>
+                    <p><strong>/compact</strong>: Same task, running low on context &mdash; keeps a summary of what happened.<br>
+                    <strong>/clear</strong>: Switching to a completely different task &mdash; starts fresh.</p>
+                </div>
+
+                <p class="fragment small" style="margin-top: 0.5em;">Think of context like RAM: <code>/compact</code> = writing to swap, <code>/clear</code> = reboot</p>
+
+                <aside class="notes">
+                    Context management is a practical skill that separates productive Claude Code
+                    users from frustrated ones. The 1M token window sounds huge, but complex tasks
+                    with many file reads fill it up fast. Use /compact when you are mid-task but
+                    running low -- it summarizes the conversation so far. Use /clear when switching
+                    to a completely different task. Subagents are like spawning a child process with
+                    its own memory -- useful for "go investigate this and report back" tasks.
+                    The "ultrathink" keyword triggers extended thinking mode, where Claude spends
+                    more time reasoning before responding -- useful for complex architecture decisions.
+                </aside>
+            </section>
+
+            <!-- SLIDE 18: Interview Pattern -->
+            <section>
+                <h2>The <span class="highlight-purple">Interview Pattern</span></h2>
+                <p style="font-size: 0.7em; color: #93a1a1;">Let Claude ask <em>you</em> the right questions</p>
+
+                <pre class="fragment" style="font-size: 0.6em; margin-top: 0.8em;"><code class="language-markdown" data-trim>
+I want to build [description of your feature].
+
+Interview me in detail about this feature.
+Ask about:
+- Technical implementation details
+- UI/UX requirements
+- Edge cases and error handling
+- Performance considerations
+
+Keep interviewing until everything is covered,
+then write a complete spec to SPEC.md.
+                </code></pre>
+
+                <div class="fragment" style="margin-top: 0.8em;">
+                    <h3 style="font-size: 0.85em;">Why this works</h3>
+                    <ul style="font-size: 0.65em;">
+                        <li class="fragment">Claude asks questions <span class="highlight-blue">you would not think of</span></li>
+                        <li class="fragment">Surfaces edge cases <span class="highlight">before</span> implementation</li>
+                        <li class="fragment">Produces a <span class="highlight-green">complete spec</span> that guides all subsequent work</li>
+                        <li class="fragment">Shifts Claude from "guess what they want" to "know what they want"</li>
+                    </ul>
+                </div>
+
+                <p class="fragment small" style="margin-top: 0.8em;">This is especially powerful for features where you have a rough idea but have not thought through all the details.</p>
+
+                <aside class="notes">
+                    The interview pattern is one of the most underused techniques. Instead of trying
+                    to write a perfect prompt that covers everything, you let Claude interview you.
+                    Claude will ask about things you have not considered -- error handling, edge cases,
+                    accessibility, performance. After the interview, it writes a complete spec that
+                    both of you agree on. This is like having a senior engineer do a requirements
+                    gathering session with you before coding starts.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SECTION 4: Skills & Hooks -->
+            <!-- ============================================================ -->
+
+            <!-- SLIDE 19: Section Title -->
+            <section class="section-title">
+                <h2 style="color: #7ec8e3;">Skills, Tools &amp; Hooks</h2>
+                <h3>Extending Claude Code's capabilities</h3>
+                <aside class="notes">
+                    This section covers three ways to extend Claude Code beyond its defaults:
+                    Skills (reusable prompt templates), Tool permissions (security model),
+                    and Hooks (lifecycle automation). These are more advanced features but
+                    very powerful once understood.
+                </aside>
+            </section>
+
+            <!-- SLIDE 20: Skills -->
+            <section>
+                <h2>Skills: Reusable <span class="highlight-purple">Prompt Templates</span></h2>
+                <p style="font-size: 0.7em; color: #93a1a1;">Markdown files that extend Claude with specialized behavior</p>
+
+                <div class="two-column" style="margin-top: 0.5em;">
+                    <div>
+                        <ul style="font-size: 0.65em;">
+                            <li class="fragment">Stored as <code class="highlight-yellow">SKILL.md</code> files</li>
+                            <li class="fragment">Invoked via <code>/skill-name</code> (slash commands)</li>
+                            <li class="fragment">Can define <span class="highlight-blue">allowed tools</span>, context files</li>
+                            <li class="fragment">Dynamic context with <code class="highlight-green">!`command`</code> syntax</li>
+                        </ul>
+                    </div>
+                    <div class="fragment">
+                        <pre style="font-size: 0.55em;"><code class="language-markdown" data-trim>
+---
+name: review-pr
+description: Review a pull request
+allowed-tools: [Bash, Read, Grep]
+---
+
+# PR Review Skill
+
+## Context
+Current branch: !`git branch --show-current`
+Changed files: !`git diff --name-only main`
+
+## Instructions
+1. Read each changed file
+2. Check for:
+   - Security issues
+   - Performance problems
+   - Missing tests
+3. Write review as a comment
+                        </code></pre>
+                    </div>
+                </div>
+
+                <div class="insight-box fragment" style="margin-top: 0.5em; border-color: #e5c07b; background: rgba(229, 192, 123, 0.08);">
+                    <div class="title" style="color: #e5c07b;">Dynamic Context Injection</div>
+                    <p>The <code>!`command`</code> syntax runs a shell command and injects the output into the skill at load time. This means the skill always has <strong>fresh context</strong> about the current state of your project.</p>
+                </div>
+
+                <aside class="notes">
+                    Skills are like reusable recipes for Claude. Instead of typing the same
+                    complex prompt every time you review a PR, you create a skill file that
+                    encapsulates the process. The frontmatter defines metadata like which tools
+                    the skill can use. The dynamic context syntax with backticks is powerful --
+                    it runs a command and injects the output when the skill loads, so Claude
+                    always has current information. Skills were merged with slash commands in
+                    version 2.1.3, so you invoke them the same way.
+                </aside>
+            </section>
+
+            <!-- SLIDE 21: Tool Use & Permissions -->
+            <section>
+                <h2>Tool Use &amp; <span class="highlight">Permissions</span></h2>
+                <p style="font-size: 0.7em; color: #93a1a1;">Claude Code's built-in tools and security model</p>
+
+                <div class="two-column" style="margin-top: 0.5em;">
+                    <div>
+                        <h3 style="font-size: 0.8em;">Built-in Tools</h3>
+                        <table class="tool-table">
+                            <tr class="fragment"><td><code>Read</code></td><td>Read files</td></tr>
+                            <tr class="fragment"><td><code>Glob</code></td><td>Find files by pattern</td></tr>
+                            <tr class="fragment"><td><code>Grep</code></td><td>Search file contents</td></tr>
+                            <tr class="fragment"><td><code>Edit</code></td><td>Modify files</td></tr>
+                            <tr class="fragment"><td><code>Write</code></td><td>Create new files</td></tr>
+                            <tr class="fragment"><td><code>Bash</code></td><td>Run shell commands</td></tr>
+                            <tr class="fragment"><td><code>WebFetch</code></td><td>Read web pages</td></tr>
+                        </table>
+                    </div>
+                    <div class="fragment">
+                        <h3 style="font-size: 0.8em;">Permission Modes</h3>
+                        <div style="font-size: 0.65em;">
+                            <div style="background: rgba(152, 195, 121, 0.1); border: 1px solid #98c379; border-radius: 6px; padding: 0.4em; margin: 0.3em 0;">
+                                <strong style="color: #98c379;">default</strong><br>
+                                Ask before writes/commands
+                            </div>
+                            <div style="background: rgba(126, 200, 227, 0.1); border: 1px solid #7ec8e3; border-radius: 6px; padding: 0.4em; margin: 0.3em 0;">
+                                <strong style="color: #7ec8e3;">acceptEdits</strong><br>
+                                Auto-approve file edits, ask for Bash
+                            </div>
+                            <div style="background: rgba(229, 192, 123, 0.1); border: 1px solid #e5c07b; border-radius: 6px; padding: 0.4em; margin: 0.3em 0;">
+                                <strong style="color: #e5c07b;">plan</strong><br>
+                                Read-only, no modifications
+                            </div>
+                            <div style="background: rgba(255, 107, 107, 0.1); border: 1px solid #ff6b6b; border-radius: 6px; padding: 0.4em; margin: 0.3em 0;">
+                                <strong style="color: #ff6b6b;">bypassPermissions</strong><br>
+                                Auto-approve all (containers only!)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="fragment small" style="margin-top: 0.5em;">
+                    Security note: Shell operators (<code>&&</code>, <code>|</code>, <code>;</code>) do <strong>not</strong> bypass permission rules &mdash; each command in a chain is checked individually.
+                </p>
+
+                <aside class="notes">
+                    Claude Code has a set of built-in tools that it uses to interact with your
+                    project. Each tool has a specific purpose -- Read for reading files, Glob for
+                    finding files, Grep for searching content, etc. The permission model controls
+                    what Claude can do without asking. In default mode, it asks before every
+                    write operation and shell command. acceptEdits lets it freely edit files but
+                    still asks for shell commands. plan mode is read-only -- great for
+                    understanding code without risk of changes. bypassPermissions is only for
+                    containers where there is nothing sensitive to protect.
+                </aside>
+            </section>
+
+            <!-- SLIDE 22: Hooks -->
+            <section>
+                <h2>Hooks: <span class="highlight-green">Lifecycle Automation</span></h2>
+                <p style="font-size: 0.7em; color: #93a1a1;">User-defined shell commands triggered at key events</p>
+
+                <div style="margin-top: 0.5em;">
+                    <div class="hook-card fragment">
+                        <span class="event">PreToolUse</span>
+                        <span>Before a tool runs</span>
+                        <span class="desc">&mdash; Block dangerous commands</span>
+                    </div>
+                    <div class="hook-card fragment">
+                        <span class="event">PostToolUse</span>
+                        <span>After a tool runs</span>
+                        <span class="desc">&mdash; Auto-format, lint, validate</span>
+                    </div>
+                    <div class="hook-card fragment">
+                        <span class="event">SessionStart</span>
+                        <span>Session begins</span>
+                        <span class="desc">&mdash; Inject context, check env</span>
+                    </div>
+                    <div class="hook-card fragment">
+                        <span class="event">Notification</span>
+                        <span>Claude sends notification</span>
+                        <span class="desc">&mdash; Desktop alerts, sounds</span>
+                    </div>
+                    <div class="hook-card fragment">
+                        <span class="event">Stop</span>
+                        <span>Claude finishes a turn</span>
+                        <span class="desc">&mdash; Verify completion, run checks</span>
+                    </div>
+                </div>
+
+                <pre class="fragment" style="font-size: 0.55em; margin-top: 0.6em;"><code class="language-json" data-trim>
+// .claude/settings.json -- auto-format after every file edit
+{
+  "hooks": {
+    "PostToolUse": [{
+      "matcher": "Write|Edit",
+      "command": "npx prettier --write $CLAUDE_FILE_PATH"
+    }]
+  }
+}
+                </code></pre>
+
+                <p class="fragment small">Exit code <span class="highlight-green">0</span> = proceed, exit code <span class="highlight">2</span> = block the action</p>
+
+                <aside class="notes">
+                    Hooks are a powerful automation mechanism. They let you run custom shell
+                    commands at specific points in Claude Code's lifecycle. The most common use
+                    case is PostToolUse with a formatter: every time Claude writes or edits a file,
+                    the hook automatically runs Prettier or your formatter. PreToolUse can block
+                    dangerous commands before they execute -- for example, preventing rm -rf or
+                    git push --force. The exit code convention is simple: 0 means proceed normally,
+                    2 means block the action. This is inspired by git hooks.
+                </aside>
+            </section>
+
+            <!-- SLIDE 23: Terminal Workflows -->
+            <section>
+                <h2>Terminal Workflows</h2>
+                <p style="font-size: 0.7em; color: #93a1a1;">Professional setups for maximum productivity</p>
+
+                <div class="two-column" style="margin-top: 0.5em;">
+                    <div>
+                        <h3 style="font-size: 0.85em;">tmux Multi-Pane Setup</h3>
+                        <div class="fragment" style="font-size: 0.6em; border: 2px solid #7ec8e3; border-radius: 8px; padding: 0.5em; margin-top: 0.3em;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                                <div style="background: rgba(198, 120, 221, 0.15); border: 1px solid #c678dd; border-radius: 4px; padding: 0.3em; text-align: center;">
+                                    <strong style="color: #c678dd;">Claude Code</strong><br>
+                                    <span style="color: #93a1a1;">Main session</span>
+                                </div>
+                                <div style="background: rgba(152, 195, 121, 0.15); border: 1px solid #98c379; border-radius: 4px; padding: 0.3em; text-align: center;">
+                                    <strong style="color: #98c379;">Tests</strong><br>
+                                    <span style="color: #93a1a1;">npm test --watch</span>
+                                </div>
+                                <div style="background: rgba(229, 192, 123, 0.15); border: 1px solid #e5c07b; border-radius: 4px; padding: 0.3em; text-align: center;">
+                                    <strong style="color: #e5c07b;">Logs</strong><br>
+                                    <span style="color: #93a1a1;">tail -f app.log</span>
+                                </div>
+                                <div style="background: rgba(126, 200, 227, 0.15); border: 1px solid #7ec8e3; border-radius: 4px; padding: 0.3em; text-align: center;">
+                                    <strong style="color: #7ec8e3;">Git</strong><br>
+                                    <span style="color: #93a1a1;">git status / diff</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 0.85em;">Key Commands</h3>
+                        <ul style="font-size: 0.65em;">
+                            <li class="fragment"><code class="highlight-yellow">claude --continue</code><br>Resume the last conversation</li>
+                            <li class="fragment"><code class="highlight-yellow">claude --resume</code><br>Pick from recent sessions</li>
+                            <li class="fragment"><code class="highlight-yellow">Ctrl+C</code> during execution<br>Interrupt and redirect Claude</li>
+                        </ul>
+
+                        <div class="fragment" style="margin-top: 0.8em;">
+                            <h3 style="font-size: 0.85em;">Agent Teams <span class="small">(experimental)</span></h3>
+                            <p style="font-size: 0.6em;">Multiple Claude agents on split panes, collaborating on different parts of the same project</p>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    For professional use, a tmux or terminal multiplexer setup is highly recommended.
+                    The four-pane layout gives you Claude Code in one pane, tests running
+                    continuously in another, logs in a third, and git status in the fourth.
+                    The --continue flag is essential for resuming interrupted sessions -- Claude
+                    picks up right where it left off. Agent Teams is an experimental feature where
+                    you can run multiple Claude Code instances that work on different parts of
+                    your project simultaneously, like having multiple developers.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SECTION 5: Wrap-up -->
+            <!-- ============================================================ -->
+
+            <!-- SLIDE 24: Best Practices Summary -->
+            <section>
+                <h2>Best Practices <span class="highlight">Summary</span></h2>
+
+                <div style="font-size: 0.75em;">
+                    <div class="fragment" style="display: flex; align-items: center; gap: 0.8em; margin: 0.5em 0; padding: 0.4em 0.8em; background: rgba(255, 107, 107, 0.08); border-radius: 8px; border-left: 4px solid #ff6b6b;">
+                        <span style="font-size: 1.5em; color: #ff6b6b; font-weight: bold;">1</span>
+                        <span>Start with <code>/init</code> to bootstrap your <strong>CLAUDE.md</strong></span>
+                    </div>
+                    <div class="fragment" style="display: flex; align-items: center; gap: 0.8em; margin: 0.5em 0; padding: 0.4em 0.8em; background: rgba(126, 200, 227, 0.08); border-radius: 8px; border-left: 4px solid #7ec8e3;">
+                        <span style="font-size: 1.5em; color: #7ec8e3; font-weight: bold;">2</span>
+                        <span>Use <strong>plan mode</strong> (<code>Shift+Tab</code>) before coding complex features</span>
+                    </div>
+                    <div class="fragment" style="display: flex; align-items: center; gap: 0.8em; margin: 0.5em 0; padding: 0.4em 0.8em; background: rgba(152, 195, 121, 0.08); border-radius: 8px; border-left: 4px solid #98c379;">
+                        <span style="font-size: 1.5em; color: #98c379; font-weight: bold;">3</span>
+                        <span>Include <strong>verification steps</strong> (test cases, checks) in every prompt</span>
+                    </div>
+                    <div class="fragment" style="display: flex; align-items: center; gap: 0.8em; margin: 0.5em 0; padding: 0.4em 0.8em; background: rgba(229, 192, 123, 0.08); border-radius: 8px; border-left: 4px solid #e5c07b;">
+                        <span style="font-size: 1.5em; color: #e5c07b; font-weight: bold;">4</span>
+                        <span>Connect <strong>MCP servers</strong> for GitHub, Sentry, databases, and more</span>
+                    </div>
+                    <div class="fragment" style="display: flex; align-items: center; gap: 0.8em; margin: 0.5em 0; padding: 0.4em 0.8em; background: rgba(198, 120, 221, 0.08); border-radius: 8px; border-left: 4px solid #c678dd;">
+                        <span style="font-size: 1.5em; color: #c678dd; font-weight: bold;">5</span>
+                        <span>Create <strong>skills</strong> for repeated workflows (PR review, deploy, etc.)</span>
+                    </div>
+                    <div class="fragment" style="display: flex; align-items: center; gap: 0.8em; margin: 0.5em 0; padding: 0.4em 0.8em; background: rgba(147, 161, 161, 0.08); border-radius: 8px; border-left: 4px solid #93a1a1;">
+                        <span style="font-size: 1.5em; color: #93a1a1; font-weight: bold;">6</span>
+                        <span>Use <code>/compact</code> and <code>/clear</code> to manage <strong>context</strong> wisely</span>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    These six practices will take students from beginner to productive Claude Code
+                    users. The most important ones are: always start with CLAUDE.md (it dramatically
+                    improves output quality), always include verification steps in prompts, and use
+                    plan mode for anything non-trivial. MCP and skills are force multipliers once
+                    the basics are solid.
+                </aside>
+            </section>
+
+            <!-- SLIDE 25: Discussion -->
+            <section class="discussion-slide">
+                <h2>Discussion</h2>
+                <p style="font-size: 1.1em; margin: 1.5em 0;">What Claude Code features would help your <span class="highlight">NLP project</span> most?</p>
+
+                <ul style="font-size: 0.7em; max-width: 75%; margin: 0 auto;">
+                    <li class="fragment">MCP to connect to your <span class="highlight-blue">training data</span> sources?</li>
+                    <li class="fragment">Skills to automate <span class="highlight-green">model evaluation</span> workflows?</li>
+                    <li class="fragment">Hooks to auto-run <span class="highlight-yellow">linters and type checkers</span> on ML code?</li>
+                    <li class="fragment">CLAUDE.md to document your <span class="highlight-purple">project conventions</span>?</li>
+                </ul>
+
+                <div class="insight-box fragment" style="margin-top: 1.5em; border-color: #7ec8e3; background: rgba(126, 200, 227, 0.08);">
+                    <div class="title" style="color: #7ec8e3;">Think about it</div>
+                    <p>For your group NLP project, what <strong>CLAUDE.md</strong> would you write? What MCP servers would you connect? What skills would you create?</p>
+                </div>
+
+                <aside class="notes">
+                    This is an open discussion. Encourage students to think about their own projects.
+                    Some ideas to prompt discussion: connecting Claude to HuggingFace datasets via
+                    MCP, creating skills for common NLP tasks like tokenization or embedding
+                    evaluation, using hooks to automatically validate model outputs, writing CLAUDE.md
+                    files that document the NLP pipeline architecture. Give students 5-10 minutes
+                    to discuss in their groups before sharing.
+                </aside>
+            </section>
+
+            <!-- SLIDE 26: References -->
+            <section>
+                <h2>References</h2>
+                <ul style="font-size: 0.6em; line-height: 1.8;">
+                    <li><span class="highlight-blue">Claude Code Documentation</span><br>
+                        <a href="https://docs.anthropic.com/en/docs/claude-code" style="color: #7ec8e3;">docs.anthropic.com/en/docs/claude-code</a></li>
+                    <li><span class="highlight-blue">Claude Code Best Practices</span><br>
+                        <a href="https://docs.anthropic.com/en/docs/claude-code/best-practices" style="color: #7ec8e3;">docs.anthropic.com/en/docs/claude-code/best-practices</a></li>
+                    <li><span class="highlight-yellow">Model Context Protocol (MCP)</span><br>
+                        <a href="https://modelcontextprotocol.io" style="color: #e5c07b;">modelcontextprotocol.io</a></li>
+                    <li><span class="highlight-yellow">MCP Specification</span><br>
+                        <a href="https://spec.modelcontextprotocol.io" style="color: #e5c07b;">spec.modelcontextprotocol.io</a></li>
+                    <li><span class="highlight-green">Claude Code Hooks</span><br>
+                        <a href="https://docs.anthropic.com/en/docs/claude-code/hooks" style="color: #98c379;">docs.anthropic.com/en/docs/claude-code/hooks</a></li>
+                    <li><span class="highlight-green">Claude Code MCP Guide</span><br>
+                        <a href="https://docs.anthropic.com/en/docs/claude-code/mcp" style="color: #98c379;">docs.anthropic.com/en/docs/claude-code/mcp</a></li>
+                    <li><span class="highlight-purple">CLAUDE.md Guide</span><br>
+                        <a href="https://docs.anthropic.com/en/docs/claude-code/memory" style="color: #c678dd;">docs.anthropic.com/en/docs/claude-code/memory</a></li>
+                    <li><span class="highlight-purple">Prompt Engineering for Claude Code</span><br>
+                        <a href="https://www.anthropic.com/engineering/claude-code-best-practices" style="color: #c678dd;">anthropic.com/engineering/claude-code-best-practices</a></li>
+                </ul>
+
+                <aside class="notes">
+                    These are the official documentation links. Students should bookmark the Claude
+                    Code docs and the MCP specification. The best practices page from Anthropic's
+                    engineering blog is particularly useful for practical tips. Encourage students
+                    to explore these resources before the next session.
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            controlsTutorial: false,
+            progress: true,
+            center: true,
+            plugins: [RevealHighlight, RevealNotes]
+        });
+    </script>
+</body>
+</html>
