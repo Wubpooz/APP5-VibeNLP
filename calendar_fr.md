@@ -56,7 +56,9 @@
 | Horaire | Sujet | Contenu | Présentation de groupe |
 |---------|-------|---------|------------------------|
 | 13:30 - 15:30 | Document AI & Multimodal | Analyse PDF, compréhension documentaire, modèles Vision-Language, applications multimodales | Présentation #4 (OpenClaw & Agent-to-Agent) |
-| 15:45 - 17:45 | RLHF | Bases de l'apprentissage par renforcement, pipeline RLHF, méthodes d'alignement (DPO/PPO), sécurité | |
+| 15:45 - 17:45 | RLHF + Architecture Agent | Bases RL, pipeline RLHF, méthodes d'alignement ; **Architecture Agent** : De OpenClaw à nanobot | |
+
+**Matériel supplémentaire** : [Architecture Agent : De OpenClaw à nanobot](slides/day5-agent-architecture-nanobot.html) - Analyse d'un framework Agent minimaliste, idéal pour les projets Demo Day
 
 ### Jour 6 - 31 mars 2026 (mardi) - Demo Day
 
