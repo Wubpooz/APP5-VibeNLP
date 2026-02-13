@@ -11,9 +11,9 @@
 | 场次 | 日期 | 主题 | 难度 |
 |------|------|------|------|
 | #1 | 09/03 | 创业工具箱 | 入门 |
-| #2 | 13/03 | Claude Code 深度使用 | 基础 |
-| #3 | 19/03 | Attention Is All You Need | 进阶 |
-| #4 | 20/03 | OpenClaw 与 Agent 生态 | 高级 |
+| #2 | 13/03 | Modern AI IDEs: Cursor vs Windsurf vs Cline | 基础 |
+| #3 | 19/03 | Claude Code使用：MCP、Prompt工程与实战 | 进阶 |
+| #4 | 20/03 | OpenClaw 与 Agent-to-Agent | 高级 |
 
 > 越靠后的主题难度越高，但准备时间也相应更长。
 
@@ -31,9 +31,23 @@
 - 前端部署（如 Vercel）
 - 后端托管
 
-### 主题 #2：Claude Code 深度使用（13/03）
+> 以上仅为参考建议，各组自行决定展示内容和重点。
 
-掌握 Claude Code 的高级功能和工作流：
+### 主题 #2：Modern AI IDEs: Cursor vs Windsurf vs Cline（13/03）
+
+探索 AI 驱动的现代开发工具生态（不限于标题中列举的工具）：
+
+- AI IDE 横向对比（如 Cursor、Windsurf、Cline、GitHub Copilot 等）
+- 核心功能分析（代码补全、Agent 模式、上下文管理等）
+- 与 CLI 工具（如 Claude Code）的区别与互补
+- 开发者实际使用体验与工作流
+- 定价模型与选择建议
+
+> 以上仅为参考建议，各组自行决定展示内容和重点。
+
+### 主题 #3：Claude Code使用：MCP、Prompt工程与实战（19/03）
+
+深入掌握 Claude Code 的高级功能与实战技巧：
 
 - MCP（Model Context Protocol）
 - Skills 创建与使用
@@ -41,17 +55,9 @@
 - Tool Use 技巧
 - 终端环境（如 Conductor、tmux）
 
-### 主题 #3：Attention Is All You Need（19/03）
+> 以上仅为参考建议，各组自行决定展示内容和重点。
 
-理解 Transformer 架构的核心：
-
-- Self-Attention 机制（Query、Key、Value）
-- Multi-Head Attention
-- Positional Encoding
-- Encoder-Decoder 架构
-- 从 Transformer 到 BERT、GPT
-
-### 主题 #4：OpenClaw 与 Agent 生态（20/03）
+### 主题 #4：OpenClaw 与 Agent-to-Agent（20/03）
 
 理解 AI Agent 的设计与发展趋势：
 
@@ -59,6 +65,8 @@
 - OpenClaw 的设计理念与架构
 - 平台生态（如 Moltbook）
 - Agent-to-Agent（A2A）协议与趋势
+
+> 以上仅为参考建议，各组自行决定展示内容和重点。
 
 ## 评分标准
 

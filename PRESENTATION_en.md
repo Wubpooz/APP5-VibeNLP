@@ -11,9 +11,9 @@
 | Session | Date | Topic | Difficulty |
 |---------|------|-------|------------|
 | #1 | 09/03 | Startup Toolbox | Beginner |
-| #2 | 13/03 | Claude Code Deep Dive | Intermediate |
-| #3 | 19/03 | Attention Is All You Need | Advanced |
-| #4 | 20/03 | OpenClaw & Agent Ecosystem | Expert |
+| #2 | 13/03 | Modern AI IDEs: Cursor vs Windsurf vs Cline | Intermediate |
+| #3 | 19/03 | Claude Code Usage: MCP, Prompt Engineering & Practice | Advanced |
+| #4 | 20/03 | OpenClaw & Agent-to-Agent | Expert |
 
 > Later topics are more difficult, but come with more preparation time.
 
@@ -31,9 +31,23 @@ Preparing for the Demo Day NLP project, sharing practical tools and experience:
 - Frontend deployment (e.g., Vercel)
 - Backend hosting
 
-### Topic #2: Claude Code Deep Dive (13/03)
+> The above are suggestions only — each group decides their own content and focus.
 
-Mastering Claude Code's advanced features and workflows:
+### Topic #2: Modern AI IDEs: Cursor vs Windsurf vs Cline (13/03)
+
+Exploring the modern AI-powered development tool ecosystem (not limited to the tools listed in the title):
+
+- AI IDE comparison (e.g., Cursor, Windsurf, Cline, GitHub Copilot, etc.)
+- Core feature analysis (code completion, Agent mode, context management, etc.)
+- Differences and complementarity with CLI tools (e.g., Claude Code)
+- Developer experience and workflows
+- Pricing models and selection advice
+
+> The above are suggestions only — each group decides their own content and focus.
+
+### Topic #3: Claude Code Usage: MCP, Prompt Engineering & Practice (19/03)
+
+Mastering Claude Code's advanced features and practical techniques:
 
 - MCP (Model Context Protocol)
 - Creating and using Skills
@@ -41,17 +55,9 @@ Mastering Claude Code's advanced features and workflows:
 - Tool Use techniques
 - Terminal environments (e.g., Conductor, tmux)
 
-### Topic #3: Attention Is All You Need (19/03)
+> The above are suggestions only — each group decides their own content and focus.
 
-Understanding the core of the Transformer architecture:
-
-- Self-Attention mechanism (Query, Key, Value)
-- Multi-Head Attention
-- Positional Encoding
-- Encoder-Decoder architecture
-- From Transformer to BERT, GPT
-
-### Topic #4: OpenClaw & Agent Ecosystem (20/03)
+### Topic #4: OpenClaw & Agent-to-Agent (20/03)
 
 Understanding AI Agent design and development trends:
 
@@ -59,6 +65,8 @@ Understanding AI Agent design and development trends:
 - OpenClaw's design philosophy and architecture
 - Platform ecosystem (e.g., Moltbook)
 - Agent-to-Agent (A2A) protocols and trends
+
+> The above are suggestions only — each group decides their own content and focus.
 
 ## Grading Criteria
 
