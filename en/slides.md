@@ -86,3 +86,17 @@ RL basics, RLHF pipeline, Alignment methods (DPO/PPO), Safety
 ### Group Presentation Reference: OpenClaw & A2A
 
 <a href="{{ site.baseurl }}/slides/day5-openclaw-a2a.html" class="btn btn-sm" target="_blank">View Reference</a>
+
+---
+
+## Keyboard Shortcuts
+
+All slides use [Reveal.js](https://revealjs.com/). Useful shortcuts:
+
+| Key | Action |
+|-----|--------|
+| `S` | Open speaker notes (with timer & next slide preview) |
+| `F` | Fullscreen |
+| `O` | Overview mode (see all slides) |
+| `B` | Blackout screen |
+| `?` | Show all shortcuts |
