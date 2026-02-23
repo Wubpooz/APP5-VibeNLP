@@ -1518,6 +1518,231 @@
                 </aside>
             </section>
 
+            <!-- ==================== SECTION 4.5: AGENT EVOLUTION ==================== -->
+
+            <!-- Slide: Agent Evolution Problem -->
+            <section class="section-title">
+                <h2>Agent Evolution</h2>
+                <h3>What If Agents Could Learn From Each Other?</h3>
+                <aside class="notes">
+                    Transition to evolution section. We've covered connection (MCP), 
+                    execution (Skills), and communication (A2A). Now: the final piece - Evolution.
+                </aside>
+            </section>
+
+            <!-- Slide: The Repetition Problem -->
+            <section>
+                <h2>The Repetition Problem</h2>
+                <p style="font-size: 0.85em;">Every agent learns <span class="highlight">from scratch</span></p>
+
+                <div class="fragment" style="background: rgba(255,107,107,0.1); border-radius: 10px; padding: 1em; margin: 1em 0;">
+                    <p style="font-size: 0.9em; margin: 0;">
+                        <span class="highlight">Day 1:</span> Your agent hits a timeout error. Figures out exponential backoff.<br>
+                        <span class="highlight">Day 2:</span> Another agent hits the same error. Figures it out again.<br>
+                        <span class="highlight">Day 3:</span> 10,000 agents hit the same error. Each solves it independently.
+                    </p>
+                </div>
+
+                <div class="fragment" style="display: flex; justify-content: center; gap: 2em; margin: 1em 0;">
+                    <div style="text-align: center;">
+                        <div class="stat-big" style="font-size: 2.2em; color: #ff6b6b;">$10,000</div>
+                        <p class="small">Token cost of redundant trial-and-error</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <div class="stat-big" style="font-size: 2.2em; color: #98c379;">$200</div>
+                        <p class="small">If solutions were <em>shared</em></p>
+                    </div>
+                </div>
+
+                <p class="fragment small">Analogy: imagine if every programmer had to rediscover sorting algorithms from scratch.</p>
+                <aside class="notes">
+                    This is the core insight: agents today are like isolated individuals, each solving 
+                    the same problems over and over. We've built amazing protocols for agents to 
+                    communicate (A2A), but they can't share EXPERIENCE.
+                    
+                    The economic argument is compelling: if 10,000 agents each spend $1 in tokens 
+                    solving the same error, that's $10,000 wasted. But if one agent solves it and 
+                    shares the solution, the total cost drops to ~$200.
+                </aside>
+            </section>
+
+            <!-- Slide: The Evolution Layer -->
+            <section>
+                <h2>The Missing Layer</h2>
+                <p style="font-size: 0.85em;">We have connection, execution, communication... <span class="highlight-blue">what about evolution?</span></p>
+
+                <table style="font-size: 0.75em; margin: 1em auto; border-collapse: collapse;">
+                    <tr class="fragment">
+                        <td style="padding: 0.5em 1em; border: 1px solid #7ec8e3;"><strong>MCP</strong></td>
+                        <td style="padding: 0.5em 1em; border: 1px solid #7ec8e3; color: #93a1a1;">Connection</td>
+                        <td style="padding: 0.5em 1em; border: 1px solid #7ec8e3;">Tells agent <em>what tools exist</em></td>
+                    </tr>
+                    <tr class="fragment">
+                        <td style="padding: 0.5em 1em; border: 1px solid #7ec8e3;"><strong>Skills</strong></td>
+                        <td style="padding: 0.5em 1em; border: 1px solid #7ec8e3; color: #93a1a1;">Execution</td>
+                        <td style="padding: 0.5em 1em; border: 1px solid #7ec8e3;">Tells agent <em>how to do things</em></td>
+                    </tr>
+                    <tr class="fragment">
+                        <td style="padding: 0.5em 1em; border: 1px solid #7ec8e3;"><strong>A2A</strong></td>
+                        <td style="padding: 0.5em 1em; border: 1px solid #7ec8e3; color: #93a1a1;">Communication</td>
+                        <td style="padding: 0.5em 1em; border: 1px solid #7ec8e3;">Lets agents <em>talk to each other</em></td>
+                    </tr>
+                    <tr class="fragment" style="background: rgba(152,195,121,0.15);">
+                        <td style="padding: 0.5em 1em; border: 2px solid #98c379;"><strong class="highlight-green">GEP</strong></td>
+                        <td style="padding: 0.5em 1em; border: 2px solid #98c379; color: #98c379;">Evolution</td>
+                        <td style="padding: 0.5em 1em; border: 2px solid #98c379;">Lets agents <em>share experience</em></td>
+                    </tr>
+                </table>
+
+                <div class="insight-box fragment" style="margin-top: 0.8em; max-width: 85%;">
+                    <div class="title">GEP: Genome Evolution Protocol</div>
+                    <p style="margin: 0;">A protocol that lets agents <strong>package</strong> their solutions, <strong>publish</strong> them to a network, and <strong>inherit</strong> solutions from other agents.</p>
+                </div>
+                <aside class="notes">
+                    GEP completes the picture. We've built the infrastructure for agents to exist (MCP),
+                    to know how to do things (Skills), and to talk to each other (A2A).
+                    
+                    But we haven't built infrastructure for them to EVOLVE - to accumulate collective
+                    experience over time. GEP fills this gap.
+                </aside>
+            </section>
+
+            <!-- Slide: How Evolution Works -->
+            <section>
+                <h2>How Agent Evolution Works</h2>
+                <p style="font-size: 0.8em;">The lifecycle of a shared solution</p>
+
+                <div class="pipeline fragment" style="margin: 1.5em 0;">
+                    <div class="step" style="background: rgba(255,107,107,0.15); border-color: #ff6b6b;">
+                        <div style="font-size: 0.8em;">🔥 Agent A</div>
+                        <div style="font-size: 0.6em; color: #93a1a1;">hits error</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="step" style="background: rgba(229,192,123,0.15); border-color: #e5c07b;">
+                        <div style="font-size: 0.8em;">🧪 Evolves</div>
+                        <div style="font-size: 0.6em; color: #93a1a1;">a fix</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="step" style="background: rgba(152,195,121,0.15); border-color: #98c379;">
+                        <div style="font-size: 0.8em;">📦 Capsule</div>
+                        <div style="font-size: 0.6em; color: #93a1a1;">packaged</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="step" style="background: rgba(126,200,227,0.15); border-color: #7ec8e3;">
+                        <div style="font-size: 0.8em;">🌐 Network</div>
+                        <div style="font-size: 0.6em; color: #93a1a1;">published</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="step" style="background: rgba(198,120,221,0.15); border-color: #c678dd;">
+                        <div style="font-size: 0.8em;">🧬 Agent B</div>
+                        <div style="font-size: 0.6em; color: #93a1a1;">inherits</div>
+                    </div>
+                </div>
+
+                <div class="two-column fragment" style="margin-top: 1em; font-size: 0.75em;">
+                    <div style="background: rgba(229,192,123,0.1); border-radius: 8px; padding: 0.8em;">
+                        <h3 style="margin: 0 0 0.3em; font-size: 1em; color: #e5c07b;">Gene</h3>
+                        <p style="margin: 0; color: #93a1a1;">A <strong>strategy template</strong><br>"When you see TimeoutError, use exponential backoff"</p>
+                    </div>
+                    <div style="background: rgba(152,195,121,0.1); border-radius: 8px; padding: 0.8em;">
+                        <h3 style="margin: 0 0 0.3em; font-size: 1em; color: #98c379;">Capsule</h3>
+                        <p style="margin: 0; color: #93a1a1;">A <strong>validated implementation</strong><br>Actual code + success rate + environment info</p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    The terminology is deliberately biological:
+                    - Gene = a reusable strategy template (like a "recipe" for solving a type of problem)
+                    - Capsule = a validated implementation of a gene (like a "tested dish" with reviews)
+                    
+                    The flow:
+                    1. Agent A encounters an error
+                    2. It experiments and finds a solution
+                    3. The solution is packaged as a Capsule (with metadata: success rate, environment)
+                    4. Capsule is published to the network
+                    5. Agent B encounters similar error, searches network, finds and inherits the solution
+                    
+                    Like biological evolution: good solutions spread, bad ones die out.
+                </aside>
+            </section>
+
+            <!-- Slide: EvoMap Example -->
+            <section>
+                <h2>EvoMap: Evolution in Practice</h2>
+                <p style="font-size: 0.8em;"><a href="https://evomap.ai" style="color: #7ec8e3;">evomap.ai</a> &mdash; a marketplace for agent evolution</p>
+
+                <div style="display: flex; justify-content: center; gap: 1.5em; margin: 1em 0;">
+                    <div class="fragment" style="text-align: center;">
+                        <div class="stat-big" style="font-size: 2em; color: #7ec8e3;">1,400+</div>
+                        <p class="small">Shared Capsules</p>
+                    </div>
+                    <div class="fragment" style="text-align: center;">
+                        <div class="stat-big" style="font-size: 2em; color: #98c379;">1,200+</div>
+                        <p class="small">Contributing nodes</p>
+                    </div>
+                    <div class="fragment" style="text-align: center;">
+                        <div class="stat-big" style="font-size: 2em; color: #e5c07b;">24,000+</div>
+                        <p class="small">Total API calls</p>
+                    </div>
+                </div>
+
+                <div class="fragment" style="background: rgba(126,200,227,0.1); border: 1px solid #7ec8e3; border-radius: 8px; padding: 0.8em; margin: 0.8em auto; max-width: 90%; font-size: 0.7em;">
+                    <p style="margin: 0 0 0.3em;"><strong>Top Capsule: HTTP Retry with Circuit Breaker</strong></p>
+                    <code style="font-size: 0.85em; color: #93a1a1;">Signals: TimeoutError, ECONNRESET, 429 | GDI: 70.9 | Success: 96% | 22 consecutive wins</code>
+                    <p style="margin: 0.5em 0 0; color: #93a1a1;">Handles transient failures with exponential backoff, rate limit detection, and graceful degradation. <strong>2,900+ calls</strong>.</p>
+                </div>
+
+                <p class="fragment small" style="margin-top: 0.5em;"><strong>GDI</strong> (Genome Diversity Index): a ranking score based on intrinsic quality, usage, and social signals. Higher GDI = better solutions rise to the top.</p>
+                <aside class="notes">
+                    EvoMap is a real implementation of GEP. It's like npm/PyPI for agent solutions.
+                    
+                    Key points:
+                    - 1,400+ Capsules = 1,400+ validated solutions for common problems
+                    - GDI score = automatic ranking (like GitHub stars, but more sophisticated)
+                    - The top capsule (HTTP retry) has been used 2,900+ times
+                    
+                    This is what "agent evolution" looks like in practice: 
+                    one agent solves a problem, shares it, and thousands benefit.
+                </aside>
+            </section>
+
+            <!-- Slide: The Evolution Mindset -->
+            <section>
+                <h2>The Evolution Mindset</h2>
+                <p style="font-size: 0.85em;">Building agents that <span class="highlight-green">learn collectively</span></p>
+
+                <ul style="font-size: 0.8em;">
+                    <li class="fragment" style="margin-bottom: 0.6em;">
+                        <strong>Before solving a problem:</strong> Search the network first<br>
+                        <span class="small">Maybe another agent already solved it</span>
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.6em;">
+                        <strong>After solving a problem:</strong> Package and share<br>
+                        <span class="small">Your solution could help thousands of other agents</span>
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.6em;">
+                        <strong>Let bad solutions die:</strong> The network ranks by quality<br>
+                        <span class="small">Good solutions rise, bad ones get buried</span>
+                    </li>
+                </ul>
+
+                <div class="insight-box fragment" style="margin-top: 1em; border-color: #98c379; background: rgba(152,195,121,0.05); max-width: 85%;">
+                    <div class="title" style="color: #98c379;">Key Insight</div>
+                    <p style="margin: 0;"><strong>One agent learns, a million agents inherit.</strong><br>This is the promise of agent evolution &mdash; collective intelligence that compounds over time.</p>
+                </div>
+                <aside class="notes">
+                    The mindset shift is important:
+                    1. Don't reinvent the wheel - search first
+                    2. Don't hoard solutions - share them
+                    3. Trust the network to surface the best solutions
+                    
+                    This is how biological evolution works: successful adaptations spread, 
+                    unsuccessful ones disappear. We're applying the same principle to AI agents.
+                    
+                    The vision: over time, the collective intelligence of all agents grows,
+                    even though each individual agent starts from scratch.
+                </aside>
+            </section>
+
             <!-- ==================== SECTION 5: WRAP-UP ==================== -->
 
             <!-- Slide 23: Key Takeaways -->
@@ -1533,8 +1758,8 @@
                         <span style="font-size: 0.8em; color: #93a1a1;">Plain Markdown files &mdash; readable, versionable, debuggable &mdash; are enough</span>
                     </li>
                     <li class="fragment" style="margin-bottom: 0.7em;">
-                        <strong>MCP + A2A = the agentic infrastructure</strong><br>
-                        <span style="font-size: 0.8em; color: #93a1a1;">MCP connects agents to tools (vertical). A2A connects agents to agents (horizontal).</span>
+                        <strong>MCP + A2A + GEP = the agentic stack</strong><br>
+                        <span style="font-size: 0.8em; color: #93a1a1;">MCP (tools) + A2A (communication) + GEP (evolution) = complete agent infrastructure</span>
                     </li>
                     <li class="fragment" style="margin-bottom: 0.7em;">
                         <strong>Security must evolve with agent capabilities</strong><br>
@@ -1595,6 +1820,12 @@
                         <li>A2A Specification: <a href="https://github.com/google/A2A" style="color: #7ec8e3;">github.com/google/A2A</a></li>
                         <li>Google Blog: <a href="https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/" style="color: #7ec8e3;">"A2A: A New Era of Agent Interoperability"</a></li>
                         <li>Linux Foundation A2A: <a href="https://www.linuxfoundation.org/press/linux-foundation-launches-open-source-a2a-protocol" style="color: #7ec8e3;">linuxfoundation.org</a></li>
+                    </ul>
+
+                    <h3 style="font-size: 1.3em; margin-bottom: 0.3em;">Agent Evolution (GEP)</h3>
+                    <ul style="margin-bottom: 0.8em;">
+                        <li>EvoMap: <a href="https://evomap.ai" style="color: #7ec8e3;">evomap.ai</a> (agent evolution marketplace)</li>
+                        <li>GEP-A2A Protocol Guide: <a href="https://evomap.ai/skill.md" style="color: #7ec8e3;">evomap.ai/skill.md</a></li>
                     </ul>
 
                     <h3 style="font-size: 1.3em; margin-bottom: 0.3em;">MCP Protocol</h3>
