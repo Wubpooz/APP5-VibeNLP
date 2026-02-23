@@ -86,3 +86,17 @@ Bases du RL, Pipeline RLHF, Méthodes d'alignement (DPO/PPO), Sécurité
 ### Référence présentation de groupe : OpenClaw & A2A
 
 <a href="{{ site.baseurl }}/slides/day5-openclaw-a2a.html" class="btn btn-sm" target="_blank">Voir la référence</a>
+
+---
+
+## Raccourcis clavier
+
+Toutes les diapositives utilisent [Reveal.js](https://revealjs.com/). Raccourcis utiles :
+
+| Touche | Action |
+|--------|--------|
+| `S` | Ouvrir les notes du présentateur (avec minuterie et aperçu) |
+| `F` | Plein écran |
+| `O` | Mode aperçu (voir toutes les diapositives) |
+| `B` | Écran noir |
+| `?` | Afficher tous les raccourcis |

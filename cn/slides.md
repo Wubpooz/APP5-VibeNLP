@@ -86,3 +86,17 @@ PDF解析、文档理解、视觉-语言模型
 ### 小组展示参考：OpenClaw与A2A
 
 <a href="{{ site.baseurl }}/slides/day5-openclaw-a2a.html" class="btn btn-sm" target="_blank">查看参考</a>
+
+---
+
+## 快捷键
+
+所有幻灯片使用 [Reveal.js](https://revealjs.com/)。常用快捷键：
+
+| 按键 | 功能 |
+|-----|--------|
+| `S` | 打开演讲者笔记（含计时器和下一张预览） |
+| `F` | 全屏 |
+| `O` | 概览模式（查看所有幻灯片） |
+| `B` | 黑屏 |
+| `?` | 显示所有快捷键 |

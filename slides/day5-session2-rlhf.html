@@ -939,6 +939,11 @@
                 <td>No critic model needed</td>
             </tr>
             <tr class="fragment">
+                <td><span class="highlight-purple">RLVR</span></td>
+                <td>Verifiable rewards (math, code)</td>
+                <td>No human labels needed</td>
+            </tr>
+            <tr class="fragment">
                 <td><span class="highlight">Online DPO</span></td>
                 <td>DPO with online generation</td>
                 <td>Best of both worlds</td>
@@ -948,7 +953,7 @@
             The trend: <strong>simpler training, less infrastructure, comparable results</strong>
         </p>
         <aside class="notes">
-            This is a rapidly evolving field. KTO is notable because it only needs binary thumbs up/down feedback, not pairwise comparisons, making data collection much cheaper. IPO addresses some theoretical shortcomings of DPO. ORPO merges SFT and preference optimization into a single stage. GRPO, used by DeepSeek, eliminates the critic model from PPO. Online DPO combines DPO's simplicity with PPO's online exploration. The overall trend is toward simpler, cheaper alignment methods that still produce high-quality results. For your projects, DPO is likely the practical choice.
+            This is a rapidly evolving field. KTO is notable because it only needs binary thumbs up/down feedback, not pairwise comparisons, making data collection much cheaper. IPO addresses some theoretical shortcomings of DPO. ORPO merges SFT and preference optimization into a single stage. GRPO, used by DeepSeek, eliminates the critic model from PPO. RLVR (Reinforcement Learning with Verifiable Rewards), also from DeepSeek R1, uses automated verification instead of human feedback—for math problems, check if the answer is correct; for code, check if it runs and passes tests. This enables RL training at scale without any human labeling. Online DPO combines DPO's simplicity with PPO's online exploration. The overall trend is toward simpler, cheaper alignment methods that still produce high-quality results. For your projects, DPO is likely the practical choice.
         </aside>
     </section>
 
