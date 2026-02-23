@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Architecture: From OpenClaw to nanobot</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/moon.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --r-heading-font: 'Helvetica Neue', Arial, sans-serif;
+            --r-main-font: 'Helvetica Neue', Arial, sans-serif;
+        }
+        .reveal { font-size: 32px; }
+        .reveal h1 { font-size: 2.2em; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.2em; color: #7ec8e3; }
+        .reveal ul { text-align: left; }
+        .reveal li { margin-bottom: 0.4em; }
+
+        /* Big stat numbers */
+        .stat-big {
+            font-size: 3.5em;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin: 0.2em 0;
+        }
+        .stat-label {
+            font-size: 0.6em;
+            color: #93a1a1;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1em;
+        }
+        .stat-box {
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+        }
+        .stat-box .stat-big {
+            font-size: 2.8em;
+        }
+
+        /* Quote styling */
+        .quote-slide blockquote {
+            font-style: italic;
+            font-size: 1.2em;
+            border-left: 4px solid #7ec8e3;
+            padding-left: 1em;
+            margin: 1em auto;
+            max-width: 80%;
+            text-align: left;
+        }
+        .quote-slide .attribution {
+            text-align: right;
+            color: #93a1a1;
+            font-size: 0.7em;
+            margin-right: 10%;
+        }
+
+        /* Discussion slides */
+        .discussion-slide {
+            background: rgba(126, 200, 227, 0.08) !important;
+        }
+        .discussion-slide h2 {
+            color: #7ec8e3;
+        }
+
+        /* Two column layout */
+        .two-column {
+            display: flex;
+            gap: 2em;
+            align-items: flex-start;
+        }
+        .two-column > div {
+            flex: 1;
+        }
+
+        /* Comparison box */
+        .compare-box {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 1em;
+            margin: 0.5em;
+        }
+        .compare-box h3 {
+            margin-top: 0;
+        }
+        .compare-box.highlight {
+            border: 2px solid #7ec8e3;
+        }
+
+        /* Code styling */
+        .reveal pre {
+            font-size: 0.55em;
+            width: 100%;
+        }
+        .reveal code {
+            max-height: 500px;
+        }
+
+        /* Architecture diagram */
+        .arch-box {
+            background: rgba(126, 200, 227, 0.1);
+            border: 2px solid #7ec8e3;
+            border-radius: 10px;
+            padding: 0.8em;
+            margin: 0.3em;
+            text-align: center;
+        }
+        .arch-arrow {
+            font-size: 1.5em;
+            color: #7ec8e3;
+        }
+
+        /* Emoji styling */
+        .emoji-big {
+            font-size: 3em;
+        }
+
+        /* Demo Day idea cards */
+        .idea-card {
+            background: linear-gradient(135deg, rgba(126, 200, 227, 0.1), rgba(255, 107, 107, 0.1));
+            border-radius: 10px;
+            padding: 1em;
+            margin: 0.5em;
+            text-align: left;
+        }
+        .idea-card h4 {
+            color: #7ec8e3;
+            margin: 0 0 0.5em 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            
+            <!-- Title Slide -->
+            <section>
+                <h1>🤖 AI Agent 架构解析</h1>
+                <h3>From OpenClaw to nanobot</h3>
+                <p style="color: #93a1a1; margin-top: 2em;">
+                    VibeNLP · Day 5 · Agent Architecture
+                </p>
+            </section>
+
+            <!-- Section: What is an Agent? -->
+            <section>
+                <section>
+                    <h2>什么是 AI Agent?</h2>
+                    <p class="emoji-big">🤖</p>
+                </section>
+
+                <section>
+                    <h2>Chatbot vs Agent</h2>
+                    <div class="two-column">
+                        <div class="compare-box">
+                            <h3>💬 Chatbot</h3>
+                            <ul>
+                                <li>输入 → 输出</li>
+                                <li>单轮对话</li>
+                                <li>无状态</li>
+                                <li>无法执行动作</li>
+                            </ul>
+                        </div>
+                        <div class="compare-box highlight">
+                            <h3>🤖 Agent</h3>
+                            <ul>
+                                <li>感知 → 思考 → 行动</li>
+                                <li>多轮规划</li>
+                                <li>有记忆</li>
+                                <li>可调用工具</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Agent 的核心能力</h2>
+                    <div class="stat-row">
+                        <div class="stat-box">
+                            <div style="font-size: 2em;">🧠</div>
+                            <div class="stat-label">推理</div>
+                            <p style="font-size: 0.7em;">LLM 作为大脑</p>
+                        </div>
+                        <div class="stat-box">
+                            <div style="font-size: 2em;">🔧</div>
+                            <div class="stat-label">工具</div>
+                            <p style="font-size: 0.7em;">扩展能力边界</p>
+                        </div>
+                        <div class="stat-box">
+                            <div style="font-size: 2em;">💾</div>
+                            <div class="stat-label">记忆</div>
+                            <p style="font-size: 0.7em;">保持上下文</p>
+                        </div>
+                        <div class="stat-box">
+                            <div style="font-size: 2em;">🔄</div>
+                            <div class="stat-label">循环</div>
+                            <p style="font-size: 0.7em;">持续迭代</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="quote-slide">
+                    <blockquote>
+                        "An agent is a system that uses an LLM to decide the control flow of an application."
+                    </blockquote>
+                    <p class="attribution">— Harrison Chase, LangChain</p>
+                </section>
+            </section>
+
+            <!-- Section: Architecture Overview -->
+            <section>
+                <section>
+                    <h2>🏗️ Agent 架构组件</h2>
+                </section>
+
+                <section>
+                    <h2>经典 Agent 架构</h2>
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
+                        <div class="arch-box" style="width: 60%;">📥 <strong>Input</strong> (用户消息)</div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-box" style="width: 80%;">🧠 <strong>LLM</strong> (推理 + 决策)</div>
+                        <div class="arch-arrow">↓</div>
+                        <div style="display: flex; gap: 1em; width: 100%; justify-content: center;">
+                            <div class="arch-box">🔧 Tools</div>
+                            <div class="arch-box">💾 Memory</div>
+                            <div class="arch-box">📚 Knowledge</div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-box" style="width: 60%;">📤 <strong>Output</strong> (响应/动作)</div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Agent 循环 (Agent Loop)</h2>
+                    <pre><code class="python">while not done:
+    # 1. 观察：收集信息
+    observation = get_user_input() + get_memory()
+    
+    # 2. 思考：LLM 决策
+    thought = llm.think(observation)
+    
+    # 3. 行动：执行工具或回复
+    if thought.needs_tool:
+        result = execute_tool(thought.tool, thought.args)
+        observation += result
+    else:
+        respond(thought.answer)
+        done = True</code></pre>
+                    <p style="color: #93a1a1; font-size: 0.8em;">ReAct 模式：Reasoning + Acting</p>
+                </section>
+
+                <section>
+                    <h2>工具调用 (Function Calling)</h2>
+                    <pre><code class="json">{
+  "tools": [
+    {
+      "name": "web_search",
+      "description": "Search the web for information",
+      "parameters": {
+        "query": {"type": "string", "required": true}
+      }
+    },
+    {
+      "name": "send_email",
+      "description": "Send an email to a recipient",
+      "parameters": {
+        "to": {"type": "string"},
+        "subject": {"type": "string"},
+        "body": {"type": "string"}
+      }
+    }
+  ]
+}</code></pre>
+                </section>
+
+                <section>
+                    <h2>记忆系统</h2>
+                    <div class="two-column">
+                        <div class="compare-box">
+                            <h3>⚡ 短期记忆</h3>
+                            <ul>
+                                <li>对话历史</li>
+                                <li>Context Window</li>
+                                <li>会话内有效</li>
+                            </ul>
+                        </div>
+                        <div class="compare-box">
+                            <h3>💾 长期记忆</h3>
+                            <ul>
+                                <li>向量数据库</li>
+                                <li>文件系统</li>
+                                <li>跨会话持久</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p style="margin-top: 1em; color: #93a1a1; font-size: 0.8em;">
+                        记忆 = Agent 的"人格"和"经验"
+                    </p>
+                </section>
+            </section>
+
+            <!-- Section: Complexity Spectrum -->
+            <section>
+                <section>
+                    <h2>📊 复杂度光谱</h2>
+                    <p>同样的功能，不同的实现</p>
+                </section>
+
+                <section>
+                    <h2>OpenClaw vs nanobot</h2>
+                    <div class="stat-row">
+                        <div class="stat-box">
+                            <div class="stat-big">430k</div>
+                            <div class="stat-label">OpenClaw 代码行数</div>
+                        </div>
+                        <div class="stat-box">
+                            <div style="font-size: 3em;">vs</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-big" style="color: #7ec8e3;">4k</div>
+                            <div class="stat-label">nanobot 代码行数</div>
+                        </div>
+                    </div>
+                    <p style="margin-top: 1em; font-size: 1.2em;">99% 更少的代码</p>
+                </section>
+
+                <section>
+                    <h2>功能对比</h2>
+                    <table style="font-size: 0.7em;">
+                        <thead>
+                            <tr>
+                                <th>功能</th>
+                                <th>OpenClaw</th>
+                                <th>nanobot</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>💬 多平台聊天</td><td>✅</td><td>✅</td></tr>
+                            <tr><td>🔧 工具调用</td><td>✅</td><td>✅</td></tr>
+                            <tr><td>💾 持久记忆</td><td>✅</td><td>✅</td></tr>
+                            <tr><td>🌐 网页搜索</td><td>✅</td><td>✅</td></tr>
+                            <tr><td>⏰ 定时任务</td><td>✅</td><td>✅</td></tr>
+                            <tr><td>🖥️ 本地模型</td><td>✅</td><td>✅</td></tr>
+                            <tr><td>🔌 插件生态</td><td>✅ 丰富</td><td>⚠️ 基础</td></tr>
+                            <tr><td>🏢 企业功能</td><td>✅</td><td>❌</td></tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>为什么简洁很重要？</h2>
+                    <ul>
+                        <li><strong>可读性</strong>：4000 行代码可以在一下午读完</li>
+                        <li><strong>可改性</strong>：想改什么直接改，不怕牵一发动全身</li>
+                        <li><strong>学习价值</strong>：理解 Agent 原理的最佳教材</li>
+                        <li><strong>部署成本</strong>：更低的资源消耗</li>
+                        <li><strong>调试效率</strong>：出问题容易定位</li>
+                    </ul>
+                </section>
+
+                <section class="quote-slide">
+                    <blockquote>
+                        "Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away."
+                    </blockquote>
+                    <p class="attribution">— Antoine de Saint-Exupéry</p>
+                </section>
+            </section>
+
+            <!-- Section: nanobot Deep Dive -->
+            <section>
+                <section>
+                    <h2>🐈 nanobot 深度解析</h2>
+                    <p>香港大学 HKUDS 出品</p>
+                </section>
+
+                <section>
+                    <h2>项目概况</h2>
+                    <ul>
+                        <li><strong>发布</strong>：2026年2月2日</li>
+                        <li><strong>Stars</strong>：5000+ (3天内)</li>
+                        <li><strong>代码量</strong>：3,582 行核心代码</li>
+                        <li><strong>语言</strong>：Python</li>
+                        <li><strong>协议</strong>：MIT</li>
+                        <li><strong>GitHub</strong>：github.com/HKUDS/nanobot</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>nanobot 架构</h2>
+                    <div style="display: flex; flex-direction: column; gap: 0.8em; align-items: center;">
+                        <div style="display: flex; gap: 0.5em;">
+                            <div class="arch-box">Telegram</div>
+                            <div class="arch-box">Discord</div>
+                            <div class="arch-box">WhatsApp</div>
+                            <div class="arch-box">飞书</div>
+                        </div>
+                        <div class="arch-arrow">↓ Channels</div>
+                        <div class="arch-box" style="width: 70%;"><strong>Gateway</strong> (消息路由)</div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-box" style="width: 80%;"><strong>Agent Core</strong> (核心循环)</div>
+                        <div class="arch-arrow">↓</div>
+                        <div style="display: flex; gap: 0.5em;">
+                            <div class="arch-box">OpenRouter</div>
+                            <div class="arch-box">OpenAI</div>
+                            <div class="arch-box">Anthropic</div>
+                            <div class="arch-box">vLLM</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>核心代码结构</h2>
+                    <pre><code class="plaintext">nanobot/
+├── agent/           # Agent 核心逻辑
+│   ├── core.py      # Agent 循环
+│   ├── memory.py    # 记忆系统
+│   └── tools.py     # 工具定义
+├── channels/        # 聊天平台适配
+│   ├── telegram.py
+│   ├── discord.py
+│   └── whatsapp.py
+├── providers/       # LLM 提供商
+│   ├── openrouter.py
+│   └── anthropic.py
+└── gateway.py       # 入口点</code></pre>
+                    <p style="color: #93a1a1; font-size: 0.7em;">清晰的模块划分，每个文件职责单一</p>
+                </section>
+
+                <section>
+                    <h2>Agent 核心循环 (简化版)</h2>
+                    <pre><code class="python"># agent/core.py 核心逻辑
+class Agent:
+    def __init__(self, config):
+        self.llm = get_provider(config)
+        self.memory = Memory()
+        self.tools = load_tools()
+    
+    async def run(self, message: str) -> str:
+        # 构建提示词
+        prompt = self.build_prompt(message)
+        
+        # 调用 LLM
+        response = await self.llm.chat(prompt, tools=self.tools)
+        
+        # 处理工具调用
+        while response.tool_calls:
+            for call in response.tool_calls:
+                result = await self.execute_tool(call)
+                prompt.append({"role": "tool", "content": result})
+            response = await self.llm.chat(prompt, tools=self.tools)
+        
+        # 保存记忆
+        self.memory.save(message, response.content)
+        
+        return response.content</code></pre>
+                </section>
+
+                <section>
+                    <h2>记忆系统实现</h2>
+                    <pre><code class="python"># agent/memory.py
+class Memory:
+    def __init__(self, path="~/.nanobot/memory"):
+        self.path = Path(path).expanduser()
+        self.short_term = []  # 当前会话
+        self.long_term = self.load_long_term()  # 持久化
+    
+    def save(self, user_msg, bot_msg):
+        # 短期记忆：追加到对话历史
+        self.short_term.append({"role": "user", "content": user_msg})
+        self.short_term.append({"role": "assistant", "content": bot_msg})
+        
+        # 长期记忆：定期总结并存储
+        if len(self.short_term) > 20:
+            summary = self.summarize(self.short_term)
+            self.long_term.append(summary)
+            self.persist()
+    
+    def get_context(self, limit=10):
+        return self.short_term[-limit:] + self.long_term[-5:]</code></pre>
+                </section>
+
+                <section>
+                    <h2>添加自定义工具</h2>
+                    <pre><code class="python"># 只需两步！
+
+# 1. 定义工具函数
+@tool(description="Get current weather for a city")
+async def get_weather(city: str) -> str:
+    response = await httpx.get(f"https://wttr.in/{city}?format=3")
+    return response.text
+
+# 2. 注册到配置
+# ~/.nanobot/config.json
+{
+  "tools": {
+    "custom": ["path/to/my_tools.py"]
+  }
+}</code></pre>
+                    <p style="color: #93a1a1; font-size: 0.8em;">装饰器模式，简单直观</p>
+                </section>
+            </section>
+
+            <!-- Section: Quick Start -->
+            <section>
+                <section>
+                    <h2>🚀 2分钟部署 Agent</h2>
+                </section>
+
+                <section>
+                    <h2>Step 1: 安装</h2>
+                    <pre><code class="bash"># 方式一：pip
+pip install nanobot-ai
+
+# 方式二：uv (更快)
+uv tool install nanobot-ai
+
+# 方式三：源码 (开发用)
+git clone https://github.com/HKUDS/nanobot.git
+cd nanobot && pip install -e .</code></pre>
+                </section>
+
+                <section>
+                    <h2>Step 2: 配置</h2>
+                    <pre><code class="bash"># 初始化配置
+nanobot onboard</code></pre>
+                    <pre><code class="json">// ~/.nanobot/config.json
+{
+  "providers": {
+    "openrouter": {
+      "apiKey": "sk-or-v1-xxx"
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": "anthropic/claude-sonnet-4-5"
+    }
+  }
+}</code></pre>
+                    <p style="color: #93a1a1; font-size: 0.7em;">
+                        API Key: <a href="https://openrouter.ai/keys" style="color: #7ec8e3;">openrouter.ai/keys</a>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Step 3: 运行</h2>
+                    <pre><code class="bash"># 命令行模式
+nanobot agent -m "What is 2+2?"
+
+# 或启动 Gateway (连接聊天平台)
+nanobot gateway</code></pre>
+                    <div style="margin-top: 1em; padding: 1em; background: rgba(126, 200, 227, 0.1); border-radius: 10px;">
+                        <p style="margin: 0;">✅ 完成！你现在有了一个可工作的 AI Agent</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>连接 Telegram</h2>
+                    <pre><code class="json">// ~/.nanobot/config.json
+{
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "token": "YOUR_BOT_TOKEN",
+      "allowFrom": ["YOUR_USER_ID"]
+    }
+  }
+}</code></pre>
+                    <ol style="font-size: 0.8em;">
+                        <li>在 Telegram 找 @BotFather</li>
+                        <li>发送 /newbot 创建机器人</li>
+                        <li>复制 token 到配置</li>
+                        <li>运行 <code>nanobot gateway</code></li>
+                    </ol>
+                </section>
+
+                <section>
+                    <h2>本地模型 (vLLM)</h2>
+                    <pre><code class="bash"># 启动 vLLM 服务
+vllm serve meta-llama/Llama-3.1-8B-Instruct --port 8000</code></pre>
+                    <pre><code class="json">// ~/.nanobot/config.json
+{
+  "providers": {
+    "vllm": {
+      "apiKey": "dummy",
+      "apiBase": "http://localhost:8000/v1"
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": "meta-llama/Llama-3.1-8B-Instruct"
+    }
+  }
+}</code></pre>
+                    <p style="color: #93a1a1; font-size: 0.8em;">完全本地运行，无需 API 费用</p>
+                </section>
+            </section>
+
+            <!-- Section: Demo Day Ideas -->
+            <section>
+                <section>
+                    <h2>💡 Demo Day 灵感</h2>
+                    <p>基于 nanobot 可以做什么？</p>
+                </section>
+
+                <section>
+                    <h2>项目想法 (1/2)</h2>
+                    <div class="idea-card">
+                        <h4>📈 金融分析助手</h4>
+                        <p>实时监控股票/加密货币，结合 RAG 分析新闻情绪</p>
+                    </div>
+                    <div class="idea-card">
+                        <h4>📚 论文阅读助手</h4>
+                        <p>上传 PDF，自动总结、提取关键信息、回答问题</p>
+                    </div>
+                    <div class="idea-card">
+                        <h4>🗓️ 智能日程管理</h4>
+                        <p>自然语言安排日程，自动发送提醒，冲突检测</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>项目想法 (2/2)</h2>
+                    <div class="idea-card">
+                        <h4>🏠 房产搜索助手</h4>
+                        <p>定时爬取房源，按条件筛选，自动发送邮件报告</p>
+                    </div>
+                    <div class="idea-card">
+                        <h4>🌐 多语言翻译助手</h4>
+                        <p>结合 NLP 技术优化翻译质量，支持专业术语</p>
+                    </div>
+                    <div class="idea-card">
+                        <h4>🤖 Agent-to-Agent 协作</h4>
+                        <p>多个专业 Agent 协同工作：一个搜索、一个分析、一个汇报</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>为什么选 nanobot 做 Demo？</h2>
+                    <ul>
+                        <li><strong>快速原型</strong>：2分钟部署，专注业务逻辑</li>
+                        <li><strong>易于修改</strong>：代码简单，想改就改</li>
+                        <li><strong>展示友好</strong>：可以讲清楚每一行代码在做什么</li>
+                        <li><strong>多平台</strong>：Telegram/Discord 演示效果好</li>
+                        <li><strong>免费开源</strong>：MIT 协议，随便用</li>
+                    </ul>
+                </section>
+            </section>
+
+            <!-- Section: Discussion -->
+            <section>
+                <section class="discussion-slide">
+                    <h2>🤔 讨论时间</h2>
+                </section>
+
+                <section class="discussion-slide">
+                    <h2>思考问题</h2>
+                    <ol>
+                        <li>Agent 和传统软件的本质区别是什么？</li>
+                        <li>什么情况下选择复杂框架 (OpenClaw)？什么情况下选择简洁框架 (nanobot)？</li>
+                        <li>Agent 的安全性如何保证？（工具调用权限、Prompt Injection）</li>
+                        <li>记忆系统如何影响 Agent 的"人格"？</li>
+                    </ol>
+                </section>
+
+                <section class="discussion-slide">
+                    <h2>动手挑战</h2>
+                    <div style="background: rgba(255, 107, 107, 0.1); padding: 1em; border-radius: 10px; text-align: left;">
+                        <p><strong>15 分钟挑战：</strong></p>
+                        <ol>
+                            <li>安装 nanobot</li>
+                            <li>配置 OpenRouter API</li>
+                            <li>让它回答一个问题</li>
+                            <li>添加一个自定义工具</li>
+                        </ol>
+                        <p style="color: #93a1a1; margin-top: 1em;">
+                            提示：文档在 github.com/HKUDS/nanobot
+                        </p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>延伸阅读</h2>
+                    <ul style="font-size: 0.8em;">
+                        <li><a href="https://github.com/HKUDS/nanobot" style="color: #7ec8e3;">nanobot GitHub</a> - 源码和文档</li>
+                        <li><a href="https://github.com/openclaw/openclaw" style="color: #7ec8e3;">OpenClaw GitHub</a> - 完整功能参考</li>
+                        <li><a href="https://www.anthropic.com/research/building-effective-agents" style="color: #7ec8e3;">Building Effective Agents</a> - Anthropic 官方指南</li>
+                        <li><a href="https://lilianweng.github.io/posts/2023-06-23-agent/" style="color: #7ec8e3;">LLM Powered Autonomous Agents</a> - Lilian Weng 综述</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>总结</h2>
+                    <ul>
+                        <li><strong>Agent = LLM + Tools + Memory + Loop</strong></li>
+                        <li><strong>简洁有价值</strong>：4000 行代码足够实现核心功能</li>
+                        <li><strong>动手最重要</strong>：装上 nanobot，开始改代码</li>
+                        <li><strong>Demo Day</strong>：用 nanobot 做一个你想要的 AI 助手</li>
+                    </ul>
+                    <p style="margin-top: 1.5em; font-size: 1.2em;">🐈 Happy Hacking!</p>
+                </section>
+            </section>
+
+            <!-- End Slide -->
+            <section>
+                <h2>Q&A</h2>
+                <p class="emoji-big">🙋</p>
+                <p style="color: #93a1a1; margin-top: 1em;">
+                    github.com/HKUDS/nanobot
+                </p>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: true,
+            plugins: [ RevealHighlight, RevealNotes ]
+        });
+    </script>
+</body>
+</html>

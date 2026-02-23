@@ -56,7 +56,9 @@
 | 时段 | 主题 | 内容概要 | 小组展示 |
 |------|------|----------|----------|
 | 13:30 - 15:30 | Document AI & Multimodal | PDF解析、文档理解、Vision-Language模型、多模态应用 | 小组展示#4（OpenClaw与Agent-to-Agent） |
-| 15:45 - 17:45 | RLHF | 强化学习基础、RLHF流程、对齐方法（DPO/PPO）、安全性 | |
+| 15:45 - 17:45 | RLHF + Agent架构 | 强化学习基础、RLHF流程、对齐方法；**Agent架构解析**：从OpenClaw到nanobot | |
+
+**补充材料**：[Agent架构：从OpenClaw到nanobot](slides/day5-agent-architecture-nanobot.html) - 极简Agent框架解析，适合Demo Day项目参考
 
 ### Day 6 - 2026年3月31日（周二）- Demo Day
 
