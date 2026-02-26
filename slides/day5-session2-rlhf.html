@@ -1083,7 +1083,49 @@
     </section>
 
     <!-- ============================================================ -->
-    <!-- SLIDE 26: Discussion - Alignment Trade-offs -->
+    <!-- SLIDE: Distillation Attacks - Real World Case -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>Distillation Attacks: A Real Case</h2>
+        <p style="font-size:0.7em; color:#93a1a1;">February 2026 — Anthropic's accusation</p>
+        <div class="two-column" style="margin-top:0.8em;">
+            <div style="font-size:0.62em; text-align:left;">
+                <div class="fragment" style="padding:0.6em; background:rgba(255,107,107,0.1); border-radius:8px; border-left:3px solid #ff6b6b;">
+                    <strong>Anthropic accused:</strong><br>
+                    DeepSeek, Moonshot AI, MiniMax<br><br>
+                    <span class="highlight">24,000</span> fraudulent accounts<br>
+                    <span class="highlight">16 million</span> exchanges with Claude<br><br>
+                    "Extracting capabilities to train their own models"
+                </div>
+                <div class="fragment" style="margin-top:0.8em; font-size:0.95em;">
+                    <p><span class="highlight-yellow">The concern:</span></p>
+                    <ul style="font-size:0.9em;">
+                        <li>Distilled models may <strong>lose safety guardrails</strong></li>
+                        <li>Capability without alignment = dangerous</li>
+                        <li>Potential national security risks</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="fragment">
+                <img src="assets/distillation-meme.jpg" alt="Distillation meme - cats fishing for data" style="max-width:100%; border-radius:8px; border:2px solid #586e75;">
+                <p class="small" style="margin-top:0.3em; text-align:center;">
+                    The irony: who owns "internet data"? 🎣
+                </p>
+            </div>
+        </div>
+        <aside class="notes">
+            This is a real case from February 2026. Anthropic publicly accused three Chinese AI companies of systematic distillation attacks on Claude. They claim 24,000 fake accounts made 16 million API calls to extract Claude's capabilities.
+            
+            The meme captures the irony beautifully: all LLMs are trained on internet data scraped without explicit permission. Now companies are accusing each other of "stealing" model outputs.
+            
+            But there's a serious concern here: when you distill a model, you often lose the safety training. A distilled model might have the capabilities but not the guardrails. This is a genuine safety risk.
+            
+            Discussion questions: Is distillation "stealing"? Who owns model outputs? How do you protect against this while keeping APIs accessible?
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE: Discussion - Alignment Trade-offs -->
     <!-- ============================================================ -->
     <section class="discussion-slide">
         <h2>Discussion</h2>
