@@ -583,7 +583,53 @@
                 </aside>
             </section>
 
-            <!-- ==================== SLIDE 9: LLM COMPARISON TABLE ==================== -->
+            <!-- ==================== SLIDE 9: NVIDIA NIM ==================== -->
+
+            <section>
+                <h2>NVIDIA NIM: Hidden Gem 💎</h2>
+                <p style="font-size: 0.8em;">Free access to <span class="highlight-green">frontier-class models</span> via NVIDIA's API</p>
+                <div class="two-column" style="margin-top: 1em;">
+                    <div>
+                        <div class="tool-card fragment">
+                            <div class="tool-name">NVIDIA NIM</div>
+                            <div class="tool-price">FREE Trial API</div>
+                            <div class="tool-desc">
+                                <strong>Sign up:</strong> build.nvidia.com<br>
+                                <span class="highlight-green">Kimi K2.5</span>: 1T MoE, 256K context<br>
+                                <span class="highlight-green">GLM-4/5</span>: 128K context<br>
+                                <span class="highlight-green">MiniMax M2.1</span>: 128K context<br>
+                                OpenAI-compatible API format
+                            </div>
+                        </div>
+                    </div>
+                    <div style="font-size: 0.7em;">
+                        <p class="fragment"><strong>Why it's great:</strong></p>
+                        <ul style="font-size: 0.9em;">
+                            <li class="fragment">No credit card required</li>
+                            <li class="fragment">Models competitive with GPT-5.2</li>
+                            <li class="fragment">Multimodal support (images, video)</li>
+                            <li class="fragment">Fast inference on NVIDIA hardware</li>
+                        </ul>
+                        <p class="fragment" style="margin-top: 0.8em; color: #e5c07b;">
+                            ⚠️ Trial service with rate limits<br>
+                            <span style="font-size: 0.85em;">But generous enough for student projects</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 0.8em; padding: 0.5em; background: rgba(152,195,121,0.1); border: 2px solid #98c379; border-radius: 8px; font-size: 0.7em;">
+                    <code>baseUrl: https://integrate.api.nvidia.com/v1</code>
+                </div>
+                <aside class="notes">
+                    This is a relatively unknown option that students should know about.
+                    NVIDIA NIM provides free API access to several powerful models including
+                    Kimi K2.5 (1 trillion parameter MoE from Moonshot AI) and GLM models from Zhipu AI.
+                    The API is OpenAI-compatible, so you can use the same code with just a URL change.
+                    Kimi K2.5 benchmarks competitively with GPT-5.2 and Claude 4.5 Opus on many tasks.
+                    Great for students who want to experiment with frontier-class models for free.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 10: LLM COMPARISON TABLE ==================== -->
 
             <section>
                 <h2>LLM API Comparison</h2>
@@ -621,6 +667,12 @@
                             <td>Llama 3 (on LPU)</td>
                             <td>Speed-critical apps</td>
                         </tr>
+                        <tr class="fragment" style="background: rgba(152,195,121,0.1);">
+                            <td><strong style="color:#98c379;">NVIDIA NIM</strong></td>
+                            <td style="color:#98c379;">FREE trial</td>
+                            <td style="color:#98c379;">Kimi K2.5 (1T MoE)</td>
+                            <td style="color:#98c379;">Frontier models, multimodal</td>
+                        </tr>
                         <tr class="fragment">
                             <td><strong>Ollama</strong></td>
                             <td>Unlimited (local)</td>
@@ -636,7 +688,7 @@
                     </tbody>
                 </table>
                 <p class="fragment" style="margin-top: 0.8em; font-size: 0.8em;">
-                    <span class="highlight">Strategy:</span> Develop with <span class="highlight-green">Gemini Flash</span> (free) or <span class="highlight-green">Ollama</span> (local)
+                    <span class="highlight">Strategy:</span> Develop with <span class="highlight-green">Gemini Flash</span> or <span class="highlight-green">NVIDIA NIM</span> (free)
                     &rarr; Deploy with <span class="highlight-blue">GPT-4o Mini</span> or <span class="highlight-blue">Haiku 4.5</span> (cheap)
                 </p>
                 <aside class="notes">
