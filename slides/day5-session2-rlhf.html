@@ -958,6 +958,84 @@
     </section>
 
     <!-- ============================================================ -->
+    <!-- SLIDE: RLVR - Reinforcement Learning with Verifiable Rewards -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>RLVR: Verifiable Rewards</h2>
+        <p style="font-size:0.7em;"><span class="highlight-green">Reinforcement Learning with Verifiable Rewards</span> (DeepSeek-R1, 2025)</p>
+        <div class="two-column" style="margin-top:0.8em; font-size:0.65em;">
+            <div>
+                <h3 style="font-size:1.1em; color:#e5c07b;">RLHF</h3>
+                <p>Reward from <span class="highlight-yellow">human preferences</span></p>
+                <ul style="font-size:0.9em;">
+                    <li>Subjective judgments</li>
+                    <li>Expensive to scale</li>
+                    <li>Best for open-ended tasks</li>
+                    <li>ChatGPT, Claude</li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="font-size:1.1em; color:#98c379;">RLVR</h3>
+                <p>Reward from <span class="highlight-green">verifiable outcomes</span></p>
+                <ul style="font-size:0.9em;">
+                    <li>Objective ground truth</li>
+                    <li>Infinitely scalable</li>
+                    <li>Best for math, code, reasoning</li>
+                    <li>DeepSeek-R1, o1/o3</li>
+                </ul>
+            </div>
+        </div>
+        <div class="fragment" style="margin-top:1em;">
+            <div class="pipeline" style="font-size:0.7em;">
+                <div class="step">Generate solution</div>
+                <div class="arrow">&rarr;</div>
+                <div class="step green">Execute / Verify</div>
+                <div class="arrow">&rarr;</div>
+                <div class="step" style="border-color:#98c379;">✓ Correct = +1 &nbsp;|&nbsp; ✗ Wrong = 0</div>
+            </div>
+        </div>
+        <p class="fragment small" style="margin-top:0.8em;">
+            No human labeling needed &mdash; the <span class="highlight-green">environment provides the reward</span>
+        </p>
+        <aside class="notes">
+            RLVR is a breakthrough from DeepSeek that powered their R1 reasoning model. The key insight: for tasks like math and code, you don't need humans to judge quality — you can just RUN the code or CHECK the math. If the answer is correct, reward = 1; if wrong, reward = 0. This is infinitely scalable because you can generate unlimited training data. DeepSeek-R1 used pure RLVR (no human preference data at all for the reasoning component) and achieved results competitive with OpenAI's o1. This approach is especially powerful for reasoning tasks where correctness is objectively verifiable.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE: RLVR Details -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>RLVR: How It Works</h2>
+        <div style="font-size:0.68em; text-align:left; max-width:90%; margin:0 auto;">
+            <div class="fragment" style="margin-bottom:0.8em; padding:0.5em; background:rgba(152,195,121,0.1); border-radius:8px; border-left:3px solid #98c379;">
+                <strong>Math problems</strong>: Compare final answer to ground truth<br>
+                <span style="color:#93a1a1;">Problem → LLM generates solution → Extract answer → Check against answer key</span>
+            </div>
+            <div class="fragment" style="margin-bottom:0.8em; padding:0.5em; background:rgba(126,200,227,0.1); border-radius:8px; border-left:3px solid #7ec8e3;">
+                <strong>Code generation</strong>: Run test cases<br>
+                <span style="color:#93a1a1;">Spec → LLM writes code → Execute against unit tests → Pass/fail reward</span>
+            </div>
+            <div class="fragment" style="margin-bottom:0.8em; padding:0.5em; background:rgba(198,120,221,0.1); border-radius:8px; border-left:3px solid #c678dd;">
+                <strong>Formal proofs</strong>: Proof checker verification<br>
+                <span style="color:#93a1a1;">Theorem → LLM generates proof → Lean/Coq verifier → Valid/invalid</span>
+            </div>
+        </div>
+        <div class="fragment" style="margin-top:1em; font-size:0.7em;">
+            <p><span class="highlight-yellow">Key advantage</span>: can train on millions of problems without any human annotation</p>
+            <p class="small" style="margin-top:0.3em;">DeepSeek-R1 trained on <span class="highlight">hundreds of thousands</span> of math/code problems with pure RLVR</p>
+        </div>
+        <p class="fragment small" style="margin-top:0.6em;">
+            <a href="https://arxiv.org/abs/2501.12948" target="_blank" style="color:#7ec8e3;">
+                Source: DeepSeek-R1 Paper (January 2025)
+            </a>
+        </p>
+        <aside class="notes">
+            Let's see concrete examples. For math: you have a dataset of problems with known answers. The model generates a solution with reasoning steps, you extract the final answer, and compare to ground truth. For code: the model generates a function, you run it against unit tests. For formal proofs: you use a proof assistant like Lean to check validity. The beauty is that you can generate unlimited training problems programmatically, run RL at massive scale, and never need a human to look at a single response. This is why DeepSeek could train a model that rivals o1 with far less human annotation. The limitation: only works for tasks with verifiable answers.
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
     <!-- SLIDE 24: Section - Safety -->
     <!-- ============================================================ -->
     <section class="section-title">
@@ -1010,7 +1088,49 @@
     </section>
 
     <!-- ============================================================ -->
-    <!-- SLIDE 26: Discussion - Alignment Trade-offs -->
+    <!-- SLIDE: Distillation Attacks - Real World Case -->
+    <!-- ============================================================ -->
+    <section>
+        <h2>Distillation Attacks: A Real Case</h2>
+        <p style="font-size:0.7em; color:#93a1a1;">February 2026 — Anthropic's accusation</p>
+        <div class="two-column" style="margin-top:0.8em;">
+            <div style="font-size:0.62em; text-align:left;">
+                <div class="fragment" style="padding:0.6em; background:rgba(255,107,107,0.1); border-radius:8px; border-left:3px solid #ff6b6b;">
+                    <strong>Anthropic accused:</strong><br>
+                    DeepSeek, Moonshot AI, MiniMax<br><br>
+                    <span class="highlight">24,000</span> fraudulent accounts<br>
+                    <span class="highlight">16 million</span> exchanges with Claude<br><br>
+                    "Extracting capabilities to train their own models"
+                </div>
+                <div class="fragment" style="margin-top:0.8em; font-size:0.95em;">
+                    <p><span class="highlight-yellow">The concern:</span></p>
+                    <ul style="font-size:0.9em;">
+                        <li>Distilled models may <strong>lose safety guardrails</strong></li>
+                        <li>Capability without alignment = dangerous</li>
+                        <li>Potential national security risks</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="fragment">
+                <img src="assets/distillation-meme.jpg" alt="Distillation meme - cats fishing for data" style="max-width:100%; border-radius:8px; border:2px solid #586e75;">
+                <p class="small" style="margin-top:0.3em; text-align:center;">
+                    The irony: who owns "internet data"? 🎣
+                </p>
+            </div>
+        </div>
+        <aside class="notes">
+            This is a real case from February 2026. Anthropic publicly accused three Chinese AI companies of systematic distillation attacks on Claude. They claim 24,000 fake accounts made 16 million API calls to extract Claude's capabilities.
+            
+            The meme captures the irony beautifully: all LLMs are trained on internet data scraped without explicit permission. Now companies are accusing each other of "stealing" model outputs.
+            
+            But there's a serious concern here: when you distill a model, you often lose the safety training. A distilled model might have the capabilities but not the guardrails. This is a genuine safety risk.
+            
+            Discussion questions: Is distillation "stealing"? Who owns model outputs? How do you protect against this while keeping APIs accessible?
+        </aside>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE: Discussion - Alignment Trade-offs -->
     <!-- ============================================================ -->
     <section class="discussion-slide">
         <h2>Discussion</h2>

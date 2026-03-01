@@ -472,6 +472,19 @@
             </section>
 
             <!-- ============================================================ -->
+            <!-- SLIDE: Claude Code Meme -->
+            <!-- ============================================================ -->
+            <section>
+                <img src="assets/claude-code-terminal-meme.jpg" alt="Claude Code meme" style="max-height: 70vh; border-radius: 12px;">
+                <p class="fragment" style="font-size: 0.85em; margin-top: 0.8em; color: #7ec8e3;">
+                    If you love the terminal, you'll love Claude Code. 🖥️
+                </p>
+                <aside class="notes">
+                    A bit of humor before we dive into the details. Claude Code is designed for developers who live in the terminal. No GUI, no mouse clicking through menus -- just you, your terminal, and an AI that understands your codebase. If you're the type who has tmux running 24/7 and thinks VS Code is too graphical, Claude Code is your spirit animal.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
             <!-- SLIDE 4: Getting Started -->
             <!-- ============================================================ -->
             <section>
@@ -663,6 +676,49 @@ cat error.log | claude -p "analyze this error"
                     transport types: remote (HTTP with Server-Sent Events for streaming) for cloud
                     services, and local (stdio) for processes running on your machine. The fact that
                     it is now under the Linux Foundation signals long-term industry commitment.
+                </aside>
+            </section>
+
+            <!-- SLIDE: MCP Under the Hood -->
+            <section>
+                <h2>MCP Under the Hood</h2>
+                <p style="font-size: 0.7em; color: #93a1a1;">What actually happens when Claude calls a tool?</p>
+
+                <div style="font-size: 0.58em; text-align: left; max-width: 95%; margin: 0.8em auto;">
+                    <div class="fragment" style="margin-bottom: 0.6em; padding: 0.5em 0.8em; background: rgba(126,200,227,0.1); border-radius: 8px; border-left: 3px solid #7ec8e3;">
+                        <strong style="color: #7ec8e3;">① Initialize</strong> — Client connects and declares capabilities<br>
+                        <code style="font-size: 0.9em; color: #93a1a1;">{"jsonrpc":"2.0", "method":"initialize", "params":{"capabilities":{}}, "id":1}</code>
+                    </div>
+                    <div class="fragment" style="margin-bottom: 0.6em; padding: 0.5em 0.8em; background: rgba(229,192,123,0.1); border-radius: 8px; border-left: 3px solid #e5c07b;">
+                        <strong style="color: #e5c07b;">② Discover Tools</strong> — Client asks: "What can you do?"<br>
+                        <code style="font-size: 0.9em; color: #93a1a1;">{"jsonrpc":"2.0", "method":"tools/list", "id":2}</code><br>
+                        <span style="color: #586e75;">→ Server returns: </span><code style="font-size: 0.85em;">[{name:"github_create_issue", description:"...", inputSchema:{...}}, ...]</code>
+                    </div>
+                    <div class="fragment" style="margin-bottom: 0.6em; padding: 0.5em 0.8em; background: rgba(152,195,121,0.1); border-radius: 8px; border-left: 3px solid #98c379;">
+                        <strong style="color: #98c379;">③ Call Tool</strong> — AI decides to use a tool<br>
+                        <code style="font-size: 0.9em; color: #93a1a1;">{"jsonrpc":"2.0", "method":"tools/call", "params":{"name":"github_create_issue", "arguments":{"title":"Bug fix", "body":"..."}}, "id":3}</code>
+                    </div>
+                    <div class="fragment" style="margin-bottom: 0.6em; padding: 0.5em 0.8em; background: rgba(198,120,221,0.1); border-radius: 8px; border-left: 3px solid #c678dd;">
+                        <strong style="color: #c678dd;">④ Response</strong> — Server returns result<br>
+                        <code style="font-size: 0.9em; color: #93a1a1;">{"jsonrpc":"2.0", "result":{"content":[{"type":"text", "text":"Created issue #42"}]}, "id":3}</code>
+                    </div>
+                </div>
+
+                <p class="fragment" style="font-size: 0.7em; margin-top: 0.8em;">
+                    <span class="highlight-blue">JSON-RPC 2.0</span> over stdio or HTTP/SSE — simple, stateless, language-agnostic
+                </p>
+
+                <aside class="notes">
+                    This slide shows what's actually happening at the protocol level. MCP uses JSON-RPC 2.0,
+                    a simple request-response protocol. First, the client (Claude Code) connects and sends
+                    an initialize request. Then it discovers what tools the server provides via tools/list.
+                    When the AI decides to use a tool, it sends a tools/call request with the tool name
+                    and arguments. The server executes the action and returns the result.
+                    
+                    This is what you'd see if you ran Wireshark and captured MCP traffic. Understanding
+                    this helps when debugging MCP servers or building your own.
+                    
+                    Reference: 轩辕的编程宇宙 "抓包分析了MCP通信过程" https://youtu.be/IjISe8ThHvY
                 </aside>
             </section>
 
