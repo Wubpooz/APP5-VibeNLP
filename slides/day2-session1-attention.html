@@ -75,7 +75,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            gap: 30px;
+            gap: 20px;
             margin-top: 30px;
         }
 
@@ -95,7 +95,7 @@
         }
 
         .era .label {
-            font-size: 0.9em;
+            font-size: 0.8em;
             color: var(--blue);
             font-weight: bold;
         }
@@ -112,17 +112,17 @@
         .diagram-row {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 6px;
             justify-content: center;
         }
 
         .box {
-            padding: 10px 18px;
+            padding: 8px 12px;
             border-radius: 6px;
             font-size: 0.65em;
             font-weight: bold;
             text-align: center;
-            min-width: 80px;
+            min-width: 60px;
             border: 2px solid;
         }
 
@@ -195,8 +195,8 @@
         }
 
         .attention-cell {
-            width: 50px;
-            height: 50px;
+            width: 42px;
+            height: 42px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -222,12 +222,12 @@
         .comparison-table th {
             background: rgba(126, 200, 227, 0.2);
             color: var(--blue);
-            padding: 10px 15px;
+            padding: 6px 10px;
             border: 1px solid rgba(126, 200, 227, 0.3);
         }
 
         .comparison-table td {
-            padding: 10px 15px;
+            padding: 6px 10px;
             border: 1px solid rgba(147, 161, 161, 0.2);
             text-align: center;
         }
@@ -235,18 +235,20 @@
         .step-list {
             text-align: left;
             font-size: 0.75em;
-            line-height: 1.8;
+            line-height: 1.5;
         }
 
         .step-list li {
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
         .big-concept {
-            font-size: 1.6em;
+            font-size: 1.3em;
             color: var(--yellow);
             font-weight: bold;
             margin: 20px 0;
+            overflow-wrap: break-word;
+            padding: 0 5%;
         }
 
         .analogy-box {
@@ -293,8 +295,8 @@
         .key-takeaway {
             background: rgba(255, 107, 107, 0.1);
             border-left: 4px solid var(--red);
-            padding: 15px 20px;
-            margin: 15px auto;
+            padding: 10px 15px;
+            margin: 10px auto;
             text-align: left;
             font-size: 0.8em;
             max-width: 85%;
@@ -305,6 +307,7 @@
             color: var(--grey);
         }
     </style>
+    <link rel="stylesheet" href="theme.css">
 </head>
 <body>
     <div class="reveal">
@@ -412,42 +415,106 @@
             </section>
 
             <!-- ============================================================ -->
+            <!-- SLIDE 4b: Seq2Seq Encoder-Decoder Architecture -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>The <span class="highlight-blue">Encoder-Decoder</span> (Seq2Seq) Architecture</h3>
+                <p style="font-size: 0.7em; color: var(--grey);">Chaining two RNNs: one to <em>read</em>, one to <em>generate</em></p>
+                <div class="fragment" style="margin-top: 12px;">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                        <!-- Encoder -->
+                        <div style="text-align: center;">
+                            <p style="font-size: 0.6em; color: var(--blue); font-weight: bold; margin: 0 0 5px 0;">ENCODER</p>
+                            <div class="diagram-row" style="gap: 4px;">
+                                <div class="box box-blue" style="font-size: 0.55em; min-width: 45px;">Le</div>
+                                <div class="box box-blue" style="font-size: 0.55em; min-width: 45px;">chat</div>
+                                <div class="box box-blue" style="font-size: 0.55em; min-width: 45px;">dort</div>
+                            </div>
+                            <p style="font-size: 0.55em; color: var(--grey); margin: 4px 0 0 0;">reads input (French)</p>
+                        </div>
+                        <!-- Arrow + context vector -->
+                        <div style="text-align: center;">
+                            <span style="font-size: 1.4em;">&rarr;</span>
+                            <div class="box box-red" style="font-size: 0.6em; padding: 5px 10px; margin: 4px 0; min-width: 80px;">context<br>vector</div>
+                            <span style="font-size: 1.4em;">&rarr;</span>
+                        </div>
+                        <!-- Decoder -->
+                        <div style="text-align: center;">
+                            <p style="font-size: 0.6em; color: var(--yellow); font-weight: bold; margin: 0 0 5px 0;">DECODER</p>
+                            <div class="diagram-row" style="gap: 4px;">
+                                <div class="box box-yellow" style="font-size: 0.55em; min-width: 45px;">The</div>
+                                <div class="box box-yellow" style="font-size: 0.55em; min-width: 45px;">cat</div>
+                                <div class="box box-yellow" style="font-size: 0.55em; min-width: 45px;">sleeps</div>
+                            </div>
+                            <p style="font-size: 0.55em; color: var(--grey); margin: 4px 0 0 0;">generates output (English)</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="fragment two-column" style="gap: 15px; margin-top: 14px; font-size: 0.7em;">
+                    <div>
+                        <p style="color: var(--blue); font-weight: bold; margin: 0 0 4px 0;">Encoder</p>
+                        <ul style="font-size: 0.9em; line-height: 1.7;">
+                            <li>Processes source tokens one by one</li>
+                            <li>Compresses everything into one <strong>context vector</strong></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p style="color: var(--yellow); font-weight: bold; margin: 0 0 4px 0;">Decoder</p>
+                        <ul style="font-size: 0.9em; line-height: 1.7;">
+                            <li>Starts from the context vector</li>
+                            <li>Generates output tokens one by one</li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="fragment" style="font-size: 0.65em; color: var(--grey); margin-top: 10px;">
+                    Used for: translation · summarization · speech recognition · &hellip;
+                </p>
+                <aside class="notes">
+                    Before diving into the problems, let's establish what architecture we're talking about.
+                    The sequence-to-sequence (seq2seq) model, introduced by Sutskever et al. (2014), chains two RNNs.
+                    The ENCODER reads the input sentence word by word and distills everything into a single fixed-size
+                    context vector — a compressed representation of the entire input.
+                    The DECODER starts from that context vector as its initial hidden state and generates the output
+                    one word at a time, feeding each predicted word back as input for the next step.
+                    This was the dominant architecture for machine translation before attention. But as we'll see,
+                    that single context vector is a serious bottleneck.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
             <!-- SLIDE 5: Problem 1 - Vanishing Gradients -->
             <!-- ============================================================ -->
             <section>
                 <h3><span class="highlight">Problem 1:</span> Vanishing Gradients</h3>
-                <div class="two-column">
-                    <div class="fragment">
-                        <p style="font-size: 0.7em;">During training, gradients must flow backward through time:</p>
-                        <div class="diagram" style="margin: 15px 0;">
-                            <div class="diagram-row">
-                                <div class="box box-green" style="opacity: 1.0;">h<sub>6</sub></div>
-                                <span class="arrow-right">&larr;</span>
-                                <div class="box box-green" style="opacity: 0.7;">h<sub>5</sub></div>
-                                <span class="arrow-right">&larr;</span>
-                                <div class="box box-green" style="opacity: 0.4;">h<sub>4</sub></div>
-                                <span class="arrow-right">&larr;</span>
-                                <div class="box box-green" style="opacity: 0.2;">h<sub>3</sub></div>
-                                <span class="arrow-right">&larr;</span>
-                                <div class="box box-green" style="opacity: 0.1;">h<sub>2</sub></div>
-                                <span class="arrow-right">&larr;</span>
-                                <div class="box box-green" style="opacity: 0.05;">h<sub>1</sub></div>
-                            </div>
+                <div class="fragment">
+                    <p style="font-size: 0.7em;">During training, gradients must flow backward through time:</p>
+                    <div class="diagram" style="margin: 15px 0;">
+                        <div class="diagram-row">
+                            <div class="box box-green" style="opacity: 0.05;">h<sub>1</sub></div>
+                            <span class="arrow-right">&larr;</span>
+                            <div class="box box-green" style="opacity: 0.1;">h<sub>2</sub></div>
+                            <span class="arrow-right">&larr;</span>
+                            <div class="box box-green" style="opacity: 0.2;">h<sub>3</sub></div>
+                            <span class="arrow-right">&larr;</span>
+                            <div class="box box-green" style="opacity: 0.4;">h<sub>4</sub></div>
+                            <span class="arrow-right">&larr;</span>
+                            <div class="box box-green" style="opacity: 0.7;">h<sub>5</sub></div>
+                            <span class="arrow-right">&larr;</span>
+                            <div class="box box-green" style="opacity: 1.0;">h<sub>6</sub></div>
                         </div>
-                        <p style="font-size: 0.6em; color: var(--grey);">Gradient signal <span class="highlight">shrinks exponentially</span> at each step</p>
                     </div>
-                    <div class="fragment">
-                        <p style="font-size: 0.7em;">What this means in practice:</p>
-                        <ul style="font-size: 0.65em; line-height: 1.8;">
-                            <li>Early words get <span class="highlight">almost zero learning signal</span></li>
-                            <li>The model <em>cannot learn</em> long-range patterns</li>
-                            <li>Like trying to shout across a football field &mdash; the sound fades</li>
-                        </ul>
-                        <br>
-                        <p style="font-size: 0.6em; color: var(--grey);">
-                            Even LSTMs &amp; GRUs (designed to fix this) struggle beyond ~200 tokens
-                        </p>
-                    </div>
+                    <p style="font-size: 0.6em; color: var(--grey);">Gradient signal <span class="highlight">shrinks exponentially</span> at each step</p>
+                </div>
+                <div class="fragment" style="margin-top: 20px;">
+                    <p style="font-size: 0.7em;">What this means in practice:</p>
+                    <ul style="font-size: 0.65em; line-height: 1.8;">
+                        <li>Early words get <span class="highlight">almost zero learning signal</span></li>
+                        <li>The model <em>cannot learn</em> long-range patterns</li>
+                        <li>Like trying to shout across a football field &mdash; the sound fades</li>
+                    </ul>
+                    <p style="font-size: 0.6em; color: var(--grey); margin-top: 10px;">
+                        Even LSTMs &amp; GRUs (designed to fix this) struggle beyond ~200 tokens
+                    </p>
                 </div>
                 <aside class="notes">
                     Vanishing gradients is the most famous RNN problem. When we train with backpropagation through time,
@@ -465,7 +532,7 @@
             <section>
                 <h3><span class="highlight">Problem 2:</span> The Information Bottleneck</h3>
                 <div class="fragment">
-                    <div class="diagram">
+                    <div class="diagram" style="margin: 8px auto;">
                         <div class="diagram-row">
                             <div class="box box-grey" style="font-size: 0.55em; min-width: 60px;">The</div>
                             <div class="box box-grey" style="font-size: 0.55em; min-width: 60px;">European</div>
@@ -478,7 +545,7 @@
                         <div class="arrow-down">&darr;</div>
                         <div style="font-size: 0.6em; color: var(--grey);">Entire sentence compressed into</div>
                         <div class="arrow-down">&darr;</div>
-                        <div class="box box-red" style="min-width: 200px; padding: 15px;">
+                        <div class="box box-red" style="min-width: 200px; padding: 8px 15px;">
                             Single Vector<br>
                             <span style="font-size: 0.7em;">[0.23, -0.41, 0.87, ...]</span>
                         </div>
@@ -505,7 +572,7 @@
             <!-- ============================================================ -->
             <section>
                 <h3><span class="highlight">Problem 3:</span> Sequential Processing Is Slow</h3>
-                <div class="two-column">
+                <div class="two-column" style="gap: 20px;">
                     <div class="fragment">
                         <p style="font-size: 0.7em; color: var(--red); font-weight: bold;">RNN: Must wait for each step</p>
                         <div class="diagram">
@@ -555,25 +622,24 @@
             <section>
                 <h3>The Long-Range Dependency Problem</h3>
                 <div style="text-align: left; max-width: 85%; margin: 0 auto;">
-                    <p class="fragment" style="font-size: 0.75em;">
+                    <p class="fragment" style="font-size: 0.75em; margin: 0 0 4px 0;">
                         <span class="highlight-blue">"The cat</span>, which was sitting on the mat in the living room
                         next to the old fireplace that hadn't been used in years,
                         <span class="highlight-blue">was</span> very happy."
                     </p>
-                    <p class="fragment" style="font-size: 0.65em; color: var(--grey); margin-left: 40px;">
+                    <p class="fragment" style="font-size: 0.65em; color: var(--grey); margin: 0 0 10px 40px;">
                         &uarr; The verb "was" must agree with "cat" &mdash; 20+ words earlier!
                     </p>
-                    <br>
-                    <p class="fragment" style="font-size: 0.75em;">
+                    <p class="fragment" style="font-size: 0.75em; margin: 0 0 4px 0;">
                         <span class="highlight-green">"She</span> told him about the project during the meeting
                         that lasted three hours on a rainy Tuesday afternoon,
                         and then <span class="highlight-green">she</span> left."
                     </p>
-                    <p class="fragment" style="font-size: 0.65em; color: var(--grey); margin-left: 40px;">
+                    <p class="fragment" style="font-size: 0.65em; color: var(--grey); margin: 0 0 0 40px;">
                         &uarr; "she" in the second clause refers back to "She" at the very beginning
                     </p>
                 </div>
-                <div class="fragment key-takeaway" style="margin-top: 20px;">
+                <div class="fragment key-takeaway" style="margin-top: 8px;">
                     <strong>Key insight:</strong> Language is full of long-range dependencies.
                     A model that forgets early words will make systematic errors.
                 </div>
@@ -637,52 +703,52 @@
                 <div class="two-column">
                     <div class="fragment">
                         <p style="font-size: 0.7em; font-weight: bold; color: var(--blue);">Architecture</p>
-                        <div class="diagram" style="font-size: 0.9em;">
-                            <div class="box box-green" style="min-width: 150px;">Context Vector c<sub>t</sub></div>
-                            <div class="arrow-down">&uarr;</div>
+                        <div class="diagram" style="font-size: 0.75em; margin: 5px auto; gap: 3px;">
+                            <div class="box box-green" style="min-width: 130px; padding: 5px 10px;">Context Vector c<sub>t</sub></div>
+                            <div class="arrow-down" style="font-size: 0.9em;">&uarr;</div>
                             <div style="font-size: 0.6em; color: var(--yellow);">Weighted sum</div>
-                            <div class="arrow-down">&uarr;</div>
+                            <div class="arrow-down" style="font-size: 0.9em;">&uarr;</div>
                             <div class="diagram-row">
-                                <div class="box box-blue" style="min-width: 45px; font-size: 0.55em;">&alpha;<sub>1</sub></div>
-                                <div class="box box-blue" style="min-width: 45px; font-size: 0.55em;">&alpha;<sub>2</sub></div>
-                                <div class="box box-blue" style="min-width: 45px; font-size: 0.55em;">&alpha;<sub>3</sub></div>
-                                <div class="box box-blue" style="min-width: 45px; font-size: 0.55em;">&alpha;<sub>4</sub></div>
+                                <div class="box box-blue" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">&alpha;<sub>1</sub></div>
+                                <div class="box box-blue" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">&alpha;<sub>2</sub></div>
+                                <div class="box box-blue" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">&alpha;<sub>3</sub></div>
+                                <div class="box box-blue" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">&alpha;<sub>4</sub></div>
                             </div>
-                            <div class="arrow-down">&uarr; <span style="font-size: 0.5em;">softmax</span></div>
+                            <div class="arrow-down" style="font-size: 0.9em;">&uarr; <span style="font-size: 0.5em;">softmax</span></div>
                             <div class="diagram-row">
-                                <div class="box box-yellow" style="min-width: 45px; font-size: 0.55em;">e<sub>1</sub></div>
-                                <div class="box box-yellow" style="min-width: 45px; font-size: 0.55em;">e<sub>2</sub></div>
-                                <div class="box box-yellow" style="min-width: 45px; font-size: 0.55em;">e<sub>3</sub></div>
-                                <div class="box box-yellow" style="min-width: 45px; font-size: 0.55em;">e<sub>4</sub></div>
+                                <div class="box box-yellow" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">e<sub>1</sub></div>
+                                <div class="box box-yellow" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">e<sub>2</sub></div>
+                                <div class="box box-yellow" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">e<sub>3</sub></div>
+                                <div class="box box-yellow" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">e<sub>4</sub></div>
                             </div>
-                            <div class="arrow-down">&uarr; <span style="font-size: 0.5em;">alignment model</span></div>
+                            <div class="arrow-down" style="font-size: 0.9em;">&uarr; <span style="font-size: 0.5em;">alignment model</span></div>
                             <div class="diagram-row">
-                                <div class="box box-grey" style="min-width: 45px; font-size: 0.55em;">h<sub>1</sub></div>
-                                <div class="box box-grey" style="min-width: 45px; font-size: 0.55em;">h<sub>2</sub></div>
-                                <div class="box box-grey" style="min-width: 45px; font-size: 0.55em;">h<sub>3</sub></div>
-                                <div class="box box-grey" style="min-width: 45px; font-size: 0.55em;">h<sub>4</sub></div>
+                                <div class="box box-grey" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">h<sub>1</sub></div>
+                                <div class="box box-grey" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">h<sub>2</sub></div>
+                                <div class="box box-grey" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">h<sub>3</sub></div>
+                                <div class="box box-grey" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">h<sub>4</sub></div>
                             </div>
                         </div>
                     </div>
                     <div class="fragment">
                         <p style="font-size: 0.7em; font-weight: bold; color: var(--yellow);">The Math</p>
-                        <div style="font-size: 0.7em; text-align: left; line-height: 2.2;">
-                            <p><strong>Step 1:</strong> Compute alignment scores</p>
-                            <div class="formula" style="font-size: 0.85em;">
+                        <div style="font-size: 0.7em; text-align: left; line-height: 1.3;">
+                            <p style="margin: 4px 0;"><strong>Step 1:</strong> Compute alignment scores</p>
+                            <div class="formula" style="font-size: 0.85em; padding: 5px 12px; margin: 4px auto;">
                                 e<sub>t,i</sub> = v<sup>T</sup> tanh(W<sub>a</sub> s<sub>t-1</sub> + U<sub>a</sub> h<sub>i</sub>)
                             </div>
-                            <p><strong>Step 2:</strong> Normalize with softmax</p>
-                            <div class="formula" style="font-size: 0.85em;">
+                            <p style="margin: 4px 0;"><strong>Step 2:</strong> Normalize with softmax</p>
+                            <div class="formula" style="font-size: 0.85em; padding: 5px 12px; margin: 4px auto;">
                                 &alpha;<sub>t,i</sub> = softmax(e<sub>t,i</sub>)
                             </div>
-                            <p><strong>Step 3:</strong> Compute context vector</p>
-                            <div class="formula" style="font-size: 0.85em;">
+                            <p style="margin: 4px 0;"><strong>Step 3:</strong> Compute context vector</p>
+                            <div class="formula" style="font-size: 0.85em; padding: 5px 12px; margin: 4px auto;">
                                 c<sub>t</sub> = &Sigma;<sub>i</sub> &alpha;<sub>t,i</sub> &middot; h<sub>i</sub>
                             </div>
                         </div>
                     </div>
                 </div>
-                <p class="paper-ref fragment">Bahdanau, Cho & Bengio. "Neural Machine Translation by Jointly Learning to Align and Translate." ICLR 2015 (arXiv 2014)</p>
+                <p class="paper-ref fragment" style="margin-top: 6px;">Bahdanau, Cho & Bengio. "Neural Machine Translation by Jointly Learning to Align and Translate." ICLR 2015 (arXiv 2014)</p>
                 <aside class="notes">
                     Bahdanau attention was the first attention mechanism for NLP, published in 2014.
                     It is called "additive" because the alignment score uses addition inside a tanh.
@@ -744,11 +810,11 @@
             <!-- SLIDE 13: Luong Attention -->
             <!-- ============================================================ -->
             <section>
-                <h3><span class="highlight-green">Luong Attention</span> (2015)</h3>
-                <p style="font-size: 0.65em; color: var(--grey);">Also called "Multiplicative Attention"</p>
+                <h3 style="margin-bottom: 4px;"><span class="highlight-green">Luong Attention</span> (2015)</h3>
+                <p style="font-size: 0.65em; color: var(--grey); margin: 0 0 6px 0;">Also called "Multiplicative Attention"</p>
                 <div class="fragment">
-                    <p style="font-size: 0.7em; font-weight: bold; color: var(--green);">Three scoring functions:</p>
-                    <table class="comparison-table">
+                    <p style="font-size: 0.7em; font-weight: bold; color: var(--green); margin: 0 0 4px 0;">Three scoring functions:</p>
+                    <table class="comparison-table" style="margin: 0 auto;">
                         <tr>
                             <th>Name</th>
                             <th>Formula</th>
@@ -771,11 +837,11 @@
                         </tr>
                     </table>
                 </div>
-                <div class="fragment key-takeaway" style="margin-top: 20px;">
+                <div class="fragment key-takeaway" style="margin: 4px auto; padding: 7px 12px;">
                     <strong>Key difference from Bahdanau:</strong> Luong uses the <em>current</em> decoder hidden state s<sub>t</sub>
                     (not s<sub>t-1</sub>), and the dot-product variant is much faster to compute.
                 </div>
-                <p class="paper-ref fragment">Luong, Pham & Manning. "Effective Approaches to Attention-based Neural Machine Translation." EMNLP 2015</p>
+                <p class="paper-ref fragment" style="margin-top: 4px;">Luong, Pham & Manning. "Effective Approaches to Attention-based Neural Machine Translation." EMNLP 2015</p>
                 <aside class="notes">
                     A year after Bahdanau, Luong et al. proposed simpler alternatives for computing attention scores.
                     The most important one is the dot product: just take the dot product of the decoder state and encoder state.
@@ -849,16 +915,11 @@
                 <h3 style="color: var(--yellow);">Quick Check: Why Was Attention So Important?</h3>
                 <br>
                 <div style="font-size: 0.75em; text-align: left; max-width: 80%; margin: 0 auto;">
-                    <p class="fragment">1. Which of the three RNN problems does attention solve directly?</p>
+                    <p class="fragment">Which of the three RNN problems does attention solve directly?</p>
                     <p class="fragment" style="color: var(--green); margin-left: 30px;">
-                        &rarr; It solves the <strong>information bottleneck</strong> (no more single vector compression)
-                        and helps with <strong>long-range dependencies</strong> (direct connections to distant words)
-                    </p>
-                    <br>
-                    <p class="fragment">2. Does attention solve the sequential processing problem?</p>
-                    <p class="fragment" style="color: var(--red); margin-left: 30px;">
-                        &rarr; <strong>Not yet!</strong> The RNN encoder/decoder still processes sequentially.
-                        Attention only helps the decoder access information. We need another breakthrough...
+                        &rarr; <strong>2 of 3</strong>: fixes <strong>information bottleneck</strong> and <strong>long-range dependencies</strong>.
+                        But not <strong style="color: var(--red);">sequential processing</strong> — the RNN encoder and decoder still process sequentially;
+                        attention only helps the decoder access information. We need another breakthrough...
                     </p>
                 </div>
                 <aside class="notes">
@@ -937,25 +998,25 @@
             <!-- ============================================================ -->
             <section>
                 <h3>Query, Key, Value: The Search Engine Analogy</h3>
-                <div class="analogy-box fragment">
+                <div class="analogy-box fragment" style="margin: 6px auto; padding: 10px 16px;">
                     <div class="analogy-title">Analogy: Searching a Library Database</div>
-                    <p><strong style="color: var(--red);">Query (Q):</strong> "I'm looking for a book about French cooking"
+                    <p style="margin: 0 0 5px 0;"><strong style="color: var(--red);">Query (Q):</strong> "I'm looking for a book about French cooking"
                     &mdash; this is what you're searching for.</p>
-                    <p style="margin-top: 8px;"><strong style="color: var(--blue);">Key (K):</strong> The title/keywords of each book in the catalog
+                    <p style="margin: 0 0 5px 0;"><strong style="color: var(--blue);">Key (K):</strong> The title/keywords of each book in the catalog
                     &mdash; these are the labels that help you match.</p>
-                    <p style="margin-top: 8px;"><strong style="color: var(--green);">Value (V):</strong> The actual content of each book
+                    <p style="margin: 0;"><strong style="color: var(--green);">Value (V):</strong> The actual content of each book
                     &mdash; this is the information you want to retrieve.</p>
                 </div>
-                <div class="fragment" style="margin-top: 20px;">
+                <div class="fragment" style="margin-top: 8px;">
                     <div class="flow-horizontal">
-                        <div class="box box-red" style="padding: 12px 20px;">Query</div>
+                        <div class="box box-red" style="padding: 10px 16px;">Query</div>
                         <span style="font-size: 0.8em; color: var(--grey);">matches against</span>
-                        <div class="box box-blue" style="padding: 12px 20px;">Keys</div>
+                        <div class="box box-blue" style="padding: 10px 16px;">Keys</div>
                         <span style="font-size: 0.8em; color: var(--grey);">to retrieve</span>
-                        <div class="box box-green" style="padding: 12px 20px;">Values</div>
+                        <div class="box box-green" style="padding: 10px 16px;">Values</div>
                     </div>
                 </div>
-                <p class="fragment small" style="color: var(--yellow); margin-top: 15px;">
+                <p class="fragment small" style="color: var(--yellow); margin-top: 8px;">
                     In self-attention, every word generates its own Q, K, and V vectors.<br>
                     Each word's Query is matched against all words' Keys to decide how much of each word's Value to collect.
                 </p>
@@ -980,18 +1041,16 @@
                 <h3>Computing Q, K, V</h3>
                 <div class="fragment">
                     <p style="font-size: 0.7em;">For each word embedding x<sub>i</sub>, compute three vectors:</p>
-                    <div style="margin: 20px auto;">
-                        <div class="formula formula-large">
+                    <div style="margin: 10px auto;">
+                        <div class="formula formula-large" style="padding: 10px 25px; margin: 8px auto;">
                             q<sub>i</sub> = W<sub>Q</sub> &middot; x<sub>i</sub> &nbsp;&nbsp;
                             <span style="color: var(--red);">(Query)</span>
                         </div>
-                        <br>
-                        <div class="formula formula-large">
+                        <div class="formula formula-large" style="padding: 10px 25px; margin: 8px auto;">
                             k<sub>i</sub> = W<sub>K</sub> &middot; x<sub>i</sub> &nbsp;&nbsp;
                             <span style="color: var(--blue);">(Key)</span>
                         </div>
-                        <br>
-                        <div class="formula formula-large">
+                        <div class="formula formula-large" style="padding: 10px 25px; margin: 8px auto;">
                             v<sub>i</sub> = W<sub>V</sub> &middot; x<sub>i</sub> &nbsp;&nbsp;
                             <span style="color: var(--green);">(Value)</span>
                         </div>
@@ -1026,13 +1085,13 @@
                 <h3>Scaled Dot-Product Attention</h3>
                 <p style="font-size: 0.65em; color: var(--grey);">The core formula from "Attention Is All You Need"</p>
                 <div class="fragment">
-                    <div class="formula formula-large" style="margin: 25px auto;">
+                    <div class="formula formula-large" style="margin: 12px auto; font-size: 0.85em;">
                         Attention(Q, K, V) = softmax( Q K<sup>T</sup> / &radic;d<sub>k</sub> ) &middot; V
                     </div>
                 </div>
-                <div class="fragment" style="margin-top: 20px;">
+                <div class="fragment" style="margin-top: 6px;">
                     <div class="step-list" style="max-width: 85%; margin: 0 auto;">
-                        <p style="font-weight: bold; color: var(--blue);">Step by step:</p>
+                        <p style="font-weight: bold; color: var(--blue); margin: 0 0 4px 0;">Step by step:</p>
                         <ol>
                             <li><span class="highlight-yellow">Dot product:</span> Q K<sup>T</sup> &mdash; compute similarity between each query and all keys</li>
                             <li class="fragment"><span class="highlight-yellow">Scale:</span> Divide by &radic;d<sub>k</sub> &mdash; prevent dot products from getting too large</li>
@@ -1041,7 +1100,7 @@
                         </ol>
                     </div>
                 </div>
-                <p class="paper-ref fragment">Vaswani et al. "Attention Is All You Need." NeurIPS 2017</p>
+                <p class="paper-ref fragment" style="margin-top: 5px;">Vaswani et al. "Attention Is All You Need." NeurIPS 2017</p>
                 <aside class="notes">
                     This is THE formula. Memorize this if you memorize anything from today.
                     Attention of Q, K, V equals softmax of Q times K-transpose divided by square root of d_k, times V.
@@ -1162,8 +1221,8 @@
             <section>
                 <h3>Visualizing the Full Attention Matrix</h3>
                 <p style="font-size: 0.6em; color: var(--grey);">"The cat sat on the mat" &mdash; each row shows where that word attends</p>
-                <div class="fragment" style="margin: 20px auto;">
-                    <div class="attention-grid" style="grid-template-columns: 60px repeat(6, 50px); font-size: 0.6em;">
+                <div class="fragment" style="margin: 10px auto;">
+                    <div class="attention-grid" style="grid-template-columns: 50px repeat(6, 42px); font-size: 0.6em;">
                         <!-- Header row -->
                         <div style="color: var(--grey);"></div>
                         <div style="color: var(--blue); font-weight: bold;">The</div>
@@ -1243,32 +1302,32 @@
             <!-- ============================================================ -->
             <section>
                 <h3>Self-Attention Solves <span class="highlight">All Three</span> RNN Problems</h3>
-                <div style="font-size: 0.75em; text-align: left; max-width: 85%; margin: 0 auto; line-height: 1.6;">
-                    <div class="fragment" style="margin-bottom: 20px;">
-                        <p><span class="highlight">1. No vanishing gradients</span></p>
-                        <p style="font-size: 0.85em; color: var(--grey); margin-left: 20px;">
+                <div style="font-size: 0.75em; text-align: left; max-width: 85%; margin: 0 auto; line-height: 1.4;">
+                    <div class="fragment" style="margin-bottom: 10px;">
+                        <p style="margin: 0 0 4px 0;"><span class="highlight">1. No vanishing gradients</span></p>
+                        <p style="font-size: 0.85em; color: var(--grey); margin: 0 0 0 20px;">
                             Every word has a <strong>direct connection</strong> to every other word.
                             Gradients flow directly &mdash; no long chain of multiplications.
                         </p>
                     </div>
-                    <div class="fragment" style="margin-bottom: 20px;">
-                        <p><span class="highlight-blue">2. No information bottleneck</span></p>
-                        <p style="font-size: 0.85em; color: var(--grey); margin-left: 20px;">
+                    <div class="fragment" style="margin-bottom: 10px;">
+                        <p style="margin: 0 0 4px 0;"><span class="highlight-blue">2. No information bottleneck</span></p>
+                        <p style="font-size: 0.85em; color: var(--grey); margin: 0 0 0 20px;">
                             Each word's representation is built from <strong>all words simultaneously</strong>.
                             No single vector must encode everything.
                         </p>
                     </div>
-                    <div class="fragment" style="margin-bottom: 20px;">
-                        <p><span class="highlight-green">3. Fully parallelizable</span></p>
-                        <p style="font-size: 0.85em; color: var(--grey); margin-left: 20px;">
+                    <div class="fragment" style="margin-bottom: 10px;">
+                        <p style="margin: 0 0 4px 0;"><span class="highlight-green">3. Fully parallelizable</span></p>
+                        <p style="font-size: 0.85em; color: var(--grey); margin: 0 0 0 20px;">
                             All attention scores can be computed at once as <strong>matrix multiplications</strong>.
                             GPUs handle this with massive parallelism.
                         </p>
                     </div>
                 </div>
-                <div class="fragment" style="margin-top: 20px;">
-                    <p class="stat-big">O(1) path length</p>
-                    <p style="font-size: 0.6em; color: var(--grey);">
+                <div class="fragment" style="margin-top: 10px;">
+                    <p class="stat-big" style="margin: 0;">O(1) path length</p>
+                    <p style="font-size: 0.6em; color: var(--grey); margin: 4px 0 0 0;">
                         Between any two words, regardless of distance in the sentence
                     </p>
                 </div>
@@ -1302,20 +1361,20 @@
             <!-- SLIDE 26: Multi-Head Attention -->
             <!-- ============================================================ -->
             <section>
-                <h3>Multi-Head Attention</h3>
-                <p style="font-size: 0.65em; color: var(--grey);">
+                <h3 style="margin-bottom: 6px;">Multi-Head Attention</h3>
+                <p style="font-size: 0.65em; color: var(--grey); margin: 0 0 6px 0;">
                     "Attending to information from different representation subspaces"
                 </p>
                 <div class="fragment">
-                    <div class="analogy-box">
+                    <div class="analogy-box" style="margin: 2px auto; padding: 6px 12px;">
                         <div class="analogy-title">Analogy: Multiple Reviewers</div>
                         Imagine sending your code for review to 8 different experts. One checks for security issues,
                         another for performance, another for readability. Each reviewer focuses on a <em>different aspect</em>.
                         Multi-head attention is the same idea: multiple attention "heads" look at different patterns.
                     </div>
                 </div>
-                <div class="fragment" style="margin-top: 20px;">
-                    <div class="flow-horizontal">
+                <div class="fragment" style="margin-top: 4px;">
+                    <div class="flow-horizontal" style="margin: 4px auto;">
                         <div class="box box-red" style="font-size: 0.55em; min-width: 90px;">Head 1<br><span style="font-size: 0.8em;">Syntax</span></div>
                         <div class="box box-blue" style="font-size: 0.55em; min-width: 90px;">Head 2<br><span style="font-size: 0.8em;">Coreference</span></div>
                         <div class="box box-green" style="font-size: 0.55em; min-width: 90px;">Head 3<br><span style="font-size: 0.8em;">Semantics</span></div>
@@ -1326,7 +1385,7 @@
                     <div class="arrow-down">&darr; <span style="font-size: 0.6em;">Concatenate &amp; project</span></div>
                     <div class="box box-red" style="min-width: 250px; margin: 0 auto;">Final output</div>
                 </div>
-                <div class="fragment formula" style="margin-top: 15px; font-size: 0.85em;">
+                <div class="fragment formula" style="margin: 3px auto; font-size: 0.85em; padding: 6px 20px;">
                     MultiHead(Q, K, V) = Concat(head<sub>1</sub>, ..., head<sub>h</sub>) W<sup>O</sup>
                 </div>
                 <aside class="notes">
@@ -1452,25 +1511,25 @@
             <section>
                 <h3>The Journey to Transformers</h3>
                 <div class="timeline fragment">
-                    <div class="era">
+                    <div class="era" style="min-width: 158px; padding: 10px 12px;">
                         <div class="year">2014</div>
                         <div class="label">Bahdanau<br>Attention</div>
                         <div style="font-size: 0.6em; color: var(--grey); margin-top: 5px;">Additive<br>attention<br>for seq2seq</div>
                     </div>
-                    <div style="color: var(--grey); font-size: 1.5em; align-self: center;">&rarr;</div>
-                    <div class="era">
+                    <div style="color: var(--grey); font-size: 1.2em; align-self: center;">&rarr;</div>
+                    <div class="era" style="min-width: 147px; padding: 10px 12px;">
                         <div class="year">2015</div>
                         <div class="label">Luong<br>Attention</div>
                         <div style="font-size: 0.6em; color: var(--grey); margin-top: 5px;">Dot-product<br>attention<br>variants</div>
                     </div>
-                    <div style="color: var(--grey); font-size: 1.5em; align-self: center;">&rarr;</div>
-                    <div class="era" style="border-color: var(--yellow);">
+                    <div style="color: var(--grey); font-size: 1.2em; align-self: center;">&rarr;</div>
+                    <div class="era" style="min-width: 183px; padding: 10px 12px; border-color: var(--yellow);">
                         <div class="year">2017</div>
                         <div class="label" style="color: var(--yellow);">Transformer</div>
                         <div style="font-size: 0.6em; color: var(--grey); margin-top: 5px;">Self-attention<br>replaces<br>RNNs entirely</div>
                     </div>
-                    <div style="color: var(--grey); font-size: 1.5em; align-self: center;">&rarr;</div>
-                    <div class="era" style="border-color: var(--red);">
+                    <div style="color: var(--grey); font-size: 1.2em; align-self: center;">&rarr;</div>
+                    <div class="era" style="min-width: 110px; padding: 10px 12px; border-color: var(--red);">
                         <div class="year">2018+</div>
                         <div class="label" style="color: var(--red);">BERT, GPT<br>& Beyond</div>
                         <div style="font-size: 0.6em; color: var(--grey); margin-top: 5px;">LLMs built<br>entirely on<br>attention</div>
@@ -1538,12 +1597,12 @@
             <!-- ============================================================ -->
             <section>
                 <h3>The One Formula to Remember</h3>
-                <div style="margin: 40px auto;">
-                    <div class="formula formula-large" style="font-size: 1.4em; padding: 30px 50px; border-color: var(--yellow);">
+                <div style="margin: 20px auto;">
+                    <div class="formula formula-large" style="font-size: 0.85em; padding: 15px 30px; border-color: var(--yellow);">
                         Attention(Q, K, V) = softmax( Q K<sup>T</sup> / &radic;d<sub>k</sub> ) &middot; V
                     </div>
                 </div>
-                <div class="fragment" style="font-size: 0.7em; margin-top: 30px;">
+                <div class="fragment" style="font-size: 0.7em; margin-top: 15px;">
                     <div class="flow-horizontal">
                         <div class="box box-red" style="min-width: 100px;">Q K<sup>T</sup><br><span style="font-size: 0.7em;">similarity</span></div>
                         <span class="arrow-right">&rarr;</span>
@@ -1554,7 +1613,7 @@
                         <div class="box box-green" style="min-width: 100px;">&times; V<br><span style="font-size: 0.7em;">retrieve</span></div>
                     </div>
                 </div>
-                <p class="fragment" style="font-size: 0.7em; color: var(--grey); margin-top: 30px;">
+                <p class="fragment" style="font-size: 0.7em; color: var(--grey); margin-top: 15px;">
                     Next session: How this formula is assembled into the full <span class="highlight-yellow">Transformer</span> architecture
                 </p>
                 <aside class="notes">
@@ -1622,5 +1681,6 @@
             plugins: [RevealHighlight, RevealNotes]
         });
     </script>
+    <script src="theme.js"></script>
 </body>
 </html>

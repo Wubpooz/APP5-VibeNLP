@@ -1,0 +1,610 @@
+/* =====================================================
+   VibeNLP Slides - Light/Dark Theme System
+   Dark mode = default (Solarized Dark via moon.css)
+   Light mode = html.theme-light (Solarized Light)
+   Toggle: press T or click the button (bottom-right)
+   ===================================================== */
+
+/* ── Light theme CSS variables ── */
+html.theme-light {
+    --red:    #dc322f;
+    --blue:   #268bd2;
+    --green:  #859900;
+    --grey:   #586e75;
+    --bg:     #fdf6e3;
+    --yellow: #b58900;
+    --purple: #6c71c4;
+    --text:   #073642;
+}
+
+/* ── Override Reveal.js moon.css globals ── */
+html.theme-light .reveal-viewport {
+    background: #fdf6e3;
+}
+html.theme-light .reveal {
+    background: #fdf6e3;
+    color: #073642;
+}
+html.theme-light .reveal .slides section {
+    background: transparent;
+    color: #073642;
+}
+html.theme-light .reveal h1,
+html.theme-light .reveal h2,
+html.theme-light .reveal h3,
+html.theme-light .reveal h4 {
+    color: #073642;
+    text-shadow: none;
+}
+html.theme-light .reveal p,
+html.theme-light .reveal li,
+html.theme-light .reveal td,
+html.theme-light .reveal th,
+html.theme-light .reveal span {
+    color: #073642;
+}
+html.theme-light .reveal a {
+    color: #268bd2;
+}
+html.theme-light .reveal strong {
+    color: #073642;
+}
+html.theme-light .reveal .controls {
+    color: #268bd2;
+}
+html.theme-light .reveal .progress {
+    color: #268bd2;
+}
+
+/* ── Code blocks: One Light theme ── */
+html.theme-light .reveal pre {
+    background: #f8f8f8 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+    border: 1px solid #e0e0e0;
+}
+html.theme-light .reveal pre code,
+html.theme-light .reveal code {
+    background: #f8f8f8 !important;
+    color: #383a42 !important;
+}
+html.theme-light .reveal .hljs-comment,
+html.theme-light .reveal .hljs-quote          { color: #a0a1a7 !important; font-style: italic; }
+html.theme-light .reveal .hljs-keyword,
+html.theme-light .reveal .hljs-selector-tag,
+html.theme-light .reveal .hljs-deletion       { color: #e45649 !important; }
+html.theme-light .reveal .hljs-string,
+html.theme-light .reveal .hljs-attr,
+html.theme-light .reveal .hljs-addition       { color: #50a14f !important; }
+html.theme-light .reveal .hljs-number,
+html.theme-light .reveal .hljs-literal        { color: #986801 !important; }
+html.theme-light .reveal .hljs-function,
+html.theme-light .reveal .hljs-title          { color: #4078f2 !important; }
+html.theme-light .reveal .hljs-built_in,
+html.theme-light .reveal .hljs-type           { color: #c18401 !important; }
+html.theme-light .reveal .hljs-variable,
+html.theme-light .reveal .hljs-name           { color: #e45649 !important; }
+html.theme-light .reveal .hljs-meta           { color: #9a6700 !important; }
+
+/* ── Highlight text classes ── */
+html.theme-light .reveal .highlight         { color: #dc322f !important; }
+html.theme-light .reveal .highlight-blue    { color: #268bd2 !important; }
+html.theme-light .reveal .highlight-green   { color: #859900 !important; }
+html.theme-light .reveal .highlight-yellow  { color: #b58900 !important; }
+html.theme-light .reveal .highlight-purple  { color: #6c71c4 !important; }
+html.theme-light .reveal .small             { color: #586e75 !important; }
+
+/* ── Stats ── */
+html.theme-light .reveal .stat-big   { color: #dc322f !important; }
+html.theme-light .reveal .stat-label { color: #586e75 !important; }
+
+/* ── Section title (day2-session1) ── */
+html.theme-light .reveal .section-title {
+    color: #268bd2 !important;
+    border-bottom-color: #dc322f !important;
+}
+
+/* ── Discussion slide ── */
+html.theme-light .reveal .discussion-slide {
+    background: rgba(38, 139, 210, 0.05) !important;
+}
+html.theme-light .reveal .discussion-slide h2 {
+    color: #268bd2 !important;
+}
+
+/* ── Quote slide ── */
+html.theme-light .reveal .quote-slide blockquote {
+    border-left-color: #268bd2 !important;
+    color: #073642 !important;
+    background: rgba(38, 139, 210, 0.04) !important;
+}
+
+/* ── Box-* classes (day2-session1 CSS-var style) ── */
+html.theme-light .reveal .box-red {
+    background: rgba(220, 50, 47, 0.08) !important;
+    border-color: #dc322f !important;
+    color: #dc322f !important;
+}
+html.theme-light .reveal .box-blue {
+    background: rgba(38, 139, 210, 0.08) !important;
+    border-color: #268bd2 !important;
+    color: #268bd2 !important;
+}
+html.theme-light .reveal .box-green {
+    background: rgba(133, 153, 0, 0.08) !important;
+    border-color: #859900 !important;
+    color: #859900 !important;
+}
+html.theme-light .reveal .box-yellow {
+    background: rgba(181, 137, 0, 0.08) !important;
+    border-color: #b58900 !important;
+    color: #b58900 !important;
+}
+html.theme-light .reveal .box-purple {
+    background: rgba(108, 113, 196, 0.08) !important;
+    border-color: #6c71c4 !important;
+    color: #6c71c4 !important;
+}
+html.theme-light .reveal .box-grey {
+    background: rgba(88, 110, 117, 0.08) !important;
+    border-color: #586e75 !important;
+    color: #586e75 !important;
+}
+/* paragraph text inside boxes should stay dark */
+html.theme-light .reveal .box-red p,
+html.theme-light .reveal .box-blue p,
+html.theme-light .reveal .box-green p,
+html.theme-light .reveal .box-yellow p,
+html.theme-light .reveal .box-purple p,
+html.theme-light .reveal .box-grey p {
+    color: #073642 !important;
+}
+
+/* ── Formula / analogy / key-takeaway (day2-session1) ── */
+html.theme-light .reveal .formula {
+    background: rgba(88, 110, 117, 0.06) !important;
+    border-color: #586e75 !important;
+    color: #073642 !important;
+}
+html.theme-light .reveal .analogy-box {
+    background: rgba(181, 137, 0, 0.06) !important;
+    border-color: #b58900 !important;
+    color: #073642 !important;
+}
+html.theme-light .reveal .key-takeaway {
+    background: rgba(220, 50, 47, 0.05) !important;
+    border-left-color: #dc322f !important;
+    color: #073642 !important;
+}
+
+/* ── Era boxes (day2-session1) ── */
+html.theme-light .reveal .era {
+    background: rgba(38, 139, 210, 0.06) !important;
+    border-color: #268bd2 !important;
+}
+html.theme-light .reveal .era .label { color: #268bd2 !important; }
+
+/* ── Architecture boxes ── */
+html.theme-light .reveal .arch-box {
+    background: rgba(38, 139, 210, 0.06) !important;
+    border-color: #268bd2 !important;
+    color: #073642 !important;
+}
+html.theme-light .reveal .arch-box.attention,
+html.theme-light .reveal .arch-box.llm,
+html.theme-light .reveal .arch-box.output,
+html.theme-light .reveal .arch-box.red {
+    background: rgba(220, 50, 47, 0.06) !important;
+    border-color: #dc322f !important;
+    color: #dc322f !important;
+}
+html.theme-light .reveal .arch-box.ffn,
+html.theme-light .reveal .arch-box.backend,
+html.theme-light .reveal .arch-box.encoder-text {
+    background: rgba(38, 139, 210, 0.06) !important;
+    border-color: #268bd2 !important;
+    color: #268bd2 !important;
+}
+html.theme-light .reveal .arch-box.norm,
+html.theme-light .reveal .arch-box.frontend,
+html.theme-light .reveal .arch-box.encoder-image,
+html.theme-light .reveal .arch-box.green {
+    background: rgba(133, 153, 0, 0.06) !important;
+    border-color: #859900 !important;
+    color: #859900 !important;
+}
+html.theme-light .reveal .arch-box.embed,
+html.theme-light .reveal .arch-box.yellow {
+    background: rgba(181, 137, 0, 0.06) !important;
+    border-color: #b58900 !important;
+    color: #b58900 !important;
+}
+html.theme-light .reveal .arch-box.nlp,
+html.theme-light .reveal .arch-box.shared,
+html.theme-light .reveal .arch-box.purple {
+    background: rgba(108, 113, 196, 0.06) !important;
+    border-color: #6c71c4 !important;
+    color: #6c71c4 !important;
+}
+
+/* ── Tables ── */
+html.theme-light .reveal table th {
+    background: rgba(38, 139, 210, 0.12) !important;
+    color: #073642 !important;
+    border-color: rgba(7, 54, 66, 0.15) !important;
+}
+html.theme-light .reveal table td {
+    color: #073642 !important;
+    border-color: rgba(7, 54, 66, 0.12) !important;
+}
+html.theme-light .reveal table tr {
+    background: transparent !important;
+}
+html.theme-light .reveal table tr:nth-child(even) {
+    background: rgba(7, 54, 66, 0.03) !important;
+}
+html.theme-light .reveal .compare-table th,
+html.theme-light .reveal .comparison-table th {
+    background: rgba(38, 139, 210, 0.12) !important;
+    border-color: #268bd2 !important;
+}
+html.theme-light .reveal .compare-table .good { color: #859900 !important; }
+html.theme-light .reveal .compare-table .bad  { color: #dc322f !important; }
+html.theme-light .reveal .compare-table .tool-name { color: #dc322f !important; }
+
+/* ── Pipeline steps ── */
+html.theme-light .reveal .pipeline .step {
+    border-color: #268bd2 !important;
+    background: rgba(38, 139, 210, 0.06) !important;
+    color: #073642 !important;
+}
+html.theme-light .reveal .pipeline .step.active {
+    border-color: #dc322f !important;
+    background: rgba(220, 50, 47, 0.06) !important;
+    color: #dc322f !important;
+}
+html.theme-light .reveal .pipeline .step.green {
+    border-color: #859900 !important;
+    background: rgba(133, 153, 0, 0.06) !important;
+    color: #859900 !important;
+}
+html.theme-light .reveal .pipeline .step.purple {
+    border-color: #6c71c4 !important;
+    background: rgba(108, 113, 196, 0.06) !important;
+    color: #6c71c4 !important;
+}
+html.theme-light .reveal .pipeline .step.yellow {
+    border-color: #b58900 !important;
+    background: rgba(181, 137, 0, 0.06) !important;
+    color: #b58900 !important;
+}
+html.theme-light .reveal .pipeline .arrow { color: #586e75 !important; }
+
+/* ── Step box (numbered) ── */
+html.theme-light .reveal .step-box .step-num {
+    background: #268bd2 !important;
+    color: #fdf6e3 !important;
+}
+
+/* ── Tokens (day3-pretraining) ── */
+html.theme-light .reveal .token {
+    border-color: #268bd2 !important;
+    background: rgba(38, 139, 210, 0.06) !important;
+    color: #073642 !important;
+}
+html.theme-light .reveal .token.masked {
+    background: rgba(220, 50, 47, 0.10) !important;
+    border-color: #dc322f !important;
+    color: #dc322f !important;
+}
+html.theme-light .reveal .token.original {
+    background: rgba(133, 153, 0, 0.10) !important;
+    border-color: #859900 !important;
+    color: #859900 !important;
+}
+html.theme-light .reveal .token.random {
+    background: rgba(108, 113, 196, 0.10) !important;
+    border-color: #6c71c4 !important;
+    color: #6c71c4 !important;
+}
+
+/* ── Scaling card (day3-pretraining) ── */
+html.theme-light .reveal .scaling-card {
+    background: rgba(38, 139, 210, 0.04) !important;
+    border-color: #268bd2 !important;
+}
+html.theme-light .reveal .scaling-card h4 { color: #268bd2 !important; }
+
+/* ── LoRA matrices (day3-finetuning) ── */
+html.theme-light .reveal .lora-matrix.frozen {
+    border-color: #586e75 !important;
+    background: rgba(88, 110, 117, 0.06) !important;
+    color: #586e75 !important;
+}
+html.theme-light .reveal .lora-matrix.trainable {
+    border-color: #dc322f !important;
+    background: rgba(220, 50, 47, 0.06) !important;
+    color: #dc322f !important;
+}
+html.theme-light .reveal .lora-matrix.small-rank {
+    border-color: #859900 !important;
+    background: rgba(133, 153, 0, 0.06) !important;
+    color: #859900 !important;
+}
+html.theme-light .reveal .lora-plus     { color: #268bd2 !important; }
+html.theme-light .reveal .lora-equals   { color: #b58900 !important; }
+html.theme-light .reveal .lora-multiply { color: #6c71c4 !important; }
+
+/* ── Decision boxes (day3-finetuning) ── */
+html.theme-light .reveal .decision-box.yes {
+    border-color: #859900 !important;
+    background: rgba(133, 153, 0, 0.05) !important;
+}
+html.theme-light .reveal .decision-box.no {
+    border-color: #dc322f !important;
+    background: rgba(220, 50, 47, 0.05) !important;
+}
+html.theme-light .reveal .decision-box.maybe {
+    border-color: #b58900 !important;
+    background: rgba(181, 137, 0, 0.05) !important;
+}
+
+/* ── Cost card (day3-finetuning) ── */
+html.theme-light .reveal .cost-card .cost-value { color: #dc322f !important; }
+html.theme-light .reveal .instruction-box {
+    background: rgba(38, 139, 210, 0.04) !important;
+    border-left-color: #268bd2 !important;
+}
+
+/* ── Prompt boxes (day4-prompting) ── */
+html.theme-light .reveal .prompt-box {
+    border-color: #268bd2 !important;
+    color: #073642 !important;
+    background: rgba(38, 139, 210, 0.04) !important;
+}
+html.theme-light .reveal .prompt-box.bad  { border-color: #dc322f !important; }
+html.theme-light .reveal .prompt-box.good { border-color: #859900 !important; }
+html.theme-light .reveal .prompt-box.bad::before  { background: #dc322f !important; }
+html.theme-light .reveal .prompt-box.good::before { background: #859900 !important; }
+html.theme-light .reveal .role-system   { color: #6c71c4 !important; }
+html.theme-light .reveal .role-user     { color: #268bd2 !important; }
+html.theme-light .reveal .role-assistant{ color: #859900 !important; }
+html.theme-light .reveal .pitfall-box {
+    background: rgba(220, 50, 47, 0.04) !important;
+    border-left-color: #dc322f !important;
+    color: #073642 !important;
+}
+html.theme-light .reveal .flow .step.active {
+    border-color: #dc322f !important;
+    background: rgba(220, 50, 47, 0.08) !important;
+}
+html.theme-light .reveal .paradigm-new {
+    border-color: #859900 !important;
+    background: rgba(133, 153, 0, 0.06) !important;
+}
+html.theme-light .reveal .technique-card {
+    background: rgba(38, 139, 210, 0.04) !important;
+    border-color: #268bd2 !important;
+}
+
+/* ── MCP boxes (day4-claude-code-mcp) ── */
+html.theme-light .reveal .mcp-box.model {
+    background: rgba(108, 113, 196, 0.08) !important;
+    border-color: #6c71c4 !important;
+    color: #6c71c4 !important;
+}
+html.theme-light .reveal .mcp-box.protocol {
+    background: rgba(181, 137, 0, 0.08) !important;
+    border-color: #b58900 !important;
+    color: #b58900 !important;
+}
+html.theme-light .reveal .mcp-box.tools {
+    background: rgba(133, 153, 0, 0.08) !important;
+    border-color: #859900 !important;
+    color: #859900 !important;
+}
+html.theme-light .reveal .comparison-box.bad {
+    background: rgba(220, 50, 47, 0.04) !important;
+    border-color: #dc322f !important;
+}
+html.theme-light .reveal .comparison-box.good {
+    background: rgba(133, 153, 0, 0.04) !important;
+    border-color: #859900 !important;
+}
+html.theme-light .reveal .insight-box {
+    background: rgba(108, 113, 196, 0.05) !important;
+    border-color: #6c71c4 !important;
+}
+html.theme-light .reveal .insight-box .title { color: #6c71c4 !important; }
+
+/* ── RAG boxes (day4-rag) ── */
+html.theme-light .reveal .rag-box {
+    background: rgba(38, 139, 210, 0.06) !important;
+    border-color: #268bd2 !important;
+}
+html.theme-light .reveal .rag-box.retriever {
+    border-color: #859900 !important;
+    background: rgba(133, 153, 0, 0.06) !important;
+}
+html.theme-light .reveal .rag-box.generator {
+    border-color: #dc322f !important;
+    background: rgba(220, 50, 47, 0.06) !important;
+}
+html.theme-light .reveal .rag-box.storage {
+    border-color: #b58900 !important;
+    background: rgba(181, 137, 0, 0.06) !important;
+}
+html.theme-light .reveal .rag-box.user {
+    border-color: #6c71c4 !important;
+    background: rgba(108, 113, 196, 0.06) !important;
+}
+html.theme-light .reveal .rag-pipeline-full .pipe-num {
+    background: #268bd2 !important;
+    color: #fdf6e3 !important;
+}
+html.theme-light .reveal .vector-space .query-point { background: #dc322f !important; }
+html.theme-light .reveal .vector-space .doc-point   { background: #268bd2 !important; }
+html.theme-light .reveal .vector-space .match-point { background: #859900 !important; }
+html.theme-light .reveal .chunk-viz .chunk.overlap {
+    border-color: #b58900 !important;
+    background: rgba(181, 137, 0, 0.06) !important;
+}
+
+/* ── RLHF stages (day5-rlhf) ── */
+html.theme-light .reveal .stage-sft {
+    background: rgba(38, 139, 210, 0.06) !important;
+    border-color: #268bd2 !important;
+}
+html.theme-light .reveal .stage-rm {
+    background: rgba(181, 137, 0, 0.06) !important;
+    border-color: #b58900 !important;
+}
+html.theme-light .reveal .stage-rl {
+    background: rgba(220, 50, 47, 0.06) !important;
+    border-color: #dc322f !important;
+}
+html.theme-light .reveal .stage-sft .stage-num { background: #268bd2 !important; color: #fdf6e3 !important; }
+html.theme-light .reveal .stage-rm  .stage-num { background: #b58900 !important; color: #fdf6e3 !important; }
+html.theme-light .reveal .stage-rl  .stage-num { background: #dc322f !important; color: #fdf6e3 !important; }
+html.theme-light .reveal .pref-pair .winner {
+    background: rgba(133, 153, 0, 0.06) !important;
+    border-color: #859900 !important;
+}
+html.theme-light .reveal .pref-pair .loser {
+    background: rgba(220, 50, 47, 0.04) !important;
+    border-color: rgba(220, 50, 47, 0.3) !important;
+}
+html.theme-light .reveal .safety-card.red    { background: rgba(220, 50, 47, 0.05) !important; border-color: rgba(220, 50, 47, 0.35) !important; }
+html.theme-light .reveal .safety-card.blue   { background: rgba(38, 139, 210, 0.05) !important; border-color: rgba(38, 139, 210, 0.35) !important; }
+html.theme-light .reveal .safety-card.green  { background: rgba(133, 153, 0, 0.05) !important;  border-color: rgba(133, 153, 0, 0.35) !important; }
+html.theme-light .reveal .safety-card.yellow { background: rgba(181, 137, 0, 0.05) !important;  border-color: rgba(181, 137, 0, 0.35) !important; }
+
+/* ── OpenClaw ctx files (day5-openclaw-a2a) ── */
+html.theme-light .reveal .ctx-file.universal  { background: rgba(38, 139, 210, 0.06) !important; border-color: #268bd2 !important; }
+html.theme-light .reveal .ctx-file.personality{ background: rgba(108, 113, 196, 0.06) !important; border-color: #6c71c4 !important; }
+html.theme-light .reveal .ctx-file.identity   { background: rgba(181, 137, 0, 0.06) !important;  border-color: #b58900 !important; }
+html.theme-light .reveal .ctx-file.periodic   { background: rgba(220, 50, 47, 0.06) !important;  border-color: #dc322f !important; }
+html.theme-light .reveal .ctx-file.memory     { background: rgba(133, 153, 0, 0.06) !important;  border-color: #859900 !important; }
+html.theme-light .reveal .ctx-file.universal  .num { background: #268bd2 !important; color: #fdf6e3 !important; }
+html.theme-light .reveal .ctx-file.personality .num{ background: #6c71c4 !important; color: #fdf6e3 !important; }
+html.theme-light .reveal .ctx-file.identity   .num { background: #b58900 !important; color: #fdf6e3 !important; }
+html.theme-light .reveal .ctx-file.periodic   .num { background: #dc322f !important; color: #fdf6e3 !important; }
+html.theme-light .reveal .ctx-file.memory     .num { background: #859900 !important; color: #fdf6e3 !important; }
+html.theme-light .reveal .cmp-table .yes     { color: #859900 !important; }
+html.theme-light .reveal .cmp-table .no      { color: #dc322f !important; }
+html.theme-light .reveal .cmp-table .special { color: #b58900 !important; }
+html.theme-light .reveal .sub-file.included {
+    background: rgba(133, 153, 0, 0.08) !important;
+    border-color: #859900 !important;
+}
+html.theme-light .reveal .sub-file.excluded {
+    background: rgba(220, 50, 47, 0.04) !important;
+    border-color: rgba(220, 50, 47, 0.3) !important;
+}
+
+/* ── Nanobot (day5-agent-architecture-nanobot) ── */
+html.theme-light .reveal .idea-card {
+    background: linear-gradient(135deg, rgba(38, 139, 210, 0.05), rgba(220, 50, 47, 0.05)) !important;
+}
+html.theme-light .reveal .idea-card h4 { color: #268bd2 !important; }
+html.theme-light .reveal .compare-box.highlight { border-color: #268bd2 !important; }
+
+/* ── Document AI (day5-document-ai) ── */
+html.theme-light .reveal .model-card.open-source { border-color: #859900 !important; }
+html.theme-light .reveal .model-card.proprietary  { border-color: #6c71c4 !important; }
+html.theme-light .reveal .task-card .task-name    { color: #268bd2 !important; }
+html.theme-light .reveal .usecase-card {
+    background: rgba(133, 153, 0, 0.04) !important;
+    border-color: rgba(133, 153, 0, 0.3) !important;
+}
+
+/* ── Tool cards (startup-toolbox, modern-ai-ides) ── */
+html.theme-light .reveal .tool-card {
+    background: rgba(38, 139, 210, 0.04) !important;
+    border-color: rgba(38, 139, 210, 0.3) !important;
+    color: #073642 !important;
+}
+html.theme-light .reveal .tool-card.cursor-card   { border-color: #b58900 !important; }
+html.theme-light .reveal .tool-card.windsurf-card  { border-color: #859900 !important; }
+html.theme-light .reveal .tool-card.cline-card     { border-color: #6c71c4 !important; }
+html.theme-light .reveal .tool-card.claude-card    { border-color: #dc322f !important; }
+html.theme-light .reveal .tag-free {
+    background: rgba(133, 153, 0, 0.08) !important;
+    color: #859900 !important;
+    border-color: #859900 !important;
+}
+html.theme-light .reveal .tag-paid {
+    background: rgba(181, 137, 0, 0.08) !important;
+    color: #b58900 !important;
+    border-color: #b58900 !important;
+}
+html.theme-light .reveal .tag-oss {
+    background: rgba(108, 113, 196, 0.08) !important;
+    color: #6c71c4 !important;
+    border-color: #6c71c4 !important;
+}
+html.theme-light .reveal .tag-new {
+    background: rgba(220, 50, 47, 0.08) !important;
+    color: #dc322f !important;
+    border-color: #dc322f !important;
+}
+
+/* ── Venn diagram ── */
+html.theme-light .reveal .venn .c1 { background: rgba(220, 50, 47, 0.3) !important; }
+html.theme-light .reveal .venn .c2 { background: rgba(38, 139, 210, 0.3) !important; }
+html.theme-light .reveal .venn .c3 { background: rgba(133, 153, 0, 0.3) !important; }
+
+/* ── Timeline ── */
+html.theme-light .reveal .timeline .era {
+    border-color: #268bd2 !important;
+    background: #fdf6e3 !important;
+}
+
+/* ── Roadmap (day1-nlp-fundamentals) ── */
+html.theme-light .reveal .roadmap .day.active {
+    border-color: #dc322f !important;
+    background: rgba(220, 50, 47, 0.04) !important;
+}
+
+/* ── Spectrum bar gradient ── */
+html.theme-light .reveal .spectrum-bar {
+    background: linear-gradient(to right, #268bd2, #b58900, #dc322f) !important;
+}
+
+/* =====================================================
+   Theme toggle button
+   ===================================================== */
+.theme-toggle-btn {
+    position: fixed;
+    bottom: 16px;
+    right: 90px; /* fallback: to the left of Reveal.js controls; JS will override */
+    z-index: 9999;
+    background: rgba(0, 43, 54, 0.75);
+    border: 1px solid rgba(147, 161, 161, 0.4);
+    color: #93a1a1;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.25s, border-color 0.25s, color 0.25s;
+    backdrop-filter: blur(4px);
+    line-height: 1;
+}
+.theme-toggle-btn:hover {
+    background: rgba(0, 43, 54, 0.95);
+    border-color: #7ec8e3;
+    color: #7ec8e3;
+}
+html.theme-light .theme-toggle-btn {
+    background: rgba(253, 246, 227, 0.88);
+    border-color: rgba(88, 110, 117, 0.4);
+    color: #586e75;
+}
+html.theme-light .theme-toggle-btn:hover {
+    background: rgba(253, 246, 227, 1);
+    border-color: #268bd2;
+    color: #268bd2;
+}
