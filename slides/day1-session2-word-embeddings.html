@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Embeddings: From One-Hot to Word2Vec & GloVe</title>
+    <title>Word Embeddings: From One-Hot to Word2vec & GloVe</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/moon.css">
@@ -219,7 +219,7 @@
             <!-- Slide 1: Title -->
             <section>
                 <h1>Word Embeddings</h1>
-                <h3>From One-Hot to Word2Vec & GloVe</h3>
+                <h3>From One-Hot to Word2vec & GloVe</h3>
                 <p style="margin-top: 2em; font-size: 0.7em; color: #93a1a1;">
                     TAL &mdash; Day 1, Session 2<br>
                     February 10, 2026<br>
@@ -257,7 +257,7 @@
                     <div class="arrow">&rarr;</div>
                     <div class="step">n-grams</div>
                     <div class="arrow">&rarr;</div>
-                    <div class="step" style="border-color: #ff6b6b;">Word2Vec</div>
+                    <div class="step" style="border-color: #ff6b6b;">Word2vec</div>
                     <div class="arrow">&rarr;</div>
                     <div class="step" style="border-color: #ff6b6b;">GloVe</div>
                 </div>
@@ -354,7 +354,12 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
                         <p class="small">&rarr; not useful for distinguishing</p>
                     </div>
                 </div>
-                <p class="fragment small" style="margin-top: 1em;">
+                <div class="fragment" style="font-size: 0.68em; background: rgba(255,255,255,0.05); border-radius: 8px; padding: 0.4em 1em; margin: 0.5em 0; text-align: left;">
+                    <strong>🔍 Example</strong> — 3 docs, Doc 1 = <em>"the cat sat on the mat"</em><br>
+                    <span style="color:#ff6b6b;">"the"</span>: TF=0.33, in all 3 docs → IDF = log(3/3) = <strong>0</strong> → TF-IDF = <strong style="color:#ff6b6b;">0.00</strong><br>
+                    <span style="color:#98c379;">"cat"</span>: TF=0.17, in 1 doc only → IDF = log(3/1) = <strong>1.10</strong> → TF-IDF = <strong style="color:#98c379;">0.18</strong>
+                </div>
+                <p class="fragment small" style="margin-top: 0.3em;">
                     Still widely used today: search engines, document retrieval, text classification baselines
                 </p>
                 <aside class="notes">
@@ -472,7 +477,7 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
                 <aside class="notes">
                     This is the most important idea in this entire session.
                     Firth's insight from 1957 is the foundation of ALL modern word embeddings.
-                    Word2Vec, GloVe, and even BERT are all built on this principle.
+                    Word2vec, GloVe, and even BERT are all built on this principle.
                 </aside>
             </section>
 
@@ -484,7 +489,7 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
                     <img src="https://jalammar.github.io/images/word2vec/wikipedia-sliding-window.png"
                          alt="Sliding window over text">
                     <p class="caption">
-                        Source: Jay Alammar, "The Illustrated Word2Vec"
+                        Source: Jay Alammar, "The Illustrated Word2vec"
                         &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
                     </p>
                 </div>
@@ -494,20 +499,20 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
                 <aside class="notes">
                     The sliding window moves through the text, one word at a time.
                     For each position, we look at the center word and its neighbors.
-                    This is how we build the training data for Word2Vec.
+                    This is how we build the training data for Word2vec.
                 </aside>
             </section>
 
-            <!-- ==================== SECTION 3: WORD2VEC ==================== -->
+            <!-- ==================== SECTION 3: Word2vec ==================== -->
 
             <section class="section-title">
-                <h2>Word2Vec</h2>
+                <h2>Word2vec</h2>
                 <h3>Mikolov et al., 2013 &mdash; Google</h3>
             </section>
 
-            <!-- Slide 14: Word2Vec Overview -->
+            <!-- Slide 14: Word2vec Overview -->
             <section>
-                <h2>Word2Vec: The Breakthrough</h2>
+                <h2>Word2vec: The Breakthrough</h2>
                 <ul>
                     <li class="fragment">Published by <strong>Tomas Mikolov et al.</strong> at Google (2013)</li>
                     <li class="fragment">Learn <strong>dense vector representations</strong> (50&ndash;300 dimensions)</li>
@@ -522,7 +527,7 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
                 </p>
                 <p class="ref">Mikolov, T. et al. (2013). "Efficient Estimation of Word Representations in Vector Space." arXiv:1301.3781</p>
                 <aside class="notes">
-                    Word2Vec is arguably the most influential NLP paper of the 2010s.
+                    Word2vec is arguably the most influential NLP paper of the 2010s.
                     It made word embeddings practical and accessible.
                     The key insight: you don't need labeled data — just raw text.
                 </aside>
@@ -532,13 +537,28 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
             <section>
                 <h2>Skip-gram</h2>
                 <p style="font-size: 0.85em;">Given a <span class="highlight">center word</span>, predict the <span class="highlight-blue">context words</span></p>
-                <div class="fig fragment">
-                    <img src="https://jalammar.github.io/images/word2vec/skipgram-sliding-window-samples.png"
-                         alt="Skip-gram training samples">
-                    <p class="caption">
-                        Source: Jay Alammar, "The Illustrated Word2Vec"
-                        &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
-                    </p>
+                <div class="fragment" style="background: rgba(255,255,255,0.05); border-radius: 10px; padding: 1.2em; margin: 0.8em 0; font-size: 0.85em; text-align: center;">
+                    <div style="font-size: 1em; margin-bottom: 0.8em; letter-spacing: 0.05em;">
+                        <span style="background: rgba(126,200,227,0.25); border: 1px dashed #7ec8e3; padding: 0.15em 0.4em; border-radius: 4px; color: #7ec8e3;">the</span>
+                        &nbsp;
+                        <span style="background: rgba(126,200,227,0.25); border: 1px dashed #7ec8e3; padding: 0.15em 0.4em; border-radius: 4px; color: #7ec8e3;">cat</span>
+                        &nbsp;
+                        <span style="background: #ff6b6b; color: white; padding: 0.15em 0.5em; border-radius: 4px; font-weight: bold;">sat</span>
+                        &nbsp;
+                        <span style="background: rgba(126,200,227,0.25); border: 1px dashed #7ec8e3; padding: 0.15em 0.4em; border-radius: 4px; color: #7ec8e3;">on</span>
+                        &nbsp;
+                        <span style="background: rgba(126,200,227,0.25); border: 1px dashed #7ec8e3; padding: 0.15em 0.4em; border-radius: 4px; color: #7ec8e3;">the</span>
+                        &nbsp; mat
+                    </div>
+                    <div style="color: #93a1a1; font-size: 0.75em; margin: 0.3em 0;">window = 2 &nbsp;&nbsp; ↓ &nbsp;&nbsp; predict context</div>
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 0.8em; margin-top: 0.5em;">
+                        <span style="background: #ff6b6b; color: white; padding: 0.2em 0.6em; border-radius: 4px; font-weight: bold;">sat</span>
+                        <span style="font-size: 1.2em; color: #7ec8e3;">&rarr;</span>
+                        <span style="background: rgba(126,200,227,0.2); border: 1px solid #7ec8e3; color: #7ec8e3; padding: 0.2em 0.6em; border-radius: 4px;">the</span>
+                        <span style="background: rgba(126,200,227,0.2); border: 1px solid #7ec8e3; color: #7ec8e3; padding: 0.2em 0.6em; border-radius: 4px;">cat</span>
+                        <span style="background: rgba(126,200,227,0.2); border: 1px solid #7ec8e3; color: #7ec8e3; padding: 0.2em 0.6em; border-radius: 4px;">on</span>
+                        <span style="background: rgba(126,200,227,0.2); border: 1px solid #7ec8e3; color: #7ec8e3; padding: 0.2em 0.6em; border-radius: 4px;">the</span>
+                    </div>
                 </div>
                 <p class="fragment" style="font-size: 0.8em;">
                     Input: <span class="highlight">"sat"</span> &rarr; Output: <span class="highlight-blue">["the", "cat", "on", "the"]</span>
@@ -554,13 +574,28 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
             <section>
                 <h2>CBOW</h2>
                 <p style="font-size: 0.85em;"><strong>C</strong>ontinuous <strong>B</strong>ag <strong>o</strong>f <strong>W</strong>ords: given <span class="highlight-blue">context</span>, predict the <span class="highlight">center word</span></p>
-                <div class="fig fragment">
-                    <img src="https://jalammar.github.io/images/word2vec/continuous-bag-of-words-example.png"
-                         alt="CBOW example">
-                    <p class="caption">
-                        Source: Jay Alammar, "The Illustrated Word2Vec"
-                        &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
-                    </p>
+                <div class="fragment" style="background: rgba(255,255,255,0.05); border-radius: 10px; padding: 1.2em; margin: 0.8em 0; font-size: 0.85em; text-align: center;">
+                    <div style="font-size: 1em; margin-bottom: 0.8em; letter-spacing: 0.05em;">
+                        <span style="background: rgba(126,200,227,0.25); border: 1px dashed #7ec8e3; padding: 0.15em 0.4em; border-radius: 4px; color: #7ec8e3;">the</span>
+                        &nbsp;
+                        <span style="background: rgba(126,200,227,0.25); border: 1px dashed #7ec8e3; padding: 0.15em 0.4em; border-radius: 4px; color: #7ec8e3;">cat</span>
+                        &nbsp;
+                        <span style="background: rgba(255,107,107,0.15); border: 2px dashed #ff6b6b; padding: 0.15em 0.5em; border-radius: 4px; color: #ff6b6b;">___</span>
+                        &nbsp;
+                        <span style="background: rgba(126,200,227,0.25); border: 1px dashed #7ec8e3; padding: 0.15em 0.4em; border-radius: 4px; color: #7ec8e3;">on</span>
+                        &nbsp;
+                        <span style="background: rgba(126,200,227,0.25); border: 1px dashed #7ec8e3; padding: 0.15em 0.4em; border-radius: 4px; color: #7ec8e3;">the</span>
+                        &nbsp; mat
+                    </div>
+                    <div style="color: #93a1a1; font-size: 0.75em; margin: 0.3em 0;">window = 2 &nbsp;&nbsp; ↓ &nbsp;&nbsp; predict center word</div>
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 0.8em; margin-top: 0.5em;">
+                        <span style="background: rgba(126,200,227,0.2); border: 1px solid #7ec8e3; color: #7ec8e3; padding: 0.2em 0.6em; border-radius: 4px;">the</span>
+                        <span style="background: rgba(126,200,227,0.2); border: 1px solid #7ec8e3; color: #7ec8e3; padding: 0.2em 0.6em; border-radius: 4px;">cat</span>
+                        <span style="background: rgba(126,200,227,0.2); border: 1px solid #7ec8e3; color: #7ec8e3; padding: 0.2em 0.6em; border-radius: 4px;">on</span>
+                        <span style="background: rgba(126,200,227,0.2); border: 1px solid #7ec8e3; color: #7ec8e3; padding: 0.2em 0.6em; border-radius: 4px;">the</span>
+                        <span style="font-size: 1.2em; color: #ff6b6b;">&rarr;</span>
+                        <span style="background: #ff6b6b; color: white; padding: 0.2em 0.6em; border-radius: 4px; font-weight: bold;">sat</span>
+                    </div>
                 </div>
                 <p class="fragment" style="font-size: 0.8em;">
                     Input: <span class="highlight-blue">["the", "cat", "on", "the"]</span> &rarr; Output: <span class="highlight">"sat"</span>
@@ -575,14 +610,39 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
             <!-- Slide 17: Skip-gram vs CBOW -->
             <section>
                 <h2>Skip-gram vs CBOW</h2>
-                <div class="fig">
-                    <img src="https://jalammar.github.io/images/word2vec/skipgram-sliding-window.png"
-                         alt="Skip-gram and CBOW comparison"
-                         style="max-height: 280px;">
-                    <p class="caption">
-                        Source: Jay Alammar, "The Illustrated Word2Vec"
-                        &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
-                    </p>
+                <div class="two-column" style="font-size: 0.75em; margin: 0.5em 0; gap: 1em;">
+                    <div style="background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.3); border-radius: 8px; padding: 0.8em; text-align: center;">
+                        <div style="color: #ff6b6b; font-weight: bold; margin-bottom: 0.5em;">Skip-gram</div>
+                        <div style="font-size: 0.9em; margin-bottom: 0.4em;">
+                            <span style="background: rgba(126,200,227,0.2); border: 1px dashed #7ec8e3; padding: 0.1em 0.3em; border-radius: 3px; color: #7ec8e3;">the</span>
+                            <span style="background: rgba(126,200,227,0.2); border: 1px dashed #7ec8e3; padding: 0.1em 0.3em; border-radius: 3px; color: #7ec8e3;">cat</span>
+                            <span style="background: #ff6b6b; color: white; padding: 0.1em 0.4em; border-radius: 3px; font-weight: bold;">sat</span>
+                            <span style="background: rgba(126,200,227,0.2); border: 1px dashed #7ec8e3; padding: 0.1em 0.3em; border-radius: 3px; color: #7ec8e3;">on</span>
+                            <span style="background: rgba(126,200,227,0.2); border: 1px dashed #7ec8e3; padding: 0.1em 0.3em; border-radius: 3px; color: #7ec8e3;">the</span>
+                        </div>
+                        <div style="color: #93a1a1; font-size: 0.8em;">center &rarr; context</div>
+                        <div style="margin-top: 0.3em; font-size: 0.85em;">
+                            <span style="background: #ff6b6b; color: white; padding: 0.1em 0.4em; border-radius: 3px;">sat</span>
+                            <span style="color: #7ec8e3;"> &rarr; </span>
+                            <span style="color: #7ec8e3;">[the, cat, on, the]</span>
+                        </div>
+                    </div>
+                    <div style="background: rgba(126,200,227,0.08); border: 1px solid rgba(126,200,227,0.3); border-radius: 8px; padding: 0.8em; text-align: center;">
+                        <div style="color: #7ec8e3; font-weight: bold; margin-bottom: 0.5em;">CBOW</div>
+                        <div style="font-size: 0.9em; margin-bottom: 0.4em;">
+                            <span style="background: rgba(126,200,227,0.2); border: 1px dashed #7ec8e3; padding: 0.1em 0.3em; border-radius: 3px; color: #7ec8e3;">the</span>
+                            <span style="background: rgba(126,200,227,0.2); border: 1px dashed #7ec8e3; padding: 0.1em 0.3em; border-radius: 3px; color: #7ec8e3;">cat</span>
+                            <span style="background: rgba(255,107,107,0.15); border: 2px dashed #ff6b6b; padding: 0.1em 0.4em; border-radius: 3px; color: #ff6b6b;">___</span>
+                            <span style="background: rgba(126,200,227,0.2); border: 1px dashed #7ec8e3; padding: 0.1em 0.3em; border-radius: 3px; color: #7ec8e3;">on</span>
+                            <span style="background: rgba(126,200,227,0.2); border: 1px dashed #7ec8e3; padding: 0.1em 0.3em; border-radius: 3px; color: #7ec8e3;">the</span>
+                        </div>
+                        <div style="color: #93a1a1; font-size: 0.8em;">context &rarr; center</div>
+                        <div style="margin-top: 0.3em; font-size: 0.85em;">
+                            <span style="color: #7ec8e3;">[the, cat, on, the]</span>
+                            <span style="color: #ff6b6b;"> &rarr; </span>
+                            <span style="background: #ff6b6b; color: white; padding: 0.1em 0.4em; border-radius: 3px;">sat</span>
+                        </div>
+                    </div>
                 </div>
                 <table class="compare-table fragment" style="margin-top: 0.5em;">
                     <tr>
@@ -611,21 +671,34 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
                         <td class="good">Slightly better</td>
                     </tr>
                 </table>
+                <div class="fragment" style="font-size: 0.65em; margin-top: 0.6em; text-align: left; line-height: 1.4;">
+                    <span style="color: #ff6b6b; font-weight: bold;">Rare words — Skip-gram wins:</span>
+                    each occurrence generates multiple (center→context) pairs, enough signal even for infrequent words.
+                    CBOW averages context vectors, so rare center words get drowned out.
+                </div>
+                <div class="fragment" style="font-size: 0.65em; margin-top: 0.3em; text-align: left; line-height: 1.4;">
+                    <span style="color: #7ec8e3; font-weight: bold;">Common words — CBOW slightly better:</span>
+                    frequent words appear as input on almost every step → fast, stable convergence.
+                    Skip-gram produces huge numbers of redundant pairs for them.
+                </div>
                 <aside class="notes">
-                    In practice, Skip-gram with negative sampling (SGNS) is the most widely used.
-                    Same architecture, different objective — just swap input and output.
+                    Rare words — Skip-gram wins: Skip-gram predicts context from a single center word (sat → the, cat, on, the). Even a rare word like "platypus" generates multiple training pairs per occurrence, so the model accumulates enough signal to learn a good vector. CBOW averages context words to predict the center, so rare words get drowned out in the average and their signal is weak.
+
+                    Common words — CBOW slightly better: Words like "the" and "is" appear constantly, so CBOW sees them as input on almost every training step — fast, stable convergence. Skip-gram handles them well too, but produces huge numbers of redundant training pairs (the → ...) which is wasteful.
+
+                    In practice, Skip-gram with negative sampling (SGNS) is the most widely used. Same architecture, different objective — just swap input and output.
                 </aside>
             </section>
 
             <!-- Slide 18: How Training Works -->
             <section>
-                <h2>Training Word2Vec</h2>
+                <h2>Training Word2vec</h2>
                 <p style="font-size: 0.85em;">A shallow neural network learns embeddings as a <strong>side effect</strong></p>
                 <div class="fig fragment">
                     <img src="https://jalammar.github.io/images/word2vec/word2vec-training-example.png"
-                         alt="Word2Vec training example">
+                         alt="Word2vec training example">
                     <p class="caption">
-                        Source: Jay Alammar, "The Illustrated Word2Vec"
+                        Source: Jay Alammar, "The Illustrated Word2vec"
                         &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
                     </p>
                 </div>
@@ -642,16 +715,16 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
             <!-- Slide 19: Negative Sampling -->
             <section>
                 <h2>Negative Sampling</h2>
-                <p style="font-size: 0.85em;">The trick that makes Word2Vec practical</p>
-                <div class="fig fragment">
+                <p style="font-size: 0.85em; margin: 0 0 8px 0;">The trick that makes Word2vec practical</p>
+                <div class="fig fragment" style="margin: 0 0 8px 0;">
                     <img src="https://jalammar.github.io/images/word2vec/word2vec-negative-sampling.png"
-                         alt="Negative sampling">
-                    <p class="caption">
-                        Source: Jay Alammar, "The Illustrated Word2Vec"
+                         alt="Negative sampling" style="max-height: 220px;">
+                    <p class="caption" style="margin: 4px 0 0 0;">
+                        Source: Jay Alammar, "The Illustrated Word2vec"
                         &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
                     </p>
                 </div>
-                <ul style="font-size: 0.75em;">
+                <ul style="font-size: 0.75em; margin: 0;">
                     <li class="fragment"><strong>Problem</strong>: softmax over 100K+ words is too expensive</li>
                     <li class="fragment"><strong>Solution</strong>: binary classification &mdash; is this a real pair or a random one?</li>
                     <li class="fragment">For each positive pair, sample 5&ndash;20 <span class="highlight">negative</span> (random) pairs</li>
@@ -685,7 +758,7 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
                     By Xin Rong, author of "word2vec Parameter Learning Explained" (arXiv:1411.2738)
                 </p>
                 <aside class="notes">
-                    This is the best interactive visualization of Word2Vec training.
+                    This is the best interactive visualization of Word2vec training.
                     Students should try it during the break or at home.
                     Key insight: watch how similar words cluster together as training progresses.
                 </aside>
@@ -694,25 +767,25 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
             <!-- Slide 20: Training Process Step by Step -->
             <section>
                 <h2>Training Process</h2>
-                <div class="fig">
+                <div class="fig" style="margin: 0 0 8px 0;">
                     <img src="https://jalammar.github.io/images/word2vec/word2vec-training-update.png"
-                         alt="Word2Vec training weight update"
-                         style="max-height: 300px;">
-                    <p class="caption">
-                        Source: Jay Alammar, "The Illustrated Word2Vec"
+                         alt="Word2vec training weight update"
+                         style="max-height: 200px;">
+                    <p class="caption" style="margin: 4px 0 0 0;">
+                        Source: Jay Alammar, "The Illustrated Word2vec"
                         &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
                     </p>
                 </div>
-                <div class="step-box fragment">
+                <div class="step-box fragment" style="margin: 6px auto; padding: 8px 16px;">
                     <span class="step-num">1</span> Look up embeddings for input word and context word
                 </div>
-                <div class="step-box fragment">
+                <div class="step-box fragment" style="margin: 6px auto; padding: 8px 16px;">
                     <span class="step-num">2</span> Compute dot product &rarr; sigmoid &rarr; prediction
                 </div>
-                <div class="step-box fragment">
+                <div class="step-box fragment" style="margin: 6px auto; padding: 8px 16px;">
                     <span class="step-num">3</span> Compare with label (1 = real pair, 0 = negative) &rarr; error
                 </div>
-                <div class="step-box fragment">
+                <div class="step-box fragment" style="margin: 6px auto; padding: 8px 16px;">
                     <span class="step-num">4</span> Update embeddings via backpropagation
                 </div>
                 <aside class="notes">
@@ -722,10 +795,10 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
                 </aside>
             </section>
 
-            <!-- ==================== SECTION 4: WHAT WORD2VEC LEARNS ==================== -->
+            <!-- ==================== SECTION 4: WHAT Word2vec LEARNS ==================== -->
 
             <section class="section-title">
-                <h2>What Word2Vec Learns</h2>
+                <h2>What Word2vec Learns</h2>
                 <h3>The magic of the vector space</h3>
             </section>
 
@@ -737,7 +810,7 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
                          alt="Word embedding dimensions"
                          style="max-height: 350px;">
                     <p class="caption">
-                        Source: Jay Alammar, "The Illustrated Word2Vec"
+                        Source: Jay Alammar, "The Illustrated Word2vec"
                         &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
                     </p>
                 </div>
@@ -765,7 +838,7 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
                          alt="King-Queen analogy visualization"
                          style="max-height: 300px;">
                     <p class="caption">
-                        Source: Jay Alammar, "The Illustrated Word2Vec"
+                        Source: Jay Alammar, "The Illustrated Word2vec"
                         &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
                     </p>
                 </div>
@@ -811,12 +884,12 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
                 <h2>Semantic & Syntactic Patterns</h2>
                 <div class="two-column">
                     <div class="fig fragment">
-                        <img src="https://nlp.stanford.edu/projects/glove/images/company_ceo_small.jpg"
+                        <img src="https://nlp.stanford.edu/projects/glove/images/company_ceo.jpg"
                              alt="Company-CEO relationships" style="max-height: 300px;">
                         <p class="caption">Company &harr; CEO</p>
                     </div>
                     <div class="fig fragment">
-                        <img src="https://nlp.stanford.edu/projects/glove/images/city_zip_small.jpg"
+                        <img src="https://nlp.stanford.edu/projects/glove/images/city_zip.jpg"
                              alt="City-Zip code relationships" style="max-height: 300px;">
                         <p class="caption">City &harr; Zip Code</p>
                     </div>
@@ -867,7 +940,7 @@ cos(cat, car)      = 0.12</pre>
             <section class="discussion-slide">
                 <h2>Think About It</h2>
                 <p style="font-size: 0.95em; margin-bottom: 1em;">
-                    What other analogies would you expect Word2Vec to capture?
+                    What other analogies would you expect Word2vec to capture?
                 </p>
                 <ul style="font-size: 0.85em;">
                     <li class="fragment">Paris &minus; France + Japan = <span class="highlight-blue">?</span></li>
@@ -898,7 +971,7 @@ cos(cat, car)      = 0.12</pre>
                 <p style="font-size: 0.85em;"><strong>Glo</strong>bal <strong>Ve</strong>ctors for Word Representation</p>
                 <ul>
                     <li class="fragment">
-                        <strong>Key difference from Word2Vec</strong>:<br>
+                        <strong>Key difference from Word2vec</strong>:<br>
                         <span style="font-size: 0.85em;">uses <span class="highlight-blue">global co-occurrence statistics</span>, not just local windows</span>
                     </li>
                     <li class="fragment">
@@ -918,7 +991,7 @@ cos(cat, car)      = 0.12</pre>
                 <aside class="notes">
                     GloVe combines the best of two worlds:
                     - Global matrix factorization (like LSA) — captures global statistics
-                    - Local context window (like Word2Vec) — captures local patterns
+                    - Local context window (like Word2vec) — captures local patterns
                     The name literally means "Global Vectors".
                 </aside>
             </section>
@@ -972,36 +1045,74 @@ cos(cat, car)      = 0.12</pre>
                 </aside>
             </section>
 
-            <!-- Slide 29c: Deriving the GloVe Objective -->
+            <!-- Slide 29c: Three Roles in GloVe -->
             <section>
                 <h2>Why Dot Products = Log Counts?</h2>
-                <p style="font-size: 0.85em;">The derivation follows from a simple requirement</p>
-                <div class="step-box fragment">
-                    <span class="step-num">1</span>
-                    <strong>Goal</strong>: find F such that F(w<sub>i</sub>, w<sub>j</sub>, w̃<sub>k</sub>) = P<sub>ik</sub> / P<sub>jk</sub>
-                </div>
-                <div class="step-box fragment">
-                    <span class="step-num">2</span>
-                    Ratios come from <strong>differences</strong>: F((w<sub>i</sub> - w<sub>j</sub>) · w̃<sub>k</sub>) = ratio
-                </div>
-                <div class="step-box fragment">
-                    <span class="step-num">3</span>
-                    What converts <strong>differences → ratios</strong>? The <span class="highlight-blue">exponential</span>!
-                    <div style="margin-top: 0.3em; font-size: 0.9em;">
-                        <span class="formula">exp(a - b) = exp(a) / exp(b)</span>
+                <p style="font-size: 0.85em; margin: 0 0 10px 0;">Three roles in the derivation &mdash; a concrete example:</p>
+                <div style="display: flex; gap: 1em; justify-content: center; margin-bottom: 0.8em;">
+                    <div class="box fragment" style="flex: 1; text-align: center; padding: 12px 8px;">
+                        <div style="font-size: 1.1em; color: #ff6b6b;"><strong>i</strong></div>
+                        <div style="font-size: 0.75em; margin-top: 4px;">target word</div>
+                        <div style="font-size: 1em; margin-top: 6px;">"ice"</div>
+                    </div>
+                    <div class="box fragment" style="flex: 1; text-align: center; padding: 12px 8px;">
+                        <div style="font-size: 1.1em; color: #93a1a1;"><strong>j</strong></div>
+                        <div style="font-size: 0.75em; margin-top: 4px;">comparison word</div>
+                        <div style="font-size: 1em; margin-top: 6px;">"steam"</div>
+                    </div>
+                    <div class="box fragment" style="flex: 1; text-align: center; padding: 12px 8px;">
+                        <div style="font-size: 1.1em; color: #7ec8e3;"><strong>k</strong></div>
+                        <div style="font-size: 0.75em; margin-top: 4px;">probe word</div>
+                        <div style="font-size: 1em; margin-top: 6px;">"solid"</div>
                     </div>
                 </div>
-                <div class="step-box fragment">
-                    <span class="step-num">4</span>
-                    Take log of both sides → <strong>w<sub>i</sub> · w̃<sub>k</sub> = log(X<sub>ik</sub>) + biases</strong>
+                <div class="fragment" style="background: rgba(255,107,107,0.1); border-left: 3px solid #ff6b6b; padding: 10px 16px; border-radius: 6px; font-size: 0.82em;">
+                    <strong>X<sub>ik</sub></strong> = how often "ice" and "solid" co-occur &nbsp;&nbsp;
+                    <strong>X<sub>jk</sub></strong> = how often "steam" and "solid" co-occur
                 </div>
-                <p class="fragment" style="font-size: 0.8em; color: #7ec8e3; margin-top: 1em;">
-                    The objective function isn't arbitrary &mdash; it's <strong>mathematically inevitable</strong>!
+                <p class="fragment" style="font-size: 0.82em; margin: 10px 0 0 0;">
+                    If <strong>X<sub>ik</sub> / X<sub>jk</sub> &gg; 1</strong> &rarr; "solid" is much closer to "ice" than to "steam" &mdash; exactly what we want vectors to capture
                 </p>
                 <aside class="notes">
-                    This derivation is what makes GloVe elegant.
-                    Each step is forced by mathematical constraints.
-                    The exponential is the ONLY function that converts addition to multiplication.
+                    i is the word we care about. j is the reference/comparison. k is the probe we use to test.
+                    The ratio X_ik/X_jk is more informative than raw counts alone.
+                </aside>
+            </section>
+
+            <!-- Slide 29d: Deriving the GloVe Objective -->
+            <section>
+                <h2>The Derivation: Forced by Math</h2>
+                <p style="font-size: 0.82em; margin: 0 0 8px 0;">Each step is the <em>only</em> valid choice &mdash; nothing is arbitrary</p>
+                <div class="step-box fragment" style="margin: 6px auto; padding: 8px 16px; font-size: 0.82em;">
+                    <span class="step-num">1</span>
+                    <strong>Goal</strong>: find F such that &nbsp; F(w<sub>i</sub>, w<sub>j</sub>, w̃<sub>k</sub>) = X<sub>ik</sub> / X<sub>jk</sub>
+                    <span style="color: #93a1a1; font-size: 0.85em;">&nbsp;(j is just a scaffold to form the ratio)</span>
+                </div>
+                <div class="step-box fragment" style="margin: 6px auto; padding: 8px 16px; font-size: 0.82em;">
+                    <span class="step-num">2</span>
+                    In vector space, <strong>ratios come from differences</strong>:
+                    &nbsp; F( (w<sub>i</sub> &minus; w<sub>j</sub>) &middot; w̃<sub>k</sub> ) = X<sub>ik</sub> / X<sub>jk</sub>
+                </div>
+                <div class="step-box fragment" style="margin: 6px auto; padding: 8px 16px; font-size: 0.82em;">
+                    <span class="step-num">3</span>
+                    What converts <strong>difference &rarr; ratio</strong>? Only <span class="highlight-blue">exp</span>:
+                    &nbsp; <span class="formula" style="font-size: 0.9em;">exp(a &minus; b) = exp(a) / exp(b)</span>
+                    &nbsp; &rarr; F must be exp
+                </div>
+                <div class="step-box fragment" style="margin: 6px auto; padding: 8px 16px; font-size: 0.82em;">
+                    <span class="step-num">4</span>
+                    exp(w<sub>i</sub>&middot;w̃<sub>k</sub>) / exp(w<sub>j</sub>&middot;w̃<sub>k</sub>) = X<sub>ik</sub>/X<sub>jk</sub>
+                    &rarr; each pair (i,k) independently satisfies:
+                    &nbsp; <strong>w<sub>i</sub> &middot; w̃<sub>k</sub> = log(X<sub>ik</sub>) + bias</strong>
+                    &nbsp; <span style="color: #93a1a1; font-size: 0.85em;">(j drops out!)</span>
+                </div>
+                <p class="fragment" style="font-size: 0.78em; color: #7ec8e3; margin: 8px 0 0 0;">
+                    Not an arbitrary design &mdash; <strong>mathematically inevitable</strong> from the goal alone
+                </p>
+                <aside class="notes">
+                    Step 4: the ratio equation factorizes. numerator = numerator, denominator = denominator.
+                    So each (i,k) pair independently satisfies exp(w_i · w̃_k) = X_ik * constant.
+                    Take log: dot product = log co-occurrence + bias. j was scaffolding — once derived, it's gone.
                 </aside>
             </section>
 
@@ -1070,10 +1181,10 @@ mat    [  3,    1,    6,    7,    0 ]</pre>
             <!-- Slide 30c: The Deep Connection -->
             <section>
                 <h2>The Deep Connection</h2>
-                <p style="font-size: 0.85em;">Word2Vec and GloVe are <strong>more similar than they appear</strong></p>
+                <p style="font-size: 0.85em;">Word2vec and GloVe are <strong>more similar than they appear</strong></p>
                 <div class="fragment" style="background: rgba(255,107,107,0.1); padding: 1em; border-radius: 8px; border-left: 4px solid #ff6b6b;">
                     <p style="margin: 0; font-size: 0.85em;">
-                        <strong>Levy & Goldberg (2014)</strong> proved that Word2Vec Skip-gram with Negative Sampling
+                        <strong>Levy & Goldberg (2014)</strong> proved that Word2vec Skip-gram with Negative Sampling
                         is <strong>implicitly factorizing a shifted PMI matrix</strong>!
                     </p>
                 </div>
@@ -1084,7 +1195,7 @@ mat    [  3,    1,    6,    7,    0 ]</pre>
                     <p style="font-size: 0.65em; color: #93a1a1;">where k = number of negative samples</p>
                 </div>
                 <ul style="font-size: 0.75em; margin-top: 0.8em;">
-                    <li class="fragment"><strong>Word2Vec</strong>: learns this factorization <em>implicitly</em> via SGD</li>
+                    <li class="fragment"><strong>Word2vec</strong>: learns this factorization <em>implicitly</em> via SGD</li>
                     <li class="fragment"><strong>GloVe</strong>: learns this factorization <em>explicitly</em> via matrix objective</li>
                     <li class="fragment">Both capture the same underlying semantic structure!</li>
                 </ul>
@@ -1098,13 +1209,13 @@ mat    [  3,    1,    6,    7,    0 ]</pre>
                 </aside>
             </section>
 
-            <!-- Slide 31: Word2Vec vs GloVe -->
+            <!-- Slide 31: Word2vec vs GloVe -->
             <section>
-                <h2>Word2Vec vs GloVe</h2>
+                <h2>Word2vec vs GloVe</h2>
                 <table class="compare-table">
                     <tr>
                         <th></th>
-                        <th>Word2Vec</th>
+                        <th>Word2vec</th>
                         <th>GloVe</th>
                     </tr>
                     <tr class="fragment">
@@ -1139,7 +1250,7 @@ mat    [  3,    1,    6,    7,    0 ]</pre>
                 <aside class="notes">
                     The debate "which is better?" has largely been settled: they're comparable.
                     GloVe tends to be preferred in academic research partly because of Stanford's influence.
-                    Word2Vec with negative sampling is very popular in industry.
+                    Word2vec with negative sampling is very popular in industry.
                     Both are available as pre-trained models you can download and use immediately.
                 </aside>
             </section>
@@ -1159,7 +1270,7 @@ mat    [  3,    1,    6,    7,    0 ]</pre>
                          alt="Effect of window size"
                          style="max-height: 300px;">
                     <p class="caption">
-                        Source: Jay Alammar, "The Illustrated Word2Vec"
+                        Source: Jay Alammar, "The Illustrated Word2vec"
                         &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
                     </p>
                 </div>
@@ -1220,7 +1331,7 @@ doctor &minus; man + woman &asymp; nurse</pre>
                     </p>
                 </div>
                 <p class="fragment" style="margin-top: 1em; font-size: 0.85em;">
-                    Word2Vec / GloVe: same vector for both!
+                    Word2vec / GloVe: same vector for both!
                 </p>
                 <div class="fragment" style="margin-top: 1em;">
                     <p style="font-size: 0.85em; color: #7ec8e3;">
@@ -1229,7 +1340,7 @@ doctor &minus; man + woman &asymp; nurse</pre>
                     <p class="small">Different vector for each usage of the word &mdash; Day 2 & 3 material</p>
                 </div>
                 <aside class="notes">
-                    This is THE fundamental limitation of Word2Vec and GloVe.
+                    This is THE fundamental limitation of Word2vec and GloVe.
                     Static = one vector forever. But words have multiple meanings.
                     The solution came in 2018 with ELMo and BERT: contextual embeddings
                     where the vector depends on the surrounding context.
@@ -1256,7 +1367,7 @@ doctor &minus; man + woman &asymp; nurse</pre>
                         <th>Dimensions</th>
                     </tr>
                     <tr class="fragment">
-                        <td>Word2Vec</td>
+                        <td>Word2vec</td>
                         <td>Google News</td>
                         <td>3M words</td>
                         <td>300</td>
@@ -1290,10 +1401,10 @@ doctor &minus; man + woman &asymp; nurse</pre>
 
             <!-- Slide 38: Code Example -->
             <section>
-                <h2>Using Word2Vec in Python</h2>
+                <h2>Using Word2vec in Python</h2>
                 <pre style="font-size: 0.55em;"><code class="python">import gensim.downloader as api
 
-# Load pre-trained Word2Vec (Google News, 300d)
+# Load pre-trained Word2vec (Google News, 300d)
 model = api.load("word2vec-google-news-300")
 
 # Find similar words
@@ -1314,7 +1425,7 @@ model.similarity("cat", "car")     # 0.12</code></pre>
                 <aside class="notes">
                     Live demo opportunity: run this code in front of students.
                     Let them suggest words and analogies to try.
-                    gensim is the standard library for Word2Vec in Python.
+                    gensim is the standard library for Word2vec in Python.
                 </aside>
             </section>
 
@@ -1341,7 +1452,7 @@ model.similarity("cat", "car")     # 0.12</code></pre>
                 </ul>
                 <aside class="notes">
                     Embeddings are not just an academic exercise — they're everywhere in production.
-                    Spotify's "Word2Vec for music" treats songs as words and playlists as sentences.
+                    Spotify's "Word2vec for music" treats songs as words and playlists as sentences.
                     Airbnb uses listing embeddings for search ranking.
                     And of course, every LLM starts by embedding input tokens.
                 </aside>
@@ -1357,27 +1468,27 @@ model.similarity("cat", "car")     # 0.12</code></pre>
             <!-- Slide 41: The Evolution -->
             <section>
                 <h2>The Evolution of Text Representation</h2>
-                <div class="pipeline" style="flex-direction: column; gap: 0.5em;">
+                <div class="pipeline" style="flex-direction: column; gap: 0.2em; margin: 0.3em auto;">
                     <div style="display: flex; align-items: center; gap: 0.5em;">
                         <div class="step" style="min-width: 180px; border-color: #93a1a1;">One-Hot</div>
                         <span style="font-size: 0.7em; color: #93a1a1;">sparse, no similarity</span>
                     </div>
-                    <div class="arrow" style="font-size: 1.2em;">&darr;</div>
+                    <div class="arrow" style="font-size: 0.9em; line-height: 1;">&darr;</div>
                     <div style="display: flex; align-items: center; gap: 0.5em;">
                         <div class="step" style="min-width: 180px; border-color: #93a1a1;">BoW / TF-IDF</div>
                         <span style="font-size: 0.7em; color: #93a1a1;">document-level, word importance</span>
                     </div>
-                    <div class="arrow" style="font-size: 1.2em;">&darr;</div>
+                    <div class="arrow" style="font-size: 0.9em; line-height: 1;">&darr;</div>
                     <div style="display: flex; align-items: center; gap: 0.5em;">
                         <div class="step" style="min-width: 180px; border-color: #93a1a1;">n-grams</div>
                         <span style="font-size: 0.7em; color: #93a1a1;">local order, but combinatorial explosion</span>
                     </div>
-                    <div class="arrow" style="font-size: 1.2em;">&darr;</div>
+                    <div class="arrow" style="font-size: 0.9em; line-height: 1;">&darr;</div>
                     <div style="display: flex; align-items: center; gap: 0.5em;">
-                        <div class="step" style="min-width: 180px; border-color: #ff6b6b;">Word2Vec / GloVe</div>
+                        <div class="step" style="min-width: 180px; border-color: #ff6b6b;">Word2vec / GloVe</div>
                         <span style="font-size: 0.7em; color: #ff6b6b;">dense, semantic, learned</span>
                     </div>
-                    <div class="arrow" style="font-size: 1.2em;">&darr;</div>
+                    <div class="arrow" style="font-size: 0.9em; line-height: 1;">&darr;</div>
                     <div style="display: flex; align-items: center; gap: 0.5em;">
                         <div class="step" style="min-width: 180px; border-color: #7ec8e3;">Contextual (BERT, GPT)</div>
                         <span style="font-size: 0.7em; color: #7ec8e3;">Day 2 & 3</span>
@@ -1401,7 +1512,7 @@ model.similarity("cat", "car")     # 0.12</code></pre>
                         <strong>Distributional hypothesis</strong>: meaning comes from context
                     </li>
                     <li class="fragment" style="margin-bottom: 0.5em;">
-                        <strong>Word2Vec & GloVe</strong>: dense vectors that capture semantic relationships
+                        <strong>Word2vec & GloVe</strong>: dense vectors that capture semantic relationships
                     </li>
                     <li class="fragment" style="margin-bottom: 0.5em;">
                         Vector arithmetic reveals <strong>latent structure</strong> in language
@@ -1426,12 +1537,12 @@ model.similarity("cat", "car")     # 0.12</code></pre>
                     </tr>
                     <tr class="fragment">
                         <td><strong>wevi</strong></td>
-                        <td>Watch Word2Vec weights update live during training</td>
+                        <td>Watch Word2vec weights update live during training</td>
                         <td><a href="http://ronxin.github.io/wevi/" style="color: #7ec8e3;">ronxin.github.io/wevi</a></td>
                     </tr>
                     <tr class="fragment">
                         <td><strong>Imperial Demo</strong></td>
-                        <td>Train your own Word2Vec, see PCA clustering</td>
+                        <td>Train your own Word2vec, see PCA clustering</td>
                         <td><a href="https://www.doc.ic.ac.uk/~nuric/word2vec_demo.html" style="color: #7ec8e3;">doc.ic.ac.uk/~nuric</a></td>
                     </tr>
                     <tr class="fragment">
@@ -1467,7 +1578,7 @@ model.similarity("cat", "car")     # 0.12</code></pre>
                 <ul style="font-size: 0.65em;">
                     <li>
                         Mikolov et al. (2013). <em>"Efficient Estimation of Word Representations in Vector Space"</em>
-                        <span style="color: #93a1a1;">&mdash; The Word2Vec paper</span>
+                        <span style="color: #93a1a1;">&mdash; The Word2vec paper</span>
                     </li>
                     <li>
                         Pennington, Socher & Manning (2014). <em>"GloVe: Global Vectors for Word Representation"</em>
@@ -1478,7 +1589,7 @@ model.similarity("cat", "car")     # 0.12</code></pre>
                         <span style="color: #93a1a1;">&mdash; The unifying theory</span>
                     </li>
                     <li>
-                        Jay Alammar. <em>"The Illustrated Word2Vec"</em>
+                        Jay Alammar. <em>"The Illustrated Word2vec"</em>
                         <span style="color: #93a1a1;">&mdash;
                         <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #7ec8e3;">jalammar.github.io</a></span>
                     </li>
@@ -1500,7 +1611,7 @@ model.similarity("cat", "car")     # 0.12</code></pre>
                 </ul>
                 <aside class="notes">
                     Added Levy & Goldberg for the unified theory view.
-                    Xin Rong's paper is the clearest explanation of Word2Vec math.
+                    Xin Rong's paper is the clearest explanation of Word2vec math.
                     Encourage students to read the Jay Alammar post — it's the best visual introduction.
                     CS224N lecture videos are freely available on YouTube.
                 </aside>
