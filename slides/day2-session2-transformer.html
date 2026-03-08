@@ -400,7 +400,7 @@
                 <div class="two-column">
                     <div>
                         <h3 style="color: #ff6b6b;">RNN / LSTM</h3>
-                        <div class="pipeline" style="flex-direction: column; gap: 0.2em;">
+                        <div class="pipeline" style="flex-direction: column; gap: 0em;">
                             <div class="step" style="width: 160px;">x<sub>1</sub> &rarr; h<sub>1</sub></div>
                             <div class="arrow" style="transform: rotate(90deg);">&rarr;</div>
                             <div class="step" style="width: 160px;">x<sub>2</sub> &rarr; h<sub>2</sub></div>
@@ -458,30 +458,30 @@
                     <div style="text-align: center;">
                         <h3 style="color: #7ec8e3;">Encoder</h3>
                         <p class="small" style="color:#7ec8e3;">"Understand the input"</p>
-                        <div style="border: 2px solid #7ec8e3; border-radius: 12px; padding: 0.5em; position:relative;">
+                        <div style="border: 2px solid #7ec8e3; border-radius: 12px; padding: 0.5em;">
                             <div class="arch-box norm" style="font-size:0.65em;">Add &amp; Norm</div>
                             <div class="arch-box ffn" style="font-size:0.65em;">Feed-Forward Network</div>
                             <div class="arch-box norm" style="font-size:0.65em;">Add &amp; Norm</div>
                             <div class="arch-box attention" style="font-size:0.65em;">Multi-Head Self-Attention</div>
-                            <span style="position:absolute; right:-1.8em; top:50%; transform:translateY(-50%); font-size:0.7em; color:#93a1a1;">&times;6</span>
                         </div>
+                        <div style="text-align:right; font-size:0.65em; color:#93a1a1; margin-top:0.1em;">&times;6</div>
                         <div class="arch-arrow">&uarr;</div>
                         <div class="arch-box embed" style="font-size:0.65em;">Input Embedding + Positional Encoding</div>
                     </div>
                     <div style="text-align: center;" class="fragment">
                         <h3 style="color: #c678dd;">Decoder</h3>
                         <p class="small" style="color:#c678dd;">"Generate the output"</p>
-                        <div style="border: 2px solid #c678dd; border-radius: 12px; padding: 0.5em; position:relative;">
-                            <div class="arch-box norm" style="font-size:0.65em;">Add &amp; Norm</div>
-                            <div class="arch-box ffn" style="font-size:0.65em;">Feed-Forward Network</div>
-                            <div class="arch-box norm" style="font-size:0.65em;">Add &amp; Norm</div>
-                            <div class="arch-box output" style="font-size:0.65em;">Multi-Head Cross-Attention</div>
-                            <div class="arch-box norm" style="font-size:0.65em;">Add &amp; Norm</div>
-                            <div class="arch-box attention" style="font-size:0.65em;">Masked Multi-Head Self-Attention</div>
-                            <span style="position:absolute; right:-1.8em; top:50%; transform:translateY(-50%); font-size:0.7em; color:#93a1a1;">&times;6</span>
+                        <div style="border: 2px solid #c678dd; border-radius: 12px; padding: 0.3em;">
+                            <div class="arch-box norm" style="font-size:0.6em; margin:0.15em auto;">Add &amp; Norm</div>
+                            <div class="arch-box ffn" style="font-size:0.6em; margin:0.15em auto;">Feed-Forward Network</div>
+                            <div class="arch-box norm" style="font-size:0.6em; margin:0.15em auto;">Add &amp; Norm</div>
+                            <div class="arch-box output" style="font-size:0.6em; margin:0.15em auto;">Multi-Head Cross-Attention</div>
+                            <div class="arch-box norm" style="font-size:0.6em; margin:0.15em auto;">Add &amp; Norm</div>
+                            <div class="arch-box attention" style="font-size:0.6em; margin:0.15em auto;">Masked Multi-Head Self-Attention</div>
                         </div>
-                        <div class="arch-arrow">&uarr;</div>
-                        <div class="arch-box embed" style="font-size:0.65em;">Output Embedding + Positional Encoding</div>
+                        <div style="text-align:right; font-size:0.65em; color:#93a1a1; margin-top:0.1em;">&times;6</div>
+                        <div class="arch-arrow" style="margin:0.05em 0;">&uarr;</div>
+                        <div class="arch-box embed" style="font-size:0.6em; margin:0.15em auto;">Output Embedding + Positional Encoding</div>
                     </div>
                 </div>
                 <aside class="notes">
@@ -621,28 +621,66 @@
 
             <section>
                 <h2>Sinusoidal Positional Encoding</h2>
-                <p style="font-size: 0.8em;">The original paper uses <span class="highlight-blue">sine and cosine</span> functions:</p>
-                <div class="formula-box fragment" style="display:block; text-align:center; font-size: 0.95em;">
-                    PE<sub>(pos, 2i)</sub> = sin(pos / 10000<sup>2i/d</sup>)<br><br>
-                    PE<sub>(pos, 2i+1)</sub> = cos(pos / 10000<sup>2i/d</sup>)
-                </div>
-                <div class="fragment" style="margin-top: 1em;">
-                    <p style="font-size: 0.75em;">Each position gets a <span class="highlight-green">unique pattern</span> of sines and cosines at different frequencies:</p>
-                    <div class="wave-container">
-                        <div class="wave-bar" style="height:60px; background:#ff6b6b;"></div>
-                        <div class="wave-bar" style="height:20px; background:#ff6b6b;"></div>
-                        <div class="wave-bar" style="height:45px; background:#7ec8e3;"></div>
-                        <div class="wave-bar" style="height:70px; background:#7ec8e3;"></div>
-                        <div class="wave-bar" style="height:35px; background:#98c379;"></div>
-                        <div class="wave-bar" style="height:10px; background:#98c379;"></div>
-                        <div class="wave-bar" style="height:55px; background:#e5c07b;"></div>
-                        <div class="wave-bar" style="height:40px; background:#e5c07b;"></div>
-                        <div class="wave-bar" style="height:15px; background:#c678dd;"></div>
-                        <div class="wave-bar" style="height:65px; background:#c678dd;"></div>
-                        <div class="wave-bar" style="height:50px; background:#ff6b6b;"></div>
-                        <div class="wave-bar" style="height:25px; background:#7ec8e3;"></div>
+                <div class="two-column" style="gap:1.5em; align-items:flex-start;">
+                    <!-- Left: formula + legend -->
+                    <div>
+                        <div class="formula-box fragment" style="display:block; text-align:center; font-size:0.85em; padding:0.5em 0.8em; margin:0.2em 0;">
+                            PE<sub>(pos, 2i)</sub> = sin(pos / 10000<sup>2i/d</sup>)<br>
+                            PE<sub>(pos, 2i+1)</sub> = cos(pos / 10000<sup>2i/d</sup>)
+                        </div>
+                        <div class="fragment" style="margin-top:0.5em; font-size:0.7em; line-height:1.7em;">
+                            <span class="highlight-yellow">pos</span> = position index of the word (0, 1, 2 …)<br>
+                            <span class="highlight-blue">i</span> &nbsp;= dimension index (0, 1, … d/2−1)<br>
+                            <span class="highlight-green">d</span> &nbsp;= total embedding size (e.g. 512)<br>
+                            <span style="color:#93a1a1;">Even dims → sin &nbsp;|&nbsp; Odd dims → cos</span>
+                        </div>
                     </div>
-                    <p class="small" style="text-align:center;">Low dimensions = high frequency | High dimensions = low frequency</p>
+                    <!-- Right: concrete example -->
+                    <div class="fragment">
+                        <p style="font-size:0.7em; margin:0 0 0.3em 0;">Example: <em style="color:#e5c07b;">"I love NLP"</em>, simplified to <span class="highlight-green">d=4</span></p>
+                        <table style="font-size:0.62em; border-collapse:collapse; width:100%; text-align:center;">
+                            <thead>
+                                <tr style="color:#93a1a1; border-bottom:1px solid #444;">
+                                    <th style="padding:0.3em 0.4em;">Word</th>
+                                    <th style="padding:0.3em 0.4em;"><span class="highlight-yellow">pos</span></th>
+                                    <th style="padding:0.3em 0.4em;">dim 0<br><span style="color:#93a1a1; font-weight:normal;">sin(pos/1)</span></th>
+                                    <th style="padding:0.3em 0.4em;">dim 1<br><span style="color:#93a1a1; font-weight:normal;">cos(pos/1)</span></th>
+                                    <th style="padding:0.3em 0.4em;">dim 2<br><span style="color:#93a1a1; font-weight:normal;">sin(pos/100)</span></th>
+                                    <th style="padding:0.3em 0.4em;">dim 3<br><span style="color:#93a1a1; font-weight:normal;">cos(pos/100)</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom:1px solid #333;">
+                                    <td style="padding:0.3em 0.4em; color:#e5c07b;">I</td>
+                                    <td style="padding:0.3em 0.4em;">0</td>
+                                    <td style="padding:0.3em 0.4em; color:#ff6b6b;">0.00</td>
+                                    <td style="padding:0.3em 0.4em; color:#ff6b6b;">1.00</td>
+                                    <td style="padding:0.3em 0.4em; color:#7ec8e3;">0.00</td>
+                                    <td style="padding:0.3em 0.4em; color:#7ec8e3;">1.00</td>
+                                </tr>
+                                <tr style="border-bottom:1px solid #333;">
+                                    <td style="padding:0.3em 0.4em; color:#e5c07b;">love</td>
+                                    <td style="padding:0.3em 0.4em;">1</td>
+                                    <td style="padding:0.3em 0.4em; color:#ff6b6b;">0.84</td>
+                                    <td style="padding:0.3em 0.4em; color:#ff6b6b;">0.54</td>
+                                    <td style="padding:0.3em 0.4em; color:#7ec8e3;">0.01</td>
+                                    <td style="padding:0.3em 0.4em; color:#7ec8e3;">1.00</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:0.3em 0.4em; color:#e5c07b;">NLP</td>
+                                    <td style="padding:0.3em 0.4em;">2</td>
+                                    <td style="padding:0.3em 0.4em; color:#ff6b6b;">0.91</td>
+                                    <td style="padding:0.3em 0.4em; color:#ff6b6b;">−0.42</td>
+                                    <td style="padding:0.3em 0.4em; color:#7ec8e3;">0.02</td>
+                                    <td style="padding:0.3em 0.4em; color:#7ec8e3;">1.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p style="font-size:0.62em; margin:0.4em 0 0 0; color:#93a1a1;">
+                            <span style="color:#ff6b6b;">■</span> dim 0: 0.00 → 0.84 → 0.91 &nbsp;(big jumps per step) → separates <em>adjacent</em> words &nbsp;|&nbsp;
+                            <span style="color:#7ec8e3;">■</span> dim 2: 0.00 → 0.01 → 0.02 (tiny steps) → only differs at pos=50, 100… → separates <em>distant</em> positions
+                        </p>
+                    </div>
                 </div>
                 <aside class="notes">
                     The intuition: think of it like a clock. The seconds hand rotates fast (high frequency),
@@ -662,29 +700,58 @@
 
             <section>
                 <h2>Fixed vs. Learned Positions</h2>
-                <div class="two-column">
-                    <div>
-                        <h3 style="color: #7ec8e3;">Sinusoidal (Fixed)</h3>
-                        <ul style="font-size: 0.7em;">
-                            <li class="fragment"><span class="good highlight-green">Generalizes</span> to longer sequences than seen in training</li>
-                            <li class="fragment"><span class="good highlight-green">No extra parameters</span> to learn</li>
-                            <li class="fragment">Relative positions encoded by linear transformation</li>
-                            <li class="fragment">Used in: <span class="highlight-blue">original Transformer</span></li>
-                        </ul>
+                <div style="display:flex; gap:1.2em; align-items:flex-start;">
+                    <!-- Left: existing comparison content -->
+                    <div style="flex:1.5;">
+                        <div class="two-column" style="gap:1em;">
+                            <div>
+                                <h3 style="color: #7ec8e3;">Sinusoidal (Fixed)</h3>
+                                <ul style="font-size: 0.7em;">
+                                    <li class="fragment"><span class="good highlight-green">Generalizes</span> to longer sequences than seen in training</li>
+                                    <li class="fragment"><span class="good highlight-green">No extra parameters</span> to learn</li>
+                                    <li class="fragment">Relative positions encoded by linear transformation</li>
+                                    <li class="fragment">Used in: <span class="highlight-blue">original Transformer</span></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 style="color: #c678dd;">Learned Embeddings</h3>
+                                <ul style="font-size: 0.7em;">
+                                    <li class="fragment">Each position gets a <span class="highlight-purple">trainable vector</span></li>
+                                    <li class="fragment"><span class="good highlight-green">Slightly better</span> performance in practice</li>
+                                    <li class="fragment"><span class="bad highlight">Limited</span> to max sequence length in training</li>
+                                    <li class="fragment">Used in: <span class="highlight-purple">BERT, GPT</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p class="fragment small" style="text-align:center; margin-top:0.6em;">
+                            Modern models (2023+): <strong>RoPE</strong> (Rotary Position Embedding) combines benefits of both
+                        </p>
                     </div>
-                    <div>
-                        <h3 style="color: #c678dd;">Learned Embeddings</h3>
-                        <ul style="font-size: 0.7em;">
-                            <li class="fragment">Each position gets a <span class="highlight-purple">trainable vector</span></li>
-                            <li class="fragment"><span class="good highlight-green">Slightly better</span> performance in practice</li>
-                            <li class="fragment"><span class="bad highlight">Limited</span> to max sequence length in training</li>
-                            <li class="fragment">Used in: <span class="highlight-purple">BERT, GPT</span></li>
-                        </ul>
+                    <!-- Right: minimap — PE is at the bottom of both encoder and decoder -->
+                    <div style="flex:0.75; font-size:0.5em; text-align:center;">
+                        <p style="color:#93a1a1; margin:0 0 0.4em 0; letter-spacing:0.05em;">WHERE WE ARE</p>
+                        <div style="display:flex; gap:0.5em; justify-content:center;">
+                            <div style="border:1px solid rgba(126,200,227,0.35); border-radius:10px; padding:0.5em 0.4em; flex:1;">
+                                <div style="color:#7ec8e3; font-weight:bold; margin-bottom:0.4em;">Encoder ×6</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Add &amp; Norm</div>
+                                <div class="arch-box ffn" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Feed-Forward</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Add &amp; Norm</div>
+                                <div class="arch-box attention" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Self-Attention</div>
+                                <div class="arch-box embed" style="font-size:1em; margin:0.3em auto; padding:0.25em 0.3em;">↑ Input Emb + <strong>PE</strong></div>
+                            </div>
+                            <div style="border:1px solid rgba(198,120,221,0.35); border-radius:10px; padding:0.5em 0.4em; flex:1;">
+                                <div style="color:#c678dd; font-weight:bold; margin-bottom:0.4em;">Decoder ×6</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Add &amp; Norm</div>
+                                <div class="arch-box ffn" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Feed-Forward</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Add &amp; Norm</div>
+                                <div class="arch-box output" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Cross-Attention</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Add &amp; Norm</div>
+                                <div class="arch-box attention" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Masked Self-Attn</div>
+                                <div class="arch-box embed" style="font-size:1em; margin:0.3em auto; padding:0.25em 0.3em;">↑ Output Emb + <strong>PE</strong></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <p class="fragment small" style="text-align:center; margin-top:1em;">
-                    Modern models (2023+): <strong>RoPE</strong> (Rotary Position Embedding) combines benefits of both
-                </p>
                 <aside class="notes">
                     The original paper found that sinusoidal and learned encodings performed nearly identically.
                     In practice, most modern models use learned positional embeddings because they are simple
@@ -713,24 +780,53 @@
 
             <section>
                 <h2>Position-wise Feed-Forward Network</h2>
-                <p style="font-size: 0.85em;">Applied to <span class="highlight-blue">each position independently</span> and identically:</p>
-                <div class="formula-box fragment" style="display:block; text-align:center;">
-                    FFN(x) = max(0, xW<sub>1</sub> + b<sub>1</sub>) W<sub>2</sub> + b<sub>2</sub>
-                </div>
-                <div class="fragment" style="margin-top:1em;">
-                    <div class="pipeline">
-                        <div class="step" style="border-color:#e5c07b;">Input<br><span class="small">d = 512</span></div>
-                        <div class="arrow">&rarr;</div>
-                        <div class="step" style="border-color:#ff6b6b;">Linear + ReLU<br><span class="small">d = 2048</span></div>
-                        <div class="arrow">&rarr;</div>
-                        <div class="step" style="border-color:#e5c07b;">Linear<br><span class="small">d = 512</span></div>
+                <div style="display:flex; gap:1.2em; align-items:flex-start;">
+                    <!-- Left: existing content -->
+                    <div style="flex:1.5;">
+                        <p style="font-size: 0.85em; margin:0 0 0.3em 0;">Applied to <span class="highlight-blue">each position independently</span> and identically:</p>
+                        <div class="formula-box fragment" style="display:block; text-align:center; padding:0.5em 1em; margin:0.2em 0;">
+                            FFN(x) = max(0, xW<sub>1</sub> + b<sub>1</sub>) W<sub>2</sub> + b<sub>2</sub>
+                        </div>
+                        <div class="fragment" style="margin-top:0.6em;">
+                            <div class="pipeline">
+                                <div class="step" style="border-color:#e5c07b;">Input<br><span class="small">d = 512</span></div>
+                                <div class="arrow">&rarr;</div>
+                                <div class="step" style="border-color:#ff6b6b;">Linear + ReLU<br><span class="small">d = 2048</span></div>
+                                <div class="arrow">&rarr;</div>
+                                <div class="step" style="border-color:#e5c07b;">Linear<br><span class="small">d = 512</span></div>
+                            </div>
+                        </div>
+                        <ul style="font-size: 0.75em; margin-top: 0.6em;">
+                            <li class="fragment">Expands to <span class="highlight">4x the dimension</span> (512 &rarr; 2048), then compresses back</li>
+                            <li class="fragment">Think of it as: attention <em>gathers</em> information, FFN <em>processes</em> it</li>
+                            <li class="fragment">Same weights for every position (but <em>different</em> from layer to layer)</li>
+                        </ul>
+                    </div>
+                    <!-- Right: minimap — FFN highlighted in both encoder and decoder -->
+                    <div style="flex:0.75; font-size:0.5em; text-align:center;">
+                        <p style="color:#93a1a1; margin:0 0 0.4em 0; letter-spacing:0.05em;">WHERE WE ARE</p>
+                        <div style="display:flex; gap:0.5em; justify-content:center;">
+                            <div style="border:1px solid rgba(126,200,227,0.35); border-radius:10px; padding:0.5em 0.4em; flex:1;">
+                                <div style="color:#7ec8e3; font-weight:bold; margin-bottom:0.4em;">Encoder ×6</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Add &amp; Norm</div>
+                                <div class="arch-box ffn" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; background:rgba(126,200,227,0.3);"><strong>Feed-Forward</strong></div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Add &amp; Norm</div>
+                                <div class="arch-box attention" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Self-Attention</div>
+                                <div style="color:#93a1a1; margin-top:0.4em; font-size:0.9em;">↑ Input Emb + PE</div>
+                            </div>
+                            <div style="border:1px solid rgba(198,120,221,0.35); border-radius:10px; padding:0.5em 0.4em; flex:1;">
+                                <div style="color:#c678dd; font-weight:bold; margin-bottom:0.4em;">Decoder ×6</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Add &amp; Norm</div>
+                                <div class="arch-box ffn" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; background:rgba(126,200,227,0.3);"><strong>Feed-Forward</strong></div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Add &amp; Norm</div>
+                                <div class="arch-box output" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Cross-Attention</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Add &amp; Norm</div>
+                                <div class="arch-box attention" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Masked Self-Attn</div>
+                                <div style="color:#93a1a1; margin-top:0.4em; font-size:0.9em;">↑ Output Emb + PE</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <ul style="font-size: 0.75em; margin-top: 1em;">
-                    <li class="fragment">Expands to <span class="highlight">4x the dimension</span> (512 &rarr; 2048), then compresses back</li>
-                    <li class="fragment">Think of it as: attention <em>gathers</em> information, FFN <em>processes</em> it</li>
-                    <li class="fragment">Same weights for every position (but <em>different</em> from layer to layer)</li>
-                </ul>
                 <aside class="notes">
                     The FFN is a simple two-layer neural network with a ReLU activation in between.
                     "Position-wise" means it is applied to each token independently -- there is no
@@ -748,34 +844,63 @@
 
             <section>
                 <h2>Layer Norm &amp; Residual Connections</h2>
-                <p style="font-size: 0.8em;">Two critical techniques that make deep Transformers <span class="highlight-green">trainable</span>:</p>
-                <div class="two-column fragment">
-                    <div>
-                        <h3 style="color: #98c379;">Residual Connection</h3>
-                        <div class="formula-box" style="display:block; text-align:center; font-size:0.9em;">
-                            output = x + Sublayer(x)
+                <div style="display:flex; gap:1.2em; align-items:flex-start;">
+                    <!-- Left: existing content -->
+                    <div style="flex:1.5;">
+                        <p style="font-size: 0.78em; margin:0 0 0.2em 0;">Two critical techniques that make deep Transformers <span class="highlight-green">trainable</span>:</p>
+                        <div class="two-column fragment" style="gap:1em;">
+                            <div>
+                                <h3 style="color: #98c379; margin-bottom:0.15em;">Residual Connection</h3>
+                                <div class="formula-box" style="display:block; text-align:center; font-size:0.8em; padding:0.4em 0.8em; margin:0.2em 0;">
+                                    output = x + Sublayer(x)
+                                </div>
+                                <ul style="font-size: 0.65em; margin-top:0.3em;">
+                                    <li>Adds input directly to output</li>
+                                    <li>Gradients flow through <span class="highlight-green">shortcut path</span></li>
+                                    <li>Enables training of <strong>deep</strong> networks</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 style="color: #e5c07b; margin-bottom:0.15em;">Layer Normalization</h3>
+                                <div class="formula-box" style="display:block; text-align:center; font-size:0.8em; padding:0.4em 0.8em; margin:0.2em 0;">
+                                    LayerNorm(x) = &gamma; &middot; (x - &mu;) / &sigma; + &beta;
+                                </div>
+                                <ul style="font-size: 0.65em; margin-top:0.3em;">
+                                    <li>Normalizes across features (not batch)</li>
+                                    <li>Stabilizes activations during training</li>
+                                    <li>&gamma; and &beta; are learned parameters</li>
+                                </ul>
+                            </div>
                         </div>
-                        <ul style="font-size: 0.65em; margin-top:0.5em;">
-                            <li>Adds input directly to output</li>
-                            <li>Gradients flow through <span class="highlight-green">shortcut path</span></li>
-                            <li>Enables training of <strong>deep</strong> networks</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 style="color: #e5c07b;">Layer Normalization</h3>
-                        <div class="formula-box" style="display:block; text-align:center; font-size:0.9em;">
-                            LayerNorm(x) = &gamma; &middot; (x - &mu;) / &sigma; + &beta;
+                        <div class="fragment" style="margin-top:0.4em; text-align:center;">
+                            <div class="formula-box" style="font-size:0.85em; padding:0.35em 1em; display:inline-block;">
+                                Combined: &nbsp; output = LayerNorm(x + Sublayer(x))
+                            </div>
                         </div>
-                        <ul style="font-size: 0.65em; margin-top:0.5em;">
-                            <li>Normalizes across features (not batch)</li>
-                            <li>Stabilizes activations during training</li>
-                            <li>&gamma; and &beta; are learned parameters</li>
-                        </ul>
                     </div>
-                </div>
-                <div class="fragment" style="margin-top:1em; text-align:center;">
-                    <div class="formula-box" style="font-size:0.9em;">
-                        Combined: &nbsp; output = LayerNorm(x + Sublayer(x))
+                    <!-- Right: minimap — Add & Norm boxes highlighted in both encoder and decoder -->
+                    <div style="flex:0.75; font-size:0.5em; text-align:center;">
+                        <p style="color:#93a1a1; margin:0 0 0.4em 0; letter-spacing:0.05em;">WHERE WE ARE</p>
+                        <div style="display:flex; gap:0.5em; justify-content:center;">
+                            <div style="border:1px solid rgba(126,200,227,0.35); border-radius:10px; padding:0.5em 0.4em; flex:1;">
+                                <div style="color:#7ec8e3; font-weight:bold; margin-bottom:0.4em;">Encoder ×6</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; background:rgba(152,195,121,0.35);"><strong>Add &amp; Norm</strong></div>
+                                <div class="arch-box ffn" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Feed-Forward</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; background:rgba(152,195,121,0.35);"><strong>Add &amp; Norm</strong></div>
+                                <div class="arch-box attention" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Self-Attention</div>
+                                <div style="color:#93a1a1; margin-top:0.4em; font-size:0.9em;">↑ Input Emb + PE</div>
+                            </div>
+                            <div style="border:1px solid rgba(198,120,221,0.35); border-radius:10px; padding:0.5em 0.4em; flex:1;">
+                                <div style="color:#c678dd; font-weight:bold; margin-bottom:0.4em;">Decoder ×6</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; background:rgba(152,195,121,0.35);"><strong>Add &amp; Norm</strong></div>
+                                <div class="arch-box ffn" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Feed-Forward</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; background:rgba(152,195,121,0.35);"><strong>Add &amp; Norm</strong></div>
+                                <div class="arch-box output" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Cross-Attention</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; background:rgba(152,195,121,0.35);"><strong>Add &amp; Norm</strong></div>
+                                <div class="arch-box attention" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Masked Self-Attn</div>
+                                <div style="color:#93a1a1; margin-top:0.4em; font-size:0.9em;">↑ Output Emb + PE</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <aside class="notes">
@@ -807,32 +932,69 @@
 
             <section>
                 <h2>Encoder Block: Step by Step</h2>
-                <p class="small">Tracing one token through a single encoder layer:</p>
-
-                <div class="step-box fragment">
-                    <span class="step-num">1</span>
-                    <strong>Input:</strong> Token embedding + positional encoding &rarr; <span class="highlight-yellow">x</span>
+                <div class="two-column" style="gap:1.2em; align-items:flex-start;">
+                    <!-- Left: step boxes -->
+                    <div style="flex:1.4;">
+                        <p class="small" style="margin:0 0 0.2em 0;">Tracing one token through a single encoder layer:</p>
+                        <div class="step-box fragment" style="margin:0.25em 0; padding:0.5em 0.8em;">
+                            <span class="step-num">1</span>
+                            <strong>Input:</strong> Token embedding + positional encoding &rarr; <span class="highlight-yellow">x</span>
+                        </div>
+                        <div class="step-box fragment" style="margin:0.25em 0; padding:0.5em 0.8em;">
+                            <span class="step-num">2</span>
+                            <strong>Multi-Head Self-Attention:</strong> <span class="highlight-yellow">x</span> produces Q, K, V &rarr; attention output <span class="highlight">a</span>
+                        </div>
+                        <div class="step-box fragment" style="margin:0.25em 0; padding:0.5em 0.8em;">
+                            <span class="step-num">3</span>
+                            <strong>Add &amp; Norm:</strong> LayerNorm(<span class="highlight-yellow">x</span> + <span class="highlight">a</span>) &rarr; <span class="highlight-blue">z</span>
+                        </div>
+                        <div class="step-box fragment" style="margin:0.25em 0; padding:0.5em 0.8em;">
+                            <span class="step-num">4</span>
+                            <strong>Feed-Forward:</strong> FFN(<span class="highlight-blue">z</span>) &rarr; <span class="highlight-green">f</span>
+                        </div>
+                        <div class="step-box fragment" style="margin:0.25em 0; padding:0.5em 0.8em;">
+                            <span class="step-num">5</span>
+                            <strong>Add &amp; Norm:</strong> LayerNorm(<span class="highlight-blue">z</span> + <span class="highlight-green">f</span>) &rarr; <span class="highlight-purple">output</span>
+                        </div>
+                        <p class="fragment small" style="text-align:center; margin-top:0.3em;">
+                            This <span class="highlight-purple">output</span> becomes the input to the next encoder layer (repeat &times;6)
+                        </p>
+                    </div>
+                    <!-- Right: mini architecture diagram -->
+                    <div style="flex:0.85; font-size:0.55em; text-align:center;">
+                        <p style="color:#93a1a1; margin:0 0 0.4em 0; font-size:1em; letter-spacing:0.05em;">WHERE WE ARE</p>
+                        <div style="display:flex; gap:0.6em; justify-content:center;">
+                            <!-- Encoder (highlighted with step numbers) -->
+                            <div style="border:2px solid #7ec8e3; border-radius:10px; padding:0.5em 0.4em; flex:1;">
+                                <div style="color:#7ec8e3; font-weight:bold; margin-bottom:0.4em;">Encoder ×6</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em;">
+                                    <span style="background:#7ec8e3; color:#002b36; border-radius:50%; padding:0 0.25em; font-weight:bold; margin-right:0.3em;">5</span>Add &amp; Norm
+                                </div>
+                                <div class="arch-box ffn" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em;">
+                                    <span style="background:#7ec8e3; color:#002b36; border-radius:50%; padding:0 0.25em; font-weight:bold; margin-right:0.3em;">4</span>Feed-Forward
+                                </div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em;">
+                                    <span style="background:#7ec8e3; color:#002b36; border-radius:50%; padding:0 0.25em; font-weight:bold; margin-right:0.3em;">3</span>Add &amp; Norm
+                                </div>
+                                <div class="arch-box attention" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em;">
+                                    <span style="background:#7ec8e3; color:#002b36; border-radius:50%; padding:0 0.25em; font-weight:bold; margin-right:0.3em;">2</span>Self-Attention
+                                </div>
+                                <div style="color:#93a1a1; margin-top:0.4em;"><span style="background:#e5c07b; color:#002b36; border-radius:50%; padding:0 0.25em; font-weight:bold; margin-right:0.3em; font-size:0.9em;">1</span>↑ Input Emb + PE</div>
+                            </div>
+                            <!-- Decoder (dimmed) -->
+                            <div style="border:1px solid rgba(198,120,221,0.25); border-radius:10px; padding:0.5em 0.4em; flex:1; opacity:0.3;">
+                                <div style="color:#c678dd; font-weight:bold; margin-bottom:0.4em;">Decoder ×6</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em;">Add &amp; Norm</div>
+                                <div class="arch-box ffn" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em;">Feed-Forward</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em;">Add &amp; Norm</div>
+                                <div class="arch-box output" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em;">Cross-Attention</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em;">Add &amp; Norm</div>
+                                <div class="arch-box attention" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em;">Masked Self-Attn</div>
+                                <div style="color:#93a1a1; margin-top:0.4em;">↑ Output Emb + PE</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="step-box fragment">
-                    <span class="step-num">2</span>
-                    <strong>Multi-Head Self-Attention:</strong> <span class="highlight-yellow">x</span> produces Q, K, V &rarr; attention output <span class="highlight">a</span>
-                </div>
-                <div class="step-box fragment">
-                    <span class="step-num">3</span>
-                    <strong>Add &amp; Norm:</strong> LayerNorm(<span class="highlight-yellow">x</span> + <span class="highlight">a</span>) &rarr; <span class="highlight-blue">z</span>
-                </div>
-                <div class="step-box fragment">
-                    <span class="step-num">4</span>
-                    <strong>Feed-Forward:</strong> FFN(<span class="highlight-blue">z</span>) &rarr; <span class="highlight-green">f</span>
-                </div>
-                <div class="step-box fragment">
-                    <span class="step-num">5</span>
-                    <strong>Add &amp; Norm:</strong> LayerNorm(<span class="highlight-blue">z</span> + <span class="highlight-green">f</span>) &rarr; <span class="highlight-purple">output</span>
-                </div>
-
-                <p class="fragment small" style="text-align:center; margin-top:0.5em;">
-                    This <span class="highlight-purple">output</span> becomes the input to the next encoder layer (repeat &times;6)
-                </p>
                 <aside class="notes">
                     Walk through this slowly. Let's trace a concrete token, say "cat", through the block.
                     Step 1: "cat" gets its embedding vector (learned) plus its positional encoding.
@@ -850,22 +1012,67 @@
 
             <section>
                 <h2>Decoder: What's Different?</h2>
-                <p style="font-size: 0.85em;">The decoder has <span class="highlight">three key differences</span> from the encoder:</p>
-                <div class="step-box fragment">
-                    <span class="step-num" style="background:#ff6b6b;">1</span>
-                    <strong>Masked Self-Attention:</strong> Each position can only attend to <span class="highlight">earlier positions</span>.
-                    Prevents "seeing the future" during generation.
-                </div>
-                <div class="step-box fragment">
-                    <span class="step-num" style="background:#c678dd;">2</span>
-                    <strong>Cross-Attention:</strong> Queries come from the <span class="highlight-purple">decoder</span>,
-                    but Keys and Values come from the <span class="highlight-blue">encoder output</span>.
-                    This is how the decoder "reads" the input.
-                </div>
-                <div class="step-box fragment">
-                    <span class="step-num" style="background:#e5c07b;">3</span>
-                    <strong>Autoregressive generation:</strong> Output is generated
-                    <span class="highlight-yellow">one token at a time</span>, left to right.
+                <div class="two-column" style="gap:1.2em; align-items:flex-start;">
+                    <!-- Left: step boxes -->
+                    <div style="flex:1.4;">
+                        <p style="font-size:0.78em; margin:0 0 0.3em 0;">The decoder has <span class="highlight">three key differences</span> from the encoder:</p>
+                        <div class="step-box fragment" style="margin:0.35em 0; padding:0.5em 0.8em;">
+                            <span class="step-num" style="background:#ff6b6b;">1</span>
+                            <strong>Masked Self-Attention:</strong> Each position can only attend to <span class="highlight">earlier positions</span>.
+                            Prevents "seeing the future" during generation.
+                        </div>
+                        <div class="step-box fragment" style="margin:0.35em 0; padding:0.5em 0.8em;">
+                            <span class="step-num" style="background:#c678dd;">2</span>
+                            <strong>Cross-Attention:</strong> Queries from <span class="highlight-purple">decoder</span>,
+                            Keys &amp; Values from <span class="highlight-blue">encoder output</span>.
+                            This is how the decoder "reads" the input.
+                        </div>
+                        <div class="step-box fragment" style="margin:0.35em 0; padding:0.5em 0.8em;">
+                            <span class="step-num" style="background:#e5c07b;">3</span>
+                            <strong>Autoregressive generation:</strong> Output is generated
+                            <span class="highlight-yellow">one token at a time</span>, left to right.
+                        </div>
+                    </div>
+                    <!-- Right: mini architecture diagram -->
+                    <div style="flex:0.85; font-size:0.55em; text-align:center;">
+                        <p style="color:#93a1a1; margin:0 0 0.4em 0; font-size:1em; letter-spacing:0.05em;">WHERE WE ARE</p>
+                        <div style="display:flex; gap:0.6em; justify-content:center;">
+                            <!-- Encoder (dimmed) -->
+                            <div style="border:1px solid rgba(126,200,227,0.25); border-radius:10px; padding:0.5em 0.4em; flex:1; opacity:0.3;">
+                                <div style="color:#7ec8e3; font-weight:bold; margin-bottom:0.4em;">Encoder ×6</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em;">Add &amp; Norm</div>
+                                <div class="arch-box ffn" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em;">Feed-Forward</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em;">Add &amp; Norm</div>
+                                <div class="arch-box attention" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em;">Self-Attention</div>
+                                <div style="color:#93a1a1; margin-top:0.4em;">↑ Input Emb + PE</div>
+                            </div>
+                            <!-- Decoder (highlighted with numbered badges) -->
+                            <div style="flex:1;">
+                                <!-- ③ output loop (above the ×6 block) -->
+                                <div style="border:1px solid #e5c07b; border-radius:8px; padding:0.25em 0.3em; margin-bottom:0.15em; background:rgba(229,192,123,0.15);">
+                                    <span style="background:#e5c07b; color:#002b36; border-radius:50%; padding:0 0.25em; font-weight:bold; margin-right:0.3em;">3</span>
+                                    <span style="color:#e5c07b;">Linear + Softmax</span>
+                                    <span style="color:#93a1a1; font-size:0.9em;"> → token</span>
+                                </div>
+                                <div style="color:#e5c07b; font-size:0.85em; margin-bottom:0.1em;">↓ fed back as next input</div>
+                                <!-- ×6 decoder block -->
+                                <div style="border:2px solid #c678dd; border-radius:10px; padding:0.5em 0.4em;">
+                                    <div style="color:#c678dd; font-weight:bold; margin-bottom:0.4em;">Decoder ×6</div>
+                                    <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.45;">Add &amp; Norm</div>
+                                    <div class="arch-box ffn" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.45;">Feed-Forward</div>
+                                    <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.45;">Add &amp; Norm</div>
+                                    <div class="arch-box output" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; border-color:#c678dd; background:rgba(198,120,221,0.35);">
+                                        <span style="background:#c678dd; color:#002b36; border-radius:50%; padding:0 0.25em; font-weight:bold; margin-right:0.3em;">2</span>Cross-Attention
+                                    </div>
+                                    <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.45;">Add &amp; Norm</div>
+                                    <div class="arch-box attention" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; border-color:#ff6b6b; background:rgba(255,107,107,0.35);">
+                                        <span style="background:#ff6b6b; color:#002b36; border-radius:50%; padding:0 0.25em; font-weight:bold; margin-right:0.3em;">1</span>Masked Self-Attn
+                                    </div>
+                                    <div style="color:#93a1a1; margin-top:0.4em;">↑ Output Emb + PE</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <aside class="notes">
                     The mask in masked self-attention is an upper-triangular matrix of negative infinity
@@ -915,7 +1122,7 @@
                         <p class="small">"Le chat assis"</p>
                     </div>
                 </div>
-                <p class="fragment" style="font-size: 0.75em; margin-top: 1em; text-align:center;">
+                <p class="fragment" style="font-size: 0.75em; margin-top: 0.3em; text-align:center;">
                     Original paper: <span class="highlight-blue">d<sub>model</sub> = 512</span>,
                     <span class="highlight-green">h = 8 heads</span>,
                     <span class="highlight">6 layers</span>,
