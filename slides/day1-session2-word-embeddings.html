@@ -258,11 +258,12 @@
                     <div class="step">n-grams</div>
                     <div class="arrow">&rarr;</div>
                     <div class="step" style="border-color: #ff6b6b;">Word2vec</div>
-                    <div class="arrow">&rarr;</div>
-                    <div class="step" style="border-color: #ff6b6b;">GloVe</div>
                 </div>
-                <p style="margin-top: 1.5em; font-size: 0.8em; color: #93a1a1;">
+                <p style="margin-top: 1em; font-size: 0.8em; color: #93a1a1;">
                     From sparse, manual representations &rarr; dense, learned representations
+                </p>
+                <p style="margin-top: 0.5em; font-size: 0.7em; color: #93a1a1; border: 1px dashed #555; display: inline-block; padding: 0.3em 1em; border-radius: 6px;">
+                    &#x23F1; Advanced (time permitting): <span style="color: #ff6b6b;">GloVe</span>
                 </p>
                 <aside class="notes">
                     Show the full journey. We start with the simplest approaches and build
@@ -503,6 +504,8 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
                 </aside>
             </section>
 
+            <!-- ==================== INTERLUDE: Neural Network Primer ==================== -->
+
             <!-- ==================== SECTION 3: Word2vec ==================== -->
 
             <section class="section-title">
@@ -690,6 +693,123 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
                 </aside>
             </section>
 
+            <!-- Slide: Neural Networks — The Core Idea -->
+            <section>
+                <h2>Neural Networks: The Core Idea</h2>
+                <p style="font-size: 0.8em; margin: 0 0 10px 0;">Layers of numbers connected by <strong>weights</strong> &mdash; training adjusts the weights</p>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 1.5em; margin: 0 0 10px 0;">
+                    <!-- SVG diagram -->
+                    <svg width="520" height="200" viewBox="0 0 520 200" style="flex-shrink:0;">
+                        <!-- Input nodes -->
+                        <circle cx="60" cy="60"  r="18" fill="none" stroke="#7ec8e3" stroke-width="2"/>
+                        <circle cx="60" cy="110" r="18" fill="none" stroke="#7ec8e3" stroke-width="2"/>
+                        <circle cx="60" cy="160" r="18" fill="none" stroke="#7ec8e3" stroke-width="2"/>
+                        <!-- Hidden nodes -->
+                        <circle cx="220" cy="40"  r="18" fill="none" stroke="#98c379" stroke-width="2"/>
+                        <circle cx="220" cy="90"  r="18" fill="none" stroke="#98c379" stroke-width="2"/>
+                        <circle cx="220" cy="140" r="18" fill="none" stroke="#98c379" stroke-width="2"/>
+                        <circle cx="220" cy="185" r="18" fill="none" stroke="#98c379" stroke-width="2"/>
+                        <!-- Output nodes -->
+                        <circle cx="380" cy="75"  r="18" fill="none" stroke="#ff6b6b" stroke-width="2"/>
+                        <circle cx="380" cy="130" r="18" fill="none" stroke="#ff6b6b" stroke-width="2"/>
+                        <!-- Connections input→hidden (faint) -->
+                        <g stroke="rgba(126,200,227,0.25)" stroke-width="1">
+                            <line x1="78" y1="60"  x2="202" y2="40"/>
+                            <line x1="78" y1="60"  x2="202" y2="90"/>
+                            <line x1="78" y1="60"  x2="202" y2="140"/>
+                            <line x1="78" y1="60"  x2="202" y2="185"/>
+                            <line x1="78" y1="110" x2="202" y2="40"/>
+                            <line x1="78" y1="110" x2="202" y2="90"/>
+                            <line x1="78" y1="110" x2="202" y2="140"/>
+                            <line x1="78" y1="110" x2="202" y2="185"/>
+                            <line x1="78" y1="160" x2="202" y2="40"/>
+                            <line x1="78" y1="160" x2="202" y2="90"/>
+                            <line x1="78" y1="160" x2="202" y2="140"/>
+                            <line x1="78" y1="160" x2="202" y2="185"/>
+                        </g>
+                        <!-- Connections hidden→output (faint) -->
+                        <g stroke="rgba(152,195,121,0.25)" stroke-width="1">
+                            <line x1="238" y1="40"  x2="362" y2="75"/>
+                            <line x1="238" y1="40"  x2="362" y2="130"/>
+                            <line x1="238" y1="90"  x2="362" y2="75"/>
+                            <line x1="238" y1="90"  x2="362" y2="130"/>
+                            <line x1="238" y1="140" x2="362" y2="75"/>
+                            <line x1="238" y1="140" x2="362" y2="130"/>
+                            <line x1="238" y1="185" x2="362" y2="75"/>
+                            <line x1="238" y1="185" x2="362" y2="130"/>
+                        </g>
+                        <!-- Weight matrix label W -->
+                        <text x="135" y="108" text-anchor="middle" fill="#7ec8e3" font-size="13" font-style="italic">W</text>
+                        <!-- Weight matrix label W' -->
+                        <text x="300" y="108" text-anchor="middle" fill="#98c379" font-size="13" font-style="italic">W'</text>
+                        <!-- Layer labels -->
+                        <text x="60"  y="195" text-anchor="middle" fill="#93a1a1" font-size="11">Input</text>
+                        <text x="220" y="210" text-anchor="middle" fill="#93a1a1" font-size="11">Hidden</text>
+                        <text x="380" y="165" text-anchor="middle" fill="#93a1a1" font-size="11">Output</text>
+                        <!-- Backprop arrow -->
+                        <path d="M 398 130 Q 470 180 398 80" stroke="#ff6b6b" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+                        <defs>
+                            <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                                <path d="M0,0 L6,3 L0,6 Z" fill="#ff6b6b"/>
+                            </marker>
+                        </defs>
+                        <text x="475" y="115" text-anchor="start" fill="#ff6b6b" font-size="11">error →</text>
+                        <text x="475" y="128" text-anchor="start" fill="#ff6b6b" font-size="11">update W</text>
+                    </svg>
+                    <!-- Key points -->
+                    <div style="text-align: left; font-size: 0.72em; line-height: 1.5;">
+                        <p style="margin: 0 0 6px 0;"><span class="highlight-blue">Weights</span>: numbers on each connection &mdash; learned from data</p>
+                        <p style="margin: 0 0 6px 0;"><strong>Forward pass</strong>: input &times; W &rarr; hidden &times; W&prime; &rarr; prediction</p>
+                        <p style="margin: 0 0 6px 0;"><strong>Loss</strong>: how wrong is the prediction?</p>
+                        <p style="margin: 0;"><span class="highlight">Backpropagation</span>: nudge W to reduce the loss &mdash; repeat millions of times</p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    This is the absolute minimum neural network intuition needed for word2vec.
+                    We have layers: input, one or more hidden layers, output.
+                    The connections between layers are parameterized by weight matrices W.
+                    During training, we push data through (forward pass), measure the error (loss),
+                    then propagate that error backward to update the weights (backpropagation / gradient descent).
+                    The key insight: training IS the process of finding good weights.
+                </aside>
+            </section>
+
+            <!-- Slide: Word2vec is NOT a standard neural network -->
+            <section>
+                <h2>Word2vec: A Shallow, Unusual Network</h2>
+                <div style="display: flex; gap: 1.5em; align-items: flex-start; font-size: 0.78em; margin-top: 0.4em;">
+                    <div style="flex:1; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 0.9em;">
+                        <p style="margin: 0 0 8px 0; color: #93a1a1;">Typical deep network</p>
+                        <ul style="margin: 0; padding-left: 1.2em; line-height: 1.6;">
+                            <li>Many hidden layers (deep)</li>
+                            <li>Activation functions (ReLU, sigmoid…)</li>
+                            <li>Goal: learn the <strong>output</strong> (classification, generation…)</li>
+                        </ul>
+                    </div>
+                    <div style="flex:1; background: rgba(126,200,227,0.08); border: 2px solid #7ec8e3; border-radius: 10px; padding: 0.9em;">
+                        <p style="margin: 0 0 8px 0; color: #7ec8e3;">Word2vec</p>
+                        <ul style="margin: 0; padding-left: 1.2em; line-height: 1.6;">
+                            <li><span class="highlight-blue">1 hidden layer</span> &mdash; shallow by design</li>
+                            <li><span class="highlight-blue">No activation function</span> in the hidden layer</li>
+                            <li>Goal: learn the <strong>weights W</strong>, not the output</li>
+                            <li>After training, <em>throw away the model</em> &mdash; keep W</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 0.8em; background: rgba(152,195,121,0.1); border-left: 3px solid #98c379; padding: 0.6em 1em; border-radius: 0 8px 8px 0; font-size: 0.75em; text-align: left;">
+                    <strong>The embeddings ARE the weights.</strong>
+                    Word2vec uses a neural network as a <em>training vehicle</em> &mdash;
+                    it is closer in spirit to <span class="highlight-green">matrix factorization</span> than to deep learning.
+                </div>
+                <aside class="notes">
+                    Word2vec is often described as a neural network, but it is a very unusual one.
+                    There is only one hidden layer with no non-linearity — it is a linear projection.
+                    We don't care about its output predictions at all.
+                    We just want the weight matrix W, which becomes our embedding table.
+                    In fact, Levy & Goldberg (2014) showed it is mathematically equivalent to factorizing a PMI matrix — pure linear algebra.
+                </aside>
+            </section>
+
             <!-- Slide 18: How Training Works -->
             <section>
                 <h2>Training Word2vec</h2>
@@ -736,34 +856,6 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
                 </aside>
             </section>
 
-            <!-- Slide 19b: Interactive Demo - wevi -->
-            <section>
-                <h2>🎮 Interactive Demo: Watch Training Live</h2>
-                <p style="font-size: 0.85em;"><strong>wevi</strong>: Word Embedding Visual Inspector</p>
-                <div class="fig">
-                    <a href="http://ronxin.github.io/wevi/" target="_blank" style="text-decoration: none;">
-                        <div style="background: rgba(126,200,227,0.15); border: 2px solid #7ec8e3; border-radius: 12px; padding: 1.5em; display: inline-block;">
-                            <p style="font-size: 1.2em; margin: 0;">🔗 ronxin.github.io/wevi</p>
-                            <p style="font-size: 0.7em; color: #93a1a1; margin: 0.5em 0 0;">Click to open (works best in Chrome)</p>
-                        </div>
-                    </a>
-                </div>
-                <ul style="font-size: 0.75em; margin-top: 1em;">
-                    <li class="fragment">Watch <span class="highlight-blue">weight matrices</span> update in real-time</li>
-                    <li class="fragment">See how input/output vectors <span class="highlight-green">converge</span> during training</li>
-                    <li class="fragment">Visualize the effect of <span class="highlight">window size</span> and learning rate</li>
-                    <li class="fragment">Compare <strong>CBOW vs Skip-gram</strong> training dynamics</li>
-                </ul>
-                <p class="ref">
-                    By Xin Rong, author of "word2vec Parameter Learning Explained" (arXiv:1411.2738)
-                </p>
-                <aside class="notes">
-                    This is the best interactive visualization of Word2vec training.
-                    Students should try it during the break or at home.
-                    Key insight: watch how similar words cluster together as training progresses.
-                </aside>
-            </section>
-
             <!-- Slide 20: Training Process Step by Step -->
             <section>
                 <h2>Training Process</h2>
@@ -795,6 +887,34 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
                 </aside>
             </section>
 
+            <!-- Slide 19b: Interactive Demo - wevi -->
+            <section>
+                <h2>🎮 Interactive Demo: Watch Training Live</h2>
+                <p style="font-size: 0.85em;"><strong>wevi</strong>: Word Embedding Visual Inspector</p>
+                <div class="fig">
+                    <a href="http://ronxin.github.io/wevi/" target="_blank" style="text-decoration: none;">
+                        <div style="background: rgba(126,200,227,0.15); border: 2px solid #7ec8e3; border-radius: 12px; padding: 1.5em; display: inline-block;">
+                            <p style="font-size: 1.2em; margin: 0;">🔗 ronxin.github.io/wevi</p>
+                            <p style="font-size: 0.7em; color: #93a1a1; margin: 0.5em 0 0;">Click to open (works best in Chrome)</p>
+                        </div>
+                    </a>
+                </div>
+                <ul style="font-size: 0.75em; margin-top: 1em;">
+                    <li class="fragment">Watch <span class="highlight-blue">weight matrices</span> update in real-time</li>
+                    <li class="fragment">See how input/output vectors <span class="highlight-green">converge</span> during training</li>
+                    <li class="fragment">Visualize the effect of <span class="highlight">window size</span> and learning rate</li>
+                    <li class="fragment">Compare <strong>CBOW vs Skip-gram</strong> training dynamics</li>
+                </ul>
+                <p class="ref">
+                    By Xin Rong, author of "word2vec Parameter Learning Explained" (arXiv:1411.2738)
+                </p>
+                <aside class="notes">
+                    This is the best interactive visualization of Word2vec training.
+                    Students should try it during the break or at home.
+                    Key insight: watch how similar words cluster together as training progresses.
+                </aside>
+            </section>
+
             <!-- ==================== SECTION 4: WHAT Word2vec LEARNS ==================== -->
 
             <section class="section-title">
@@ -816,11 +936,40 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
                 </div>
                 <p class="fragment" style="font-size: 0.85em;">
                     Each dimension captures some <strong>latent feature</strong> of meaning
+                    <span style="color: #93a1a1; font-size: 0.85em;">— <em>latent</em>: hidden, not explicitly defined, discovered by the model itself</span>
                 </p>
                 <aside class="notes">
                     Unlike one-hot vectors, each dimension captures something meaningful.
                     The model discovers these features on its own — no human labels needed.
                     Some dimensions might correlate with gender, size, formality, etc.
+                </aside>
+            </section>
+
+            <!-- Slide 26: Cosine Similarity -->
+            <section>
+                <h2>Measuring Similarity</h2>
+                <p style="font-size: 0.85em;"><strong>Cosine Similarity</strong>: angle between two vectors</p>
+                <div style="text-align: center; margin: 1em 0;">
+                    <span class="formula" style="font-size: 1.2em;">
+                        cos(&theta;) = (A &middot; B) / (||A|| &times; ||B||)
+                    </span>
+                </div>
+                <div class="matrix-box fragment" style="font-size: 0.8em; text-align: center;">
+<pre>cos(king, queen)   = 0.73  &larr; high similarity
+cos(king, prince)  = 0.71
+cos(king, dog)     = 0.15  &larr; low similarity
+cos(cat, dog)      = 0.76  &larr; both animals!
+cos(cat, car)      = 0.12</pre>
+                </div>
+                <ul style="font-size: 0.75em; margin-top: 0.8em;">
+                    <li class="fragment"><strong>1.0</strong> = identical direction (same meaning)</li>
+                    <li class="fragment"><strong>0.0</strong> = orthogonal (unrelated)</li>
+                    <li class="fragment"><strong>-1.0</strong> = opposite direction</li>
+                </ul>
+                <aside class="notes">
+                    Cosine similarity is the standard metric for comparing word embeddings.
+                    We use cosine instead of Euclidean distance because it's length-invariant.
+                    These numbers are illustrative — actual values depend on the model and corpus.
                 </aside>
             </section>
 
@@ -908,34 +1057,6 @@ Doc 2: [0,  1,  1,  1, 2,  0,  1]</pre>
                 </aside>
             </section>
 
-            <!-- Slide 26: Cosine Similarity -->
-            <section>
-                <h2>Measuring Similarity</h2>
-                <p style="font-size: 0.85em;"><strong>Cosine Similarity</strong>: angle between two vectors</p>
-                <div style="text-align: center; margin: 1em 0;">
-                    <span class="formula" style="font-size: 1.2em;">
-                        cos(&theta;) = (A &middot; B) / (||A|| &times; ||B||)
-                    </span>
-                </div>
-                <div class="matrix-box fragment" style="font-size: 0.8em; text-align: center;">
-<pre>cos(king, queen)   = 0.73  &larr; high similarity
-cos(king, prince)  = 0.71
-cos(king, dog)     = 0.15  &larr; low similarity
-cos(cat, dog)      = 0.76  &larr; both animals!
-cos(cat, car)      = 0.12</pre>
-                </div>
-                <ul style="font-size: 0.75em; margin-top: 0.8em;">
-                    <li class="fragment"><strong>1.0</strong> = identical direction (same meaning)</li>
-                    <li class="fragment"><strong>0.0</strong> = orthogonal (unrelated)</li>
-                    <li class="fragment"><strong>-1.0</strong> = opposite direction</li>
-                </ul>
-                <aside class="notes">
-                    Cosine similarity is the standard metric for comparing word embeddings.
-                    We use cosine instead of Euclidean distance because it's length-invariant.
-                    These numbers are illustrative — actual values depend on the model and corpus.
-                </aside>
-            </section>
-
             <!-- Slide 27: Discussion -->
             <section class="discussion-slide">
                 <h2>Think About It</h2>
@@ -958,11 +1079,394 @@ cos(cat, car)      = 0.12</pre>
                 </aside>
             </section>
 
-            <!-- ==================== SECTION 5: GLOVE ==================== -->
+            <!-- ==================== SECTION 5: PROPERTIES & LIMITATIONS ==================== -->
 
             <section class="section-title">
-                <h2>GloVe</h2>
-                <h3>Pennington, Socher & Manning, 2014 &mdash; Stanford</h3>
+                <h2>Properties & Limitations</h2>
+                <h3>What static embeddings can and cannot do</h3>
+            </section>
+
+            <!-- Slide 33: Window Size Effect -->
+            <section>
+                <h2>Window Size Matters</h2>
+                <div class="fig">
+                    <img src="https://jalammar.github.io/images/word2vec/word2vec-window-size.png"
+                         alt="Effect of window size"
+                         style="max-height: 300px;">
+                    <p class="caption">
+                        Source: Jay Alammar, "The Illustrated Word2vec"
+                        &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
+                    </p>
+                </div>
+                <div class="two-column fragment" style="font-size: 0.8em;">
+                    <div>
+                        <h3>Small window (2&ndash;3)</h3>
+                        <p>Captures <strong>syntactic</strong> similarity<br>
+                        <span class="small">"big" &harr; "large" &harr; "huge"</span></p>
+                    </div>
+                    <div>
+                        <h3>Large window (8&ndash;10)</h3>
+                        <p>Captures <strong>semantic/topical</strong> similarity<br>
+                        <span class="small">"dog" &harr; "puppy" &harr; "veterinarian"</span></p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    This is a practical consideration when training embeddings.
+                    Small windows: words that can replace each other (synonyms, same POS).
+                    Large windows: words that appear in the same topic or domain.
+                </aside>
+            </section>
+
+            <!-- Slide 34: Bias in Embeddings -->
+            <section>
+                <h2>Bias in Embeddings</h2>
+                <p style="font-size: 0.85em;">Embeddings learn the <strong>biases present in the training data</strong></p>
+                <div class="matrix-box fragment" style="text-align: center; font-size: 0.85em;">
+<pre>man &rarr; computer programmer
+woman &rarr; homemaker
+
+doctor &minus; man + woman &asymp; nurse</pre>
+                </div>
+                <ul style="font-size: 0.8em; margin-top: 1em;">
+                    <li class="fragment">These reflect <strong>historical stereotypes</strong> in training text</li>
+                    <li class="fragment">Active research area: <strong>debiasing word embeddings</strong>
+                        <span class="small">(Bolukbasi et al., 2016)</span>
+                    </li>
+                    <li class="fragment">Important lesson: <span class="highlight">data is not neutral</span></li>
+                </ul>
+                <aside class="notes">
+                    This is a crucial topic for responsible AI.
+                    The model isn't "sexist" — it's reflecting patterns in the text it was trained on.
+                    But when deployed in hiring systems, recommendations, etc., these biases cause real harm.
+                    Bolukbasi et al. paper: "Man is to Computer Programmer as Woman is to Homemaker?"
+                </aside>
+            </section>
+
+            <!-- Slide 35: The Polysemy Problem -->
+            <section>
+                <h2>The Polysemy Problem</h2>
+                <p style="font-size: 0.85em;"><strong>Static embeddings</strong>: one vector per word, regardless of context</p>
+                <div class="fragment" style="background: rgba(255,255,255,0.05); padding: 1em; border-radius: 8px; font-size: 0.85em;">
+                    <p style="margin: 0 0 0.5em;">
+                        "I went to the <span class="highlight">bank</span> to deposit money"
+                    </p>
+                    <p style="margin: 0;">
+                        "I sat on the <span class="highlight">bank</span> of the river"
+                    </p>
+                </div>
+                <p class="fragment" style="margin-top: 1em; font-size: 0.85em;">
+                    Word2vec / GloVe: same vector for both!
+                </p>
+                <div class="fragment" style="margin-top: 1em;">
+                    <p style="font-size: 0.85em; color: #7ec8e3;">
+                        Solution &rarr; <strong>Contextual embeddings</strong> (ELMo, BERT, GPT)
+                    </p>
+                    <p class="small">Different vector for each usage of the word &mdash; Day 2 & 3 material</p>
+                </div>
+                <aside class="notes">
+                    This is THE fundamental limitation of Word2vec and GloVe.
+                    Static = one vector forever. But words have multiple meanings.
+                    The solution came in 2018 with ELMo and BERT: contextual embeddings
+                    where the vector depends on the surrounding context.
+                    This is the bridge to Transformers — covered on Day 2.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 6: PRACTICAL USAGE ==================== -->
+
+            <section class="section-title">
+                <h2>Using Embeddings in Practice</h2>
+                <h3>From theory to code</h3>
+            </section>
+
+            <!-- Slide 37: Pre-trained Models -->
+            <section>
+                <h2>Pre-trained Embeddings</h2>
+                <p style="font-size: 0.85em;">You don't need to train from scratch &mdash; <strong>download and use</strong></p>
+                <table class="compare-table">
+                    <tr>
+                        <th>Model</th>
+                        <th>Corpus</th>
+                        <th>Vocabulary</th>
+                        <th>Dimensions</th>
+                    </tr>
+                    <tr class="fragment">
+                        <td>Word2vec</td>
+                        <td>Google News</td>
+                        <td>3M words</td>
+                        <td>300</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>GloVe</td>
+                        <td>Wikipedia + Gigaword</td>
+                        <td>400K words</td>
+                        <td>50, 100, 200, 300</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>GloVe (large)</td>
+                        <td>Common Crawl</td>
+                        <td>2.2M words</td>
+                        <td>300</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>FastText</td>
+                        <td>Wikipedia</td>
+                        <td>1M words</td>
+                        <td>300</td>
+                    </tr>
+                </table>
+                <aside class="notes">
+                    In practice, you almost always start with pre-trained embeddings.
+                    Training from scratch requires massive corpora and compute.
+                    GloVe 6B (Wikipedia) is a great starting point for experiments.
+                    FastText is worth mentioning — it handles subwords, useful for rare words.
+                </aside>
+            </section>
+
+            <!-- Slide 38: Code Example -->
+            <section>
+                <h2>Using Word2vec in Python</h2>
+                <pre style="font-size: 0.55em;"><code class="python">import gensim.downloader as api
+
+# Load pre-trained Word2vec (Google News, 300d)
+model = api.load("word2vec-google-news-300")
+
+# Find similar words
+model.most_similar("python")
+# [('pythons', 0.71), ('snake', 0.65), ('lizard', 0.58), ...]
+
+# Word analogy: king - man + woman = ?
+model.most_similar(positive=["king", "woman"],
+                   negative=["man"], topn=1)
+# [('queen', 0.71)]
+
+# Cosine similarity
+model.similarity("cat", "dog")     # 0.76
+model.similarity("cat", "car")     # 0.12</code></pre>
+                <p class="fragment small" style="margin-top: 0.5em;">
+                    Library: <strong>gensim</strong> &mdash; pip install gensim
+                </p>
+                <aside class="notes">
+                    Live demo opportunity: run this code in front of students.
+                    Let them suggest words and analogies to try.
+                    gensim is the standard library for Word2vec in Python.
+                </aside>
+            </section>
+
+            <!-- Slide 39: Applications -->
+            <section>
+                <h2>Where Embeddings Are Used</h2>
+                <ul>
+                    <li class="fragment">
+                        <strong>Text Classification</strong> &mdash; embeddings as input features
+                    </li>
+                    <li class="fragment">
+                        <strong>Search & Information Retrieval</strong> &mdash; semantic search beyond keywords
+                    </li>
+                    <li class="fragment">
+                        <strong>Recommendation Systems</strong>
+                        <span class="small">&mdash; Spotify, Airbnb use embedding-based recommendations</span>
+                    </li>
+                    <li class="fragment">
+                        <strong>Transfer Learning</strong> &mdash; pre-trained embeddings boost downstream tasks
+                    </li>
+                    <li class="fragment">
+                        <strong>Foundation for Transformers</strong> &mdash; BERT, GPT start with embeddings
+                    </li>
+                </ul>
+                <aside class="notes">
+                    Embeddings are not just an academic exercise — they're everywhere in production.
+                    Spotify's "Word2vec for music" treats songs as words and playlists as sentences.
+                    Airbnb uses listing embeddings for search ranking.
+                    And of course, every LLM starts by embedding input tokens.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 7: SUMMARY & PREVIEW ==================== -->
+
+            <section class="section-title">
+                <h2>Summary</h2>
+                <h3>What we learned today</h3>
+            </section>
+
+            <!-- Slide 41: The Evolution -->
+            <section>
+                <h2>The Evolution of Text Representation</h2>
+                <div class="pipeline" style="flex-direction: column; gap: 0.2em; margin: 0.3em auto;">
+                    <div style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 180px; border-color: #93a1a1;">One-Hot</div>
+                        <span style="font-size: 0.7em; color: #93a1a1;">sparse, no similarity</span>
+                    </div>
+                    <div class="arrow" style="font-size: 0.9em; line-height: 1;">&darr;</div>
+                    <div style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 180px; border-color: #93a1a1;">BoW / TF-IDF</div>
+                        <span style="font-size: 0.7em; color: #93a1a1;">document-level, word importance</span>
+                    </div>
+                    <div class="arrow" style="font-size: 0.9em; line-height: 1;">&darr;</div>
+                    <div style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 180px; border-color: #93a1a1;">n-grams</div>
+                        <span style="font-size: 0.7em; color: #93a1a1;">local order, but combinatorial explosion</span>
+                    </div>
+                    <div class="arrow" style="font-size: 0.9em; line-height: 1;">&darr;</div>
+                    <div style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 180px; border-color: #ff6b6b;">Word2vec / GloVe</div>
+                        <span style="font-size: 0.7em; color: #ff6b6b;">dense, semantic, learned</span>
+                    </div>
+                    <div class="arrow" style="font-size: 0.9em; line-height: 1;">&darr;</div>
+                    <div style="display: flex; align-items: center; gap: 0.5em;">
+                        <div class="step" style="min-width: 180px; border-color: #7ec8e3;">Contextual (BERT, GPT)</div>
+                        <span style="font-size: 0.7em; color: #7ec8e3;">Day 2 & 3</span>
+                    </div>
+                </div>
+                <aside class="notes">
+                    This is the full story of today's session in one slide.
+                    Each step solved a problem that the previous approach couldn't handle.
+                    Next time (Day 2): contextual embeddings and the Transformer architecture.
+                </aside>
+            </section>
+
+            <!-- Slide 42: Key Takeaways -->
+            <section>
+                <h2>Key Takeaways</h2>
+                <ol>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        Words need <strong>numerical representations</strong> for machines to process them
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        <strong>Distributional hypothesis</strong>: meaning comes from context
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        <strong>Word2vec & GloVe</strong>: dense vectors that capture semantic relationships
+                    </li>
+                    <li class="fragment" style="margin-bottom: 0.5em;">
+                        Vector arithmetic reveals <strong>latent structure</strong> in language
+                    </li>
+                    <li class="fragment">
+                        <strong>Limitation</strong>: static embeddings can't handle polysemy &rarr; next: contextual embeddings
+                    </li>
+                </ol>
+                <aside class="notes">
+                    Recap the five core ideas from today's session.
+                </aside>
+            </section>
+
+            <!-- Slide 42b: Interactive Resources -->
+            <section>
+                <h2>🎮 Interactive Resources to Explore</h2>
+                <table class="compare-table" style="font-size: 0.65em;">
+                    <tr>
+                        <th>Tool</th>
+                        <th>What it does</th>
+                        <th>Link</th>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>wevi</strong></td>
+                        <td>Watch Word2vec weights update live during training</td>
+                        <td><a href="http://ronxin.github.io/wevi/" style="color: #7ec8e3;">ronxin.github.io/wevi</a></td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Imperial Demo</strong></td>
+                        <td>Train your own Word2vec, see PCA clustering</td>
+                        <td><a href="https://www.doc.ic.ac.uk/~nuric/word2vec_demo.html" style="color: #7ec8e3;">doc.ic.ac.uk/~nuric</a></td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>TensorFlow Projector</strong></td>
+                        <td>Explore pre-trained embeddings in 3D</td>
+                        <td><a href="https://projector.tensorflow.org/" style="color: #7ec8e3;">projector.tensorflow.org</a></td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Lena Voita's Course</strong></td>
+                        <td>Best mathematical explanations with animations</td>
+                        <td><a href="https://lena-voita.github.io/nlp_course/word_embeddings.html" style="color: #7ec8e3;">lena-voita.github.io</a></td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Dive into DL</strong></td>
+                        <td>Interactive textbook with runnable code</td>
+                        <td><a href="https://d2l.ai/chapter_natural-language-processing-pretraining/word2vec.html" style="color: #7ec8e3;">d2l.ai</a></td>
+                    </tr>
+                </table>
+                <p class="fragment" style="font-size: 0.75em; margin-top: 1em; color: #7ec8e3;">
+                    💡 Homework: try <strong>wevi</strong> and watch how "king" and "queen" vectors evolve!
+                </p>
+                <aside class="notes">
+                    These are carefully curated resources — each offers something unique.
+                    wevi is the best for understanding the training dynamics.
+                    Lena Voita's course has the clearest mathematical explanations.
+                    TensorFlow Projector is great for exploring relationships in 3D.
+                </aside>
+            </section>
+
+            <!-- Slide 43: References & Resources -->
+            <section>
+                <h2>References & Further Reading</h2>
+                <ul style="font-size: 0.65em;">
+                    <li>
+                        Mikolov et al. (2013). <em>"Efficient Estimation of Word Representations in Vector Space"</em>
+                        <span style="color: #93a1a1;">&mdash; The Word2vec paper</span>
+                    </li>
+                    <li>
+                        Pennington, Socher & Manning (2014). <em>"GloVe: Global Vectors for Word Representation"</em>
+                        <span style="color: #93a1a1;">&mdash; The GloVe paper</span>
+                    </li>
+                    <li>
+                        <span class="highlight-blue">Levy & Goldberg (2014)</span>. <em>"Neural Word Embedding as Implicit Matrix Factorization"</em>
+                        <span style="color: #93a1a1;">&mdash; The unifying theory</span>
+                    </li>
+                    <li>
+                        Jay Alammar. <em>"The Illustrated Word2vec"</em>
+                        <span style="color: #93a1a1;">&mdash;
+                        <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #7ec8e3;">jalammar.github.io</a></span>
+                    </li>
+                    <li>
+                        <span class="highlight-green">Xin Rong (2014)</span>. <em>"word2vec Parameter Learning Explained"</em>
+                        <span style="color: #93a1a1;">&mdash;
+                        <a href="https://arxiv.org/abs/1411.2738" style="color: #7ec8e3;">arXiv:1411.2738</a></span>
+                    </li>
+                    <li>
+                        Stanford CS224N. <em>"Natural Language Processing with Deep Learning"</em>
+                        <span style="color: #93a1a1;">&mdash;
+                        <a href="https://web.stanford.edu/class/cs224n/" style="color: #7ec8e3;">web.stanford.edu/class/cs224n</a></span>
+                    </li>
+                    <li>
+                        Jurafsky & Martin. <em>"Speech and Language Processing"</em> Ch. 6
+                        <span style="color: #93a1a1;">&mdash;
+                        <a href="https://web.stanford.edu/~jurafsky/slp3/" style="color: #7ec8e3;">web.stanford.edu/~jurafsky/slp3</a></span>
+                    </li>
+                </ul>
+                <aside class="notes">
+                    Added Levy & Goldberg for the unified theory view.
+                    Xin Rong's paper is the clearest explanation of Word2vec math.
+                    Encourage students to read the Jay Alammar post — it's the best visual introduction.
+                    CS224N lecture videos are freely available on YouTube.
+                </aside>
+            </section>
+
+            <!-- Slide 44: What's Next -->
+            <section>
+                <h2>What's Next</h2>
+                <div style="border: 2px solid #7ec8e3; border-radius: 8px; padding: 1.2em; display: inline-block;">
+                    <h3>Day 2: Attention & Transformers</h3>
+                    <p style="font-size: 0.8em;">March 9, 2026</p>
+                    <ul style="font-size: 0.75em;">
+                        <li>From static to contextual embeddings</li>
+                        <li>Attention mechanism: learning where to look</li>
+                        <li>The Transformer architecture</li>
+                    </ul>
+                </div>
+                <p style="margin-top: 1.5em; font-size: 0.85em;">
+                    Thank you!
+                </p>
+                <aside class="notes">
+                    End of Day 1. Students have a month until Day 2.
+                    Encourage them to explore the references and play with gensim.
+                </aside>
+            </section>
+
+            <!-- ==================== SECTION 8: GLOVE (ADVANCED — TIME PERMITTING) ==================== -->
+
+            <section class="section-title">
+                <h2>Advanced: GloVe</h2>
+                <h3>Time permitting &mdash; Pennington, Socher & Manning, 2014</h3>
             </section>
 
             <!-- Slide 29: GloVe Overview -->
@@ -1252,389 +1756,6 @@ mat    [  3,    1,    6,    7,    0 ]</pre>
                     GloVe tends to be preferred in academic research partly because of Stanford's influence.
                     Word2vec with negative sampling is very popular in industry.
                     Both are available as pre-trained models you can download and use immediately.
-                </aside>
-            </section>
-
-            <!-- ==================== SECTION 6: PROPERTIES & LIMITATIONS ==================== -->
-
-            <section class="section-title">
-                <h2>Properties & Limitations</h2>
-                <h3>What static embeddings can and cannot do</h3>
-            </section>
-
-            <!-- Slide 33: Window Size Effect -->
-            <section>
-                <h2>Window Size Matters</h2>
-                <div class="fig">
-                    <img src="https://jalammar.github.io/images/word2vec/word2vec-window-size.png"
-                         alt="Effect of window size"
-                         style="max-height: 300px;">
-                    <p class="caption">
-                        Source: Jay Alammar, "The Illustrated Word2vec"
-                        &mdash; <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #93a1a1;">jalammar.github.io</a>
-                    </p>
-                </div>
-                <div class="two-column fragment" style="font-size: 0.8em;">
-                    <div>
-                        <h3>Small window (2&ndash;3)</h3>
-                        <p>Captures <strong>syntactic</strong> similarity<br>
-                        <span class="small">"big" &harr; "large" &harr; "huge"</span></p>
-                    </div>
-                    <div>
-                        <h3>Large window (8&ndash;10)</h3>
-                        <p>Captures <strong>semantic/topical</strong> similarity<br>
-                        <span class="small">"dog" &harr; "puppy" &harr; "veterinarian"</span></p>
-                    </div>
-                </div>
-                <aside class="notes">
-                    This is a practical consideration when training embeddings.
-                    Small windows: words that can replace each other (synonyms, same POS).
-                    Large windows: words that appear in the same topic or domain.
-                </aside>
-            </section>
-
-            <!-- Slide 34: Bias in Embeddings -->
-            <section>
-                <h2>Bias in Embeddings</h2>
-                <p style="font-size: 0.85em;">Embeddings learn the <strong>biases present in the training data</strong></p>
-                <div class="matrix-box fragment" style="text-align: center; font-size: 0.85em;">
-<pre>man &rarr; computer programmer
-woman &rarr; homemaker
-
-doctor &minus; man + woman &asymp; nurse</pre>
-                </div>
-                <ul style="font-size: 0.8em; margin-top: 1em;">
-                    <li class="fragment">These reflect <strong>historical stereotypes</strong> in training text</li>
-                    <li class="fragment">Active research area: <strong>debiasing word embeddings</strong>
-                        <span class="small">(Bolukbasi et al., 2016)</span>
-                    </li>
-                    <li class="fragment">Important lesson: <span class="highlight">data is not neutral</span></li>
-                </ul>
-                <aside class="notes">
-                    This is a crucial topic for responsible AI.
-                    The model isn't "sexist" — it's reflecting patterns in the text it was trained on.
-                    But when deployed in hiring systems, recommendations, etc., these biases cause real harm.
-                    Bolukbasi et al. paper: "Man is to Computer Programmer as Woman is to Homemaker?"
-                </aside>
-            </section>
-
-            <!-- Slide 35: The Polysemy Problem -->
-            <section>
-                <h2>The Polysemy Problem</h2>
-                <p style="font-size: 0.85em;"><strong>Static embeddings</strong>: one vector per word, regardless of context</p>
-                <div class="fragment" style="background: rgba(255,255,255,0.05); padding: 1em; border-radius: 8px; font-size: 0.85em;">
-                    <p style="margin: 0 0 0.5em;">
-                        "I went to the <span class="highlight">bank</span> to deposit money"
-                    </p>
-                    <p style="margin: 0;">
-                        "I sat on the <span class="highlight">bank</span> of the river"
-                    </p>
-                </div>
-                <p class="fragment" style="margin-top: 1em; font-size: 0.85em;">
-                    Word2vec / GloVe: same vector for both!
-                </p>
-                <div class="fragment" style="margin-top: 1em;">
-                    <p style="font-size: 0.85em; color: #7ec8e3;">
-                        Solution &rarr; <strong>Contextual embeddings</strong> (ELMo, BERT, GPT)
-                    </p>
-                    <p class="small">Different vector for each usage of the word &mdash; Day 2 & 3 material</p>
-                </div>
-                <aside class="notes">
-                    This is THE fundamental limitation of Word2vec and GloVe.
-                    Static = one vector forever. But words have multiple meanings.
-                    The solution came in 2018 with ELMo and BERT: contextual embeddings
-                    where the vector depends on the surrounding context.
-                    This is the bridge to Transformers — covered on Day 2.
-                </aside>
-            </section>
-
-            <!-- ==================== SECTION 7: PRACTICAL USAGE ==================== -->
-
-            <section class="section-title">
-                <h2>Using Embeddings in Practice</h2>
-                <h3>From theory to code</h3>
-            </section>
-
-            <!-- Slide 37: Pre-trained Models -->
-            <section>
-                <h2>Pre-trained Embeddings</h2>
-                <p style="font-size: 0.85em;">You don't need to train from scratch &mdash; <strong>download and use</strong></p>
-                <table class="compare-table">
-                    <tr>
-                        <th>Model</th>
-                        <th>Corpus</th>
-                        <th>Vocabulary</th>
-                        <th>Dimensions</th>
-                    </tr>
-                    <tr class="fragment">
-                        <td>Word2vec</td>
-                        <td>Google News</td>
-                        <td>3M words</td>
-                        <td>300</td>
-                    </tr>
-                    <tr class="fragment">
-                        <td>GloVe</td>
-                        <td>Wikipedia + Gigaword</td>
-                        <td>400K words</td>
-                        <td>50, 100, 200, 300</td>
-                    </tr>
-                    <tr class="fragment">
-                        <td>GloVe (large)</td>
-                        <td>Common Crawl</td>
-                        <td>2.2M words</td>
-                        <td>300</td>
-                    </tr>
-                    <tr class="fragment">
-                        <td>FastText</td>
-                        <td>Wikipedia</td>
-                        <td>1M words</td>
-                        <td>300</td>
-                    </tr>
-                </table>
-                <aside class="notes">
-                    In practice, you almost always start with pre-trained embeddings.
-                    Training from scratch requires massive corpora and compute.
-                    GloVe 6B (Wikipedia) is a great starting point for experiments.
-                    FastText is worth mentioning — it handles subwords, useful for rare words.
-                </aside>
-            </section>
-
-            <!-- Slide 38: Code Example -->
-            <section>
-                <h2>Using Word2vec in Python</h2>
-                <pre style="font-size: 0.55em;"><code class="python">import gensim.downloader as api
-
-# Load pre-trained Word2vec (Google News, 300d)
-model = api.load("word2vec-google-news-300")
-
-# Find similar words
-model.most_similar("python")
-# [('pythons', 0.71), ('snake', 0.65), ('lizard', 0.58), ...]
-
-# Word analogy: king - man + woman = ?
-model.most_similar(positive=["king", "woman"],
-                   negative=["man"], topn=1)
-# [('queen', 0.71)]
-
-# Cosine similarity
-model.similarity("cat", "dog")     # 0.76
-model.similarity("cat", "car")     # 0.12</code></pre>
-                <p class="fragment small" style="margin-top: 0.5em;">
-                    Library: <strong>gensim</strong> &mdash; pip install gensim
-                </p>
-                <aside class="notes">
-                    Live demo opportunity: run this code in front of students.
-                    Let them suggest words and analogies to try.
-                    gensim is the standard library for Word2vec in Python.
-                </aside>
-            </section>
-
-            <!-- Slide 39: Applications -->
-            <section>
-                <h2>Where Embeddings Are Used</h2>
-                <ul>
-                    <li class="fragment">
-                        <strong>Text Classification</strong> &mdash; embeddings as input features
-                    </li>
-                    <li class="fragment">
-                        <strong>Search & Information Retrieval</strong> &mdash; semantic search beyond keywords
-                    </li>
-                    <li class="fragment">
-                        <strong>Recommendation Systems</strong>
-                        <span class="small">&mdash; Spotify, Airbnb use embedding-based recommendations</span>
-                    </li>
-                    <li class="fragment">
-                        <strong>Transfer Learning</strong> &mdash; pre-trained embeddings boost downstream tasks
-                    </li>
-                    <li class="fragment">
-                        <strong>Foundation for Transformers</strong> &mdash; BERT, GPT start with embeddings
-                    </li>
-                </ul>
-                <aside class="notes">
-                    Embeddings are not just an academic exercise — they're everywhere in production.
-                    Spotify's "Word2vec for music" treats songs as words and playlists as sentences.
-                    Airbnb uses listing embeddings for search ranking.
-                    And of course, every LLM starts by embedding input tokens.
-                </aside>
-            </section>
-
-            <!-- ==================== SECTION 8: SUMMARY & PREVIEW ==================== -->
-
-            <section class="section-title">
-                <h2>Summary</h2>
-                <h3>What we learned today</h3>
-            </section>
-
-            <!-- Slide 41: The Evolution -->
-            <section>
-                <h2>The Evolution of Text Representation</h2>
-                <div class="pipeline" style="flex-direction: column; gap: 0.2em; margin: 0.3em auto;">
-                    <div style="display: flex; align-items: center; gap: 0.5em;">
-                        <div class="step" style="min-width: 180px; border-color: #93a1a1;">One-Hot</div>
-                        <span style="font-size: 0.7em; color: #93a1a1;">sparse, no similarity</span>
-                    </div>
-                    <div class="arrow" style="font-size: 0.9em; line-height: 1;">&darr;</div>
-                    <div style="display: flex; align-items: center; gap: 0.5em;">
-                        <div class="step" style="min-width: 180px; border-color: #93a1a1;">BoW / TF-IDF</div>
-                        <span style="font-size: 0.7em; color: #93a1a1;">document-level, word importance</span>
-                    </div>
-                    <div class="arrow" style="font-size: 0.9em; line-height: 1;">&darr;</div>
-                    <div style="display: flex; align-items: center; gap: 0.5em;">
-                        <div class="step" style="min-width: 180px; border-color: #93a1a1;">n-grams</div>
-                        <span style="font-size: 0.7em; color: #93a1a1;">local order, but combinatorial explosion</span>
-                    </div>
-                    <div class="arrow" style="font-size: 0.9em; line-height: 1;">&darr;</div>
-                    <div style="display: flex; align-items: center; gap: 0.5em;">
-                        <div class="step" style="min-width: 180px; border-color: #ff6b6b;">Word2vec / GloVe</div>
-                        <span style="font-size: 0.7em; color: #ff6b6b;">dense, semantic, learned</span>
-                    </div>
-                    <div class="arrow" style="font-size: 0.9em; line-height: 1;">&darr;</div>
-                    <div style="display: flex; align-items: center; gap: 0.5em;">
-                        <div class="step" style="min-width: 180px; border-color: #7ec8e3;">Contextual (BERT, GPT)</div>
-                        <span style="font-size: 0.7em; color: #7ec8e3;">Day 2 & 3</span>
-                    </div>
-                </div>
-                <aside class="notes">
-                    This is the full story of today's session in one slide.
-                    Each step solved a problem that the previous approach couldn't handle.
-                    Next time (Day 2): contextual embeddings and the Transformer architecture.
-                </aside>
-            </section>
-
-            <!-- Slide 42: Key Takeaways -->
-            <section>
-                <h2>Key Takeaways</h2>
-                <ol>
-                    <li class="fragment" style="margin-bottom: 0.5em;">
-                        Words need <strong>numerical representations</strong> for machines to process them
-                    </li>
-                    <li class="fragment" style="margin-bottom: 0.5em;">
-                        <strong>Distributional hypothesis</strong>: meaning comes from context
-                    </li>
-                    <li class="fragment" style="margin-bottom: 0.5em;">
-                        <strong>Word2vec & GloVe</strong>: dense vectors that capture semantic relationships
-                    </li>
-                    <li class="fragment" style="margin-bottom: 0.5em;">
-                        Vector arithmetic reveals <strong>latent structure</strong> in language
-                    </li>
-                    <li class="fragment">
-                        <strong>Limitation</strong>: static embeddings can't handle polysemy &rarr; next: contextual embeddings
-                    </li>
-                </ol>
-                <aside class="notes">
-                    Recap the five core ideas from today's session.
-                </aside>
-            </section>
-
-            <!-- Slide 42b: Interactive Resources -->
-            <section>
-                <h2>🎮 Interactive Resources to Explore</h2>
-                <table class="compare-table" style="font-size: 0.65em;">
-                    <tr>
-                        <th>Tool</th>
-                        <th>What it does</th>
-                        <th>Link</th>
-                    </tr>
-                    <tr class="fragment">
-                        <td><strong>wevi</strong></td>
-                        <td>Watch Word2vec weights update live during training</td>
-                        <td><a href="http://ronxin.github.io/wevi/" style="color: #7ec8e3;">ronxin.github.io/wevi</a></td>
-                    </tr>
-                    <tr class="fragment">
-                        <td><strong>Imperial Demo</strong></td>
-                        <td>Train your own Word2vec, see PCA clustering</td>
-                        <td><a href="https://www.doc.ic.ac.uk/~nuric/word2vec_demo.html" style="color: #7ec8e3;">doc.ic.ac.uk/~nuric</a></td>
-                    </tr>
-                    <tr class="fragment">
-                        <td><strong>TensorFlow Projector</strong></td>
-                        <td>Explore pre-trained embeddings in 3D</td>
-                        <td><a href="https://projector.tensorflow.org/" style="color: #7ec8e3;">projector.tensorflow.org</a></td>
-                    </tr>
-                    <tr class="fragment">
-                        <td><strong>Lena Voita's Course</strong></td>
-                        <td>Best mathematical explanations with animations</td>
-                        <td><a href="https://lena-voita.github.io/nlp_course/word_embeddings.html" style="color: #7ec8e3;">lena-voita.github.io</a></td>
-                    </tr>
-                    <tr class="fragment">
-                        <td><strong>Dive into DL</strong></td>
-                        <td>Interactive textbook with runnable code</td>
-                        <td><a href="https://d2l.ai/chapter_natural-language-processing-pretraining/word2vec.html" style="color: #7ec8e3;">d2l.ai</a></td>
-                    </tr>
-                </table>
-                <p class="fragment" style="font-size: 0.75em; margin-top: 1em; color: #7ec8e3;">
-                    💡 Homework: try <strong>wevi</strong> and watch how "king" and "queen" vectors evolve!
-                </p>
-                <aside class="notes">
-                    These are carefully curated resources — each offers something unique.
-                    wevi is the best for understanding the training dynamics.
-                    Lena Voita's course has the clearest mathematical explanations.
-                    TensorFlow Projector is great for exploring relationships in 3D.
-                </aside>
-            </section>
-
-            <!-- Slide 43: References & Resources -->
-            <section>
-                <h2>References & Further Reading</h2>
-                <ul style="font-size: 0.65em;">
-                    <li>
-                        Mikolov et al. (2013). <em>"Efficient Estimation of Word Representations in Vector Space"</em>
-                        <span style="color: #93a1a1;">&mdash; The Word2vec paper</span>
-                    </li>
-                    <li>
-                        Pennington, Socher & Manning (2014). <em>"GloVe: Global Vectors for Word Representation"</em>
-                        <span style="color: #93a1a1;">&mdash; The GloVe paper</span>
-                    </li>
-                    <li>
-                        <span class="highlight-blue">Levy & Goldberg (2014)</span>. <em>"Neural Word Embedding as Implicit Matrix Factorization"</em>
-                        <span style="color: #93a1a1;">&mdash; The unifying theory</span>
-                    </li>
-                    <li>
-                        Jay Alammar. <em>"The Illustrated Word2vec"</em>
-                        <span style="color: #93a1a1;">&mdash;
-                        <a href="https://jalammar.github.io/illustrated-word2vec/" style="color: #7ec8e3;">jalammar.github.io</a></span>
-                    </li>
-                    <li>
-                        <span class="highlight-green">Xin Rong (2014)</span>. <em>"word2vec Parameter Learning Explained"</em>
-                        <span style="color: #93a1a1;">&mdash;
-                        <a href="https://arxiv.org/abs/1411.2738" style="color: #7ec8e3;">arXiv:1411.2738</a></span>
-                    </li>
-                    <li>
-                        Stanford CS224N. <em>"Natural Language Processing with Deep Learning"</em>
-                        <span style="color: #93a1a1;">&mdash;
-                        <a href="https://web.stanford.edu/class/cs224n/" style="color: #7ec8e3;">web.stanford.edu/class/cs224n</a></span>
-                    </li>
-                    <li>
-                        Jurafsky & Martin. <em>"Speech and Language Processing"</em> Ch. 6
-                        <span style="color: #93a1a1;">&mdash;
-                        <a href="https://web.stanford.edu/~jurafsky/slp3/" style="color: #7ec8e3;">web.stanford.edu/~jurafsky/slp3</a></span>
-                    </li>
-                </ul>
-                <aside class="notes">
-                    Added Levy & Goldberg for the unified theory view.
-                    Xin Rong's paper is the clearest explanation of Word2vec math.
-                    Encourage students to read the Jay Alammar post — it's the best visual introduction.
-                    CS224N lecture videos are freely available on YouTube.
-                </aside>
-            </section>
-
-            <!-- Slide 44: What's Next -->
-            <section>
-                <h2>What's Next</h2>
-                <div style="border: 2px solid #7ec8e3; border-radius: 8px; padding: 1.2em; display: inline-block;">
-                    <h3>Day 2: Attention & Transformers</h3>
-                    <p style="font-size: 0.8em;">March 9, 2026</p>
-                    <ul style="font-size: 0.75em;">
-                        <li>From static to contextual embeddings</li>
-                        <li>Attention mechanism: learning where to look</li>
-                        <li>The Transformer architecture</li>
-                    </ul>
-                </div>
-                <p style="margin-top: 1.5em; font-size: 0.85em;">
-                    Thank you!
-                </p>
-                <aside class="notes">
-                    End of Day 1. Students have a month until Day 2.
-                    Encourage them to explore the references and play with gensim.
                 </aside>
             </section>
 
