@@ -695,70 +695,44 @@
             </section>
 
             <!-- ============================================================ -->
-            <!-- SLIDE 11: Bahdanau Attention -->
+            <!-- SLIDE 11: The First Attention Mechanisms (condensed) -->
             <!-- ============================================================ -->
             <section>
-                <h3><span class="highlight-blue">Bahdanau Attention</span> (2014)</h3>
-                <p style="font-size: 0.65em; color: var(--grey);">Also called "Additive Attention"</p>
-                <div class="two-column">
-                    <div class="fragment">
-                        <p style="font-size: 0.7em; font-weight: bold; color: var(--blue);">Architecture</p>
-                        <div class="diagram" style="font-size: 0.75em; margin: 5px auto; gap: 3px;">
-                            <div class="box box-green" style="min-width: 130px; padding: 5px 10px;">Context Vector c<sub>t</sub></div>
-                            <div class="arrow-down" style="font-size: 0.9em;">&uarr;</div>
-                            <div style="font-size: 0.6em; color: var(--yellow);">Weighted sum</div>
-                            <div class="arrow-down" style="font-size: 0.9em;">&uarr;</div>
-                            <div class="diagram-row">
-                                <div class="box box-blue" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">&alpha;<sub>1</sub></div>
-                                <div class="box box-blue" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">&alpha;<sub>2</sub></div>
-                                <div class="box box-blue" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">&alpha;<sub>3</sub></div>
-                                <div class="box box-blue" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">&alpha;<sub>4</sub></div>
-                            </div>
-                            <div class="arrow-down" style="font-size: 0.9em;">&uarr; <span style="font-size: 0.5em;">softmax</span></div>
-                            <div class="diagram-row">
-                                <div class="box box-yellow" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">e<sub>1</sub></div>
-                                <div class="box box-yellow" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">e<sub>2</sub></div>
-                                <div class="box box-yellow" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">e<sub>3</sub></div>
-                                <div class="box box-yellow" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">e<sub>4</sub></div>
-                            </div>
-                            <div class="arrow-down" style="font-size: 0.9em;">&uarr; <span style="font-size: 0.5em;">alignment model</span></div>
-                            <div class="diagram-row">
-                                <div class="box box-grey" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">h<sub>1</sub></div>
-                                <div class="box box-grey" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">h<sub>2</sub></div>
-                                <div class="box box-grey" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">h<sub>3</sub></div>
-                                <div class="box box-grey" style="min-width: 40px; font-size: 0.55em; padding: 4px 8px;">h<sub>4</sub></div>
-                            </div>
+                <h3>The First <span class="highlight-blue">Attention Mechanisms</span></h3>
+                <p style="font-size: 0.7em; color: var(--grey);">Key idea: the decoder can <strong>look back</strong> at all encoder hidden states — not just the last one</p>
+                <div class="two-column" style="margin-top: 20px; gap: 30px; align-items: stretch;">
+                    <div class="fragment" style="background: rgba(126, 200, 227, 0.1); border: 2px solid var(--blue); border-radius: 10px; padding: 20px; text-align: center;">
+                        <p style="font-size: 0.8em; font-weight: bold; color: var(--blue); margin: 0 0 8px 0;">Bahdanau 2014</p>
+                        <p style="font-size: 0.65em; color: var(--grey); margin: 0 0 12px 0; font-style: italic;">Additive scoring</p>
+                        <div class="box box-blue" style="margin: 0 auto; min-width: 160px; font-size: 0.6em; padding: 8px 12px;">
+                            score = v<sup>T</sup> tanh(W<sub>a</sub>s + U<sub>a</sub>h)
                         </div>
+                        <p style="font-size: 0.6em; color: var(--grey); margin: 10px 0 0 0;">Uses a small neural network<br>to compute alignment scores</p>
                     </div>
-                    <div class="fragment">
-                        <p style="font-size: 0.7em; font-weight: bold; color: var(--yellow);">The Math</p>
-                        <div style="font-size: 0.7em; text-align: left; line-height: 1.3;">
-                            <p style="margin: 4px 0;"><strong>Step 1:</strong> Compute alignment scores</p>
-                            <div class="formula" style="font-size: 0.85em; padding: 5px 12px; margin: 4px auto;">
-                                e<sub>t,i</sub> = v<sup>T</sup> tanh(W<sub>a</sub> s<sub>t-1</sub> + U<sub>a</sub> h<sub>i</sub>)
-                            </div>
-                            <p style="margin: 4px 0;"><strong>Step 2:</strong> Normalize with softmax</p>
-                            <div class="formula" style="font-size: 0.85em; padding: 5px 12px; margin: 4px auto;">
-                                &alpha;<sub>t,i</sub> = softmax(e<sub>t,i</sub>)
-                            </div>
-                            <p style="margin: 4px 0;"><strong>Step 3:</strong> Compute context vector</p>
-                            <div class="formula" style="font-size: 0.85em; padding: 5px 12px; margin: 4px auto;">
-                                c<sub>t</sub> = &Sigma;<sub>i</sub> &alpha;<sub>t,i</sub> &middot; h<sub>i</sub>
-                            </div>
+                    <div class="fragment" style="background: rgba(152, 195, 121, 0.1); border: 2px solid var(--green); border-radius: 10px; padding: 20px; text-align: center;">
+                        <p style="font-size: 0.8em; font-weight: bold; color: var(--green); margin: 0 0 8px 0;">Luong 2015</p>
+                        <p style="font-size: 0.65em; color: var(--grey); margin: 0 0 12px 0; font-style: italic;">Dot-product scoring</p>
+                        <div class="box box-green" style="margin: 0 auto; min-width: 160px; font-size: 0.6em; padding: 8px 12px;">
+                            score = s<sup>T</sup> h
                         </div>
+                        <p style="font-size: 0.6em; color: var(--grey); margin: 10px 0 0 0;">Simple dot product —<br>much faster to compute</p>
                     </div>
                 </div>
-                <p class="paper-ref fragment" style="margin-top: 6px;">Bahdanau, Cho & Bengio. "Neural Machine Translation by Jointly Learning to Align and Translate." ICLR 2015 (arXiv 2014)</p>
+                <div class="fragment key-takeaway" style="margin-top: 20px; max-width: 85%;">
+                    <strong>Key insight:</strong> Luong's dot-product scoring became the direct foundation for Transformer attention
+                </div>
+                <p class="paper-ref fragment" style="margin-top: 12px;">
+                    Bahdanau, Cho &amp; Bengio. ICLR 2015 (arXiv 2014) &bull; Luong, Pham &amp; Manning. EMNLP 2015
+                </p>
                 <aside class="notes">
-                    Bahdanau attention was the first attention mechanism for NLP, published in 2014.
-                    It is called "additive" because the alignment score uses addition inside a tanh.
-                    Here is how it works step by step:
-                    1. For each encoder hidden state h_i, compute an alignment score e_t,i that measures
-                       how well h_i matches the current decoder state s_{t-1}. This uses a small neural network.
-                    2. Apply softmax to get attention weights alpha that sum to 1.
-                    3. Compute a weighted sum of all encoder states, weighted by alpha. This is the context vector.
-                    The context vector is then concatenated with the decoder input to help make the next prediction.
-                    The key innovation: the decoder can now "look at" all encoder states, not just the last one.
+                    The first attention mechanisms were designed for sequence-to-sequence translation.
+                    Both Bahdanau and Luong solve the same core problem: instead of forcing all information
+                    through a single bottleneck context vector, let the decoder look at ALL encoder hidden states
+                    at each generation step. A learned score decides how much to "attend" to each encoder state.
+                    Bahdanau used an additive formula — a small neural network with a tanh activation.
+                    Luong simplified this to a plain dot product between the decoder state and encoder state.
+                    The dot product approach is faster, simpler, and became the direct precursor
+                    to the Transformer's scaled dot-product attention (which just adds the sqrt(dk) scaling).
                 </aside>
             </section>
 
@@ -803,108 +777,6 @@
                     Notice that the model learns these alignments automatically during training. We never tell it
                     which words should align with which. This was a major breakthrough for machine translation.
                     Before attention, translation quality degraded sharply for longer sentences.
-                </aside>
-            </section>
-
-            <!-- ============================================================ -->
-            <!-- SLIDE 13: Luong Attention -->
-            <!-- ============================================================ -->
-            <section>
-                <h3 style="margin-bottom: 4px;"><span class="highlight-green">Luong Attention</span> (2015)</h3>
-                <p style="font-size: 0.65em; color: var(--grey); margin: 0 0 6px 0;">Also called "Multiplicative Attention"</p>
-                <div class="fragment">
-                    <p style="font-size: 0.7em; font-weight: bold; color: var(--green); margin: 0 0 4px 0;">Three scoring functions:</p>
-                    <table class="comparison-table" style="margin: 0 auto;">
-                        <tr>
-                            <th>Name</th>
-                            <th>Formula</th>
-                            <th>Intuition</th>
-                        </tr>
-                        <tr>
-                            <td style="color: var(--blue);">Dot Product</td>
-                            <td><span class="formula" style="font-size: 0.9em; padding: 5px 10px;">e<sub>t,i</sub> = s<sub>t</sub><sup>T</sup> h<sub>i</sub></span></td>
-                            <td>Simplest: just multiply</td>
-                        </tr>
-                        <tr class="fragment">
-                            <td style="color: var(--yellow);">General</td>
-                            <td><span class="formula" style="font-size: 0.9em; padding: 5px 10px;">e<sub>t,i</sub> = s<sub>t</sub><sup>T</sup> W<sub>a</sub> h<sub>i</sub></span></td>
-                            <td>Learnable weight matrix</td>
-                        </tr>
-                        <tr class="fragment">
-                            <td style="color: var(--purple);">Concat</td>
-                            <td><span class="formula" style="font-size: 0.9em; padding: 5px 10px;">e<sub>t,i</sub> = v<sup>T</sup> tanh(W<sub>a</sub>[s<sub>t</sub>;h<sub>i</sub>])</span></td>
-                            <td>Like Bahdanau</td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="fragment key-takeaway" style="margin: 4px auto; padding: 7px 12px;">
-                    <strong>Key difference from Bahdanau:</strong> Luong uses the <em>current</em> decoder hidden state s<sub>t</sub>
-                    (not s<sub>t-1</sub>), and the dot-product variant is much faster to compute.
-                </div>
-                <p class="paper-ref fragment" style="margin-top: 4px;">Luong, Pham & Manning. "Effective Approaches to Attention-based Neural Machine Translation." EMNLP 2015</p>
-                <aside class="notes">
-                    A year after Bahdanau, Luong et al. proposed simpler alternatives for computing attention scores.
-                    The most important one is the dot product: just take the dot product of the decoder state and encoder state.
-                    No neural network needed! This is much faster to compute.
-                    The "general" variant adds a learnable weight matrix for more expressiveness.
-                    The "concat" variant is essentially the same as Bahdanau.
-                    The dot product variant turned out to be especially important because it is the basis
-                    for the attention used in Transformers. Simple and efficient.
-                </aside>
-            </section>
-
-            <!-- ============================================================ -->
-            <!-- SLIDE 14: Bahdanau vs Luong Comparison -->
-            <!-- ============================================================ -->
-            <section>
-                <h3>Bahdanau vs. Luong: Side by Side</h3>
-                <table class="comparison-table fragment">
-                    <tr>
-                        <th>Aspect</th>
-                        <th style="color: var(--blue);">Bahdanau (2014)</th>
-                        <th style="color: var(--green);">Luong (2015)</th>
-                    </tr>
-                    <tr>
-                        <td>Score function</td>
-                        <td>Additive (neural network)</td>
-                        <td>Multiplicative (dot product)</td>
-                    </tr>
-                    <tr>
-                        <td>Decoder state used</td>
-                        <td>s<sub>t-1</sub> (previous)</td>
-                        <td>s<sub>t</sub> (current)</td>
-                    </tr>
-                    <tr>
-                        <td>Encoder</td>
-                        <td>Bidirectional RNN</td>
-                        <td>Unidirectional (top layer)</td>
-                    </tr>
-                    <tr>
-                        <td>Computation speed</td>
-                        <td>Slower</td>
-                        <td>Faster (dot product)</td>
-                    </tr>
-                    <tr>
-                        <td>Flexibility</td>
-                        <td>Single score function</td>
-                        <td>Three variants</td>
-                    </tr>
-                </table>
-                <div class="fragment" style="margin-top: 25px;">
-                    <p style="font-size: 0.75em; color: var(--yellow);">
-                        Both achieve the same goal: <strong>let the decoder look at all encoder states</strong>
-                    </p>
-                    <p style="font-size: 0.65em; color: var(--grey);">
-                        The dot-product approach (Luong) became the foundation for Transformer attention
-                    </p>
-                </div>
-                <aside class="notes">
-                    Here is a clean comparison of the two attention mechanisms. Both solve the same fundamental problem,
-                    but they differ in the details. Bahdanau uses a small neural network (additive) to compute scores,
-                    while Luong uses a simple dot product (multiplicative). Luong is generally faster.
-                    In practice, the dot-product approach won out and became the basis for Transformer attention.
-                    The key idea is the same in both: don't rely on a single bottleneck vector.
-                    Let the decoder attend to all parts of the input at each step.
                 </aside>
             </section>
 
@@ -1551,6 +1423,77 @@
                     From 2018 onwards, every major NLP model (BERT, GPT, T5, etc.) is based on the Transformer.
                     Every large language model you use today, including the ones behind ChatGPT and Claude,
                     is built on the attention mechanism we learned today.
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 29b: The Paper That Changed Everything -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>The Paper That <span class="highlight">Changed Everything</span></h3>
+                <p style="font-size: 0.65em; color: var(--grey);">8 Google Brain authors, 2017 &mdash; most left Google and built billion-dollar companies</p>
+                <div style="margin: 12px auto; max-width: 88%;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.66em;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--blue);">
+                                <th style="text-align: left; color: var(--blue); padding: 6px 12px;">Author</th>
+                                <th style="text-align: left; color: var(--blue); padding: 6px 12px;">Company / Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment" style="border-bottom: 1px solid rgba(147,161,161,0.2);">
+                                <td style="padding: 4px 12px; color: var(--yellow);">Noam Shazeer</td>
+                                <td style="padding: 4px 12px;">Character.AI &mdash; co-founder</td>
+                            </tr>
+                            <tr class="fragment" style="border-bottom: 1px solid rgba(147,161,161,0.2);">
+                                <td style="padding: 4px 12px; color: var(--yellow);">Aidan Gomez</td>
+                                <td style="padding: 4px 12px;">Cohere &mdash; co-founder &amp; CEO</td>
+                            </tr>
+                            <tr class="fragment" style="border-bottom: 1px solid rgba(147,161,161,0.2);">
+                                <td style="padding: 4px 12px; color: var(--yellow);">Ashish Vaswani</td>
+                                <td style="padding: 4px 12px;">Adept AI &mdash; co-founder</td>
+                            </tr>
+                            <tr class="fragment" style="border-bottom: 1px solid rgba(147,161,161,0.2);">
+                                <td style="padding: 4px 12px; color: var(--yellow);">Llion Jones</td>
+                                <td style="padding: 4px 12px;">Sakana AI &mdash; co-founder</td>
+                            </tr>
+                            <tr class="fragment" style="border-bottom: 1px solid rgba(147,161,161,0.2);">
+                                <td style="padding: 4px 12px; color: var(--yellow);">Jakob Uszkoreit</td>
+                                <td style="padding: 4px 12px;">Inceptive &mdash; RNA therapeutics</td>
+                            </tr>
+                            <tr class="fragment" style="border-bottom: 1px solid rgba(147,161,161,0.2);">
+                                <td style="padding: 4px 12px; color: var(--yellow);">Illia Polosukhin</td>
+                                <td style="padding: 4px 12px;">NEAR Protocol &mdash; co-founder</td>
+                            </tr>
+                            <tr class="fragment" style="border-bottom: 1px solid rgba(147,161,161,0.2);">
+                                <td style="padding: 4px 12px; color: var(--yellow);">Lukasz Kaiser</td>
+                                <td style="padding: 4px 12px;">OpenAI</td>
+                            </tr>
+                            <tr class="fragment" style="border-bottom: 1px solid rgba(147,161,161,0.2);">
+                                <td style="padding: 4px 12px; color: var(--yellow);">Niki Parmar</td>
+                                <td style="padding: 4px 12px;">Einblick &mdash; co-founder</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="fragment" style="margin-top: 12px; background: rgba(255, 107, 107, 0.1); border: 2px solid var(--red); border-radius: 10px; padding: 10px; text-align: center; max-width: 88%; margin-left: auto; margin-right: auto;">
+                    <p style="font-size: 0.78em; margin: 0; color: var(--red); font-weight: bold;">
+                        One paper &bull; 8 people &bull; entire AI industry transformed
+                    </p>
+                </div>
+                <p class="paper-ref fragment" style="margin-top: 10px;">
+                    李自然说 &mdash; "20分钟读懂AI史上最重要的一篇论文《Attention Is All You Need》"
+                    &bull; <a href="https://youtu.be/_VaEjGnHgOI" style="color: var(--grey);">youtu.be/_VaEjGnHgOI</a>
+                </p>
+                <aside class="notes">
+                    This slide tells the human story behind the most cited AI paper ever.
+                    All 8 co-authors of "Attention Is All You Need" went on to shape the AI industry.
+                    Noam Shazeer co-founded Character.AI, one of the most popular AI chat apps.
+                    Aidan Gomez co-founded Cohere (enterprise AI), Ashish Vaswani co-founded Adept AI,
+                    Llion Jones co-founded Sakana AI. Even Illia Polosukhin pivoted to build NEAR Protocol,
+                    a blockchain platform with AI focus. This paper didn't just advance research — it seeded
+                    the entire modern AI industry. One paper, 8 people, billions of dollars of value created,
+                    and every LLM you use today is a direct descendant of the ideas in it.
                 </aside>
             </section>
 

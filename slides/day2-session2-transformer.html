@@ -393,52 +393,6 @@
                 </aside>
             </section>
 
-            <!-- ==================== SLIDE 4: WHY NOT RNNs ==================== -->
-
-            <section>
-                <h2>The Problem with RNNs</h2>
-                <div class="two-column">
-                    <div>
-                        <h3 style="color: #ff6b6b;">RNN / LSTM</h3>
-                        <div class="pipeline" style="flex-direction: column; gap: 0em;">
-                            <div class="step" style="width: 160px;">x<sub>1</sub> &rarr; h<sub>1</sub></div>
-                            <div class="arrow" style="transform: rotate(90deg);">&rarr;</div>
-                            <div class="step" style="width: 160px;">x<sub>2</sub> &rarr; h<sub>2</sub></div>
-                            <div class="arrow" style="transform: rotate(90deg);">&rarr;</div>
-                            <div class="step" style="width: 160px;">x<sub>3</sub> &rarr; h<sub>3</sub></div>
-                            <div class="arrow" style="transform: rotate(90deg);">&rarr;</div>
-                            <div class="step" style="width: 160px;">x<sub>n</sub> &rarr; h<sub>n</sub></div>
-                        </div>
-                        <p class="small" style="text-align:center;">Sequential: must wait for h<sub>t-1</sub></p>
-                    </div>
-                    <div class="fragment">
-                        <h3 style="color: #98c379;">Transformer</h3>
-                        <div style="display:flex; gap:0.5em; justify-content:center; flex-wrap:wrap;">
-                            <div class="step" style="border-color:#98c379;">x<sub>1</sub></div>
-                            <div class="step" style="border-color:#98c379;">x<sub>2</sub></div>
-                            <div class="step" style="border-color:#98c379;">x<sub>3</sub></div>
-                            <div class="step" style="border-color:#98c379;">x<sub>n</sub></div>
-                        </div>
-                        <p style="text-align:center; font-size:0.7em; color:#98c379; margin:0.5em 0;">&darr; All attend to all simultaneously &darr;</p>
-                        <div style="display:flex; gap:0.5em; justify-content:center; flex-wrap:wrap;">
-                            <div class="step" style="border-color:#98c379;">y<sub>1</sub></div>
-                            <div class="step" style="border-color:#98c379;">y<sub>2</sub></div>
-                            <div class="step" style="border-color:#98c379;">y<sub>3</sub></div>
-                            <div class="step" style="border-color:#98c379;">y<sub>n</sub></div>
-                        </div>
-                        <p class="small" style="text-align:center;">Parallel: all tokens processed at once</p>
-                    </div>
-                </div>
-                <aside class="notes">
-                    Key limitation of RNNs: they process tokens one at a time, left to right.
-                    h_t depends on h_{t-1}, so you cannot parallelize training.
-                    With long sequences (1000+ tokens), training is very slow.
-                    Also, information from early tokens degrades as it passes through many steps
-                    (the vanishing gradient problem, even with LSTMs).
-                    Transformers solve both: full parallelization AND direct connections between all tokens.
-                </aside>
-            </section>
-
             <!-- ==================== SLIDE 5: SECTION - ARCHITECTURE ==================== -->
 
             <section class="section-title">
@@ -492,89 +446,6 @@
                     Notice 3 types of attention: self-attention in encoder, masked self-attention
                     in decoder, and cross-attention connecting decoder to encoder.
                     We will explain each component in detail over the next slides.
-                </aside>
-            </section>
-
-            <!-- ==================== SLIDE 7: MULTI-HEAD ATTENTION INTRO ==================== -->
-
-            <section class="section-title">
-                <h2>Multi-Head Attention</h2>
-                <h3>Why one attention is not enough</h3>
-                <aside class="notes">
-                    We know attention from Session 1. Now the question is: why do we need
-                    multiple attention "heads" running in parallel?
-                </aside>
-            </section>
-
-            <!-- ==================== SLIDE 8: MULTI-HEAD ATTENTION ==================== -->
-
-            <section>
-                <h2>Multi-Head Attention</h2>
-                <p style="font-size: 0.85em;">Instead of one attention function, run <span class="highlight">h parallel heads</span>:</p>
-                <div class="formula-box fragment" style="display:block; text-align:center;">
-                    MultiHead(Q, K, V) = Concat(head<sub>1</sub>, ..., head<sub>h</sub>) &middot; W<sup>O</sup>
-                    <br><br>
-                    where head<sub>i</sub> = Attention(QW<sub>i</sub><sup>Q</sup>, KW<sub>i</sub><sup>K</sup>, VW<sub>i</sub><sup>V</sup>)
-                </div>
-                <div class="fragment" style="margin-top: 1em;">
-                    <p style="font-size: 0.8em;">In the original paper: <span class="highlight-blue">h = 8 heads</span>, d<sub>model</sub> = 512</p>
-                    <p style="font-size: 0.8em;">Each head operates on d<sub>k</sub> = d<sub>model</sub> / h = <span class="highlight-green">64 dimensions</span></p>
-                </div>
-                <aside class="notes">
-                    Each head has its own learned projection matrices W_Q, W_K, W_V.
-                    So each head can learn to attend to different types of relationships.
-                    The key insight: we split the 512-dimensional space into 8 heads of 64 dimensions each.
-                    This means multi-head attention has roughly the same computational cost as
-                    single-head attention with full dimensionality.
-                    After all heads compute their attention, we concatenate and project with W_O.
-                </aside>
-            </section>
-
-            <!-- ==================== SLIDE 9: WHAT EACH HEAD LEARNS ==================== -->
-
-            <section>
-                <h2>What Does Each Head Learn?</h2>
-                <p style="font-size: 0.8em;">Different heads specialize in different <span class="highlight-blue">linguistic relationships</span>:</p>
-                <div class="head-grid fragment">
-                    <div class="head-card" style="border-color: #ff6b6b;">
-                        <div class="head-title" style="color: #ff6b6b;">Head 1</div>
-                        <div>Syntactic: subject&ndash;verb agreement</div>
-                    </div>
-                    <div class="head-card" style="border-color: #7ec8e3;">
-                        <div class="head-title" style="color: #7ec8e3;">Head 2</div>
-                        <div>Positional: nearby token relationships</div>
-                    </div>
-                    <div class="head-card" style="border-color: #98c379;">
-                        <div class="head-title" style="color: #98c379;">Head 3</div>
-                        <div>Semantic: meaning similarity</div>
-                    </div>
-                    <div class="head-card" style="border-color: #e5c07b;">
-                        <div class="head-title" style="color: #e5c07b;">Head 4</div>
-                        <div>Coreference: pronoun &rarr; noun links</div>
-                    </div>
-                </div>
-                <div class="fragment" style="margin-top: 1em;">
-                    <div class="head-grid">
-                        <div class="head-card" style="border-color: #c678dd;">
-                            <div class="head-title" style="color: #c678dd;">Head 5</div>
-                            <div>Rare patterns: idioms, named entities</div>
-                        </div>
-                        <div class="head-card" style="border-color: #93a1a1;">
-                            <div class="head-title" style="color: #93a1a1;">Heads 6-8</div>
-                            <div>Other patterns (some redundant)</div>
-                        </div>
-                    </div>
-                </div>
-                <p class="fragment small">These specializations emerge during training &mdash; they are not hand-coded!</p>
-                <aside class="notes">
-                    This is one of the most elegant aspects of multi-head attention.
-                    Nobody tells the model "head 1 should handle syntax" -- the heads
-                    naturally specialize through gradient descent during training.
-                    Research by Clark et al. (2019) showed that specific BERT heads consistently
-                    attend to syntactic relations like direct objects, possessive pronouns, etc.
-                    Some heads are redundant, which is why later research explored head pruning.
-                    The key intuition: language has many types of relationships happening simultaneously,
-                    so it makes sense to have multiple parallel attention mechanisms.
                 </aside>
             </section>
 
@@ -1005,6 +876,56 @@
                     Step 5: Another residual + normalization.
                     This output goes to the next layer. After 6 layers, we have rich contextual representations.
                     Ask students: "Why do we have two Add&Norm steps?" (One for attention, one for FFN)
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 18b: HOW THE DECODER GENERATES TEXT ==================== -->
+
+            <section>
+                <h2>How the Decoder <span class="highlight-yellow">Generates Text</span></h2>
+                <p style="font-size: 0.82em;">The decoder generates <span class="highlight">ONE TOKEN AT A TIME</span>, step by step</p>
+                <div class="fragment" style="margin: 0.8em 0; font-size: 0.75em;">
+                    <p style="color: #7ec8e3; font-weight: bold; margin-bottom: 0.5em;">The autoregressive loop:</p>
+                    <div class="pipeline" style="flex-wrap: wrap; gap: 0.4em;">
+                        <div class="step" style="border-color: #93a1a1; color: #93a1a1; font-size: 0.75em;">[START]</div>
+                        <div class="arrow">&rarr;</div>
+                        <div class="step" style="font-size: 0.75em;">"The"</div>
+                        <div class="arrow">&rarr;</div>
+                        <div class="step" style="font-size: 0.75em;">"The cat"</div>
+                        <div class="arrow">&rarr;</div>
+                        <div class="step" style="font-size: 0.75em;">"The cat sat"</div>
+                        <div class="arrow">&rarr;</div>
+                        <div class="step" style="font-size: 0.75em;">"The cat sat on"</div>
+                        <div class="arrow">&rarr;</div>
+                        <div class="step" style="border-color: #98c379; color: #98c379; font-size: 0.75em;">[END]</div>
+                    </div>
+                </div>
+                <div class="fragment" style="font-size: 0.78em; margin-top: 0.7em; text-align: left; max-width: 80%; margin-left: auto; margin-right: auto;">
+                    <p style="margin-bottom: 0.3em;">At each step, the decoder sees:</p>
+                    <ul>
+                        <li>All <span class="highlight-blue">previously generated tokens</span> (its own output so far)</li>
+                        <li>The full <span class="highlight">encoder output</span> (source representation, via cross-attention)</li>
+                    </ul>
+                </div>
+                <div class="fragment" style="margin: 0.7em auto; padding: 0.7em 1em; background: rgba(229,192,123,0.1); border: 2px solid #e5c07b; border-radius: 10px; font-size: 0.77em; max-width: 85%;">
+                    <p style="margin: 0 0 0.3em 0; font-weight: bold; color: #e5c07b;">Why masked attention exists:</p>
+                    <p style="margin: 0; color: #93a1a1;">During <span class="highlight-yellow">training</span> we process all positions at once for efficiency.
+                    But we must <span class="highlight">mask future tokens</span> to simulate the step-by-step generation
+                    the model will do at inference time.</p>
+                </div>
+                <p class="fragment" style="font-size: 0.8em; margin-top: 0.6em; text-align: center;">
+                    <span class="highlight-green">The mask makes training parallel while preserving the left-to-right property</span>
+                </p>
+                <aside class="notes">
+                    This slide is the conceptual bridge before we look at the decoder's architecture.
+                    Inference is inherently sequential: generate one token, feed it back as input, repeat.
+                    This is "autoregressive" generation.
+                    During TRAINING though, we have the full target sequence available.
+                    We process ALL positions in parallel — but only if we prevent the model from cheating
+                    by looking at future tokens. The causal mask (upper triangular -infinity matrix)
+                    achieves exactly this: position t can only attend to positions 1 through t.
+                    Training is parallel, but the model learns the correct left-to-right conditional distribution.
+                    This is why the decoder's first attention layer is called "Masked Self-Attention."
                 </aside>
             </section>
 
