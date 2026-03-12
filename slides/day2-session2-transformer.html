@@ -635,7 +635,108 @@
                 </aside>
             </section>
 
-            <!-- ==================== SLIDE 14: FFN SECTION ==================== -->
+            <!-- ==================== SLIDE 10: SECTION - ADD & NORM ==================== -->
+
+            <section class="section-title">
+                <h2>Add &amp; Norm</h2>
+                <h3>The glue that holds each block together</h3>
+                <aside class="notes">
+                    Every sub-layer in the Transformer — whether attention or feed-forward —
+                    is wrapped in the same two operations: a residual connection and layer normalization.
+                    These are not glamorous, but without them, training a deep Transformer would be
+                    practically impossible. Let's understand why.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 11: ADD & NORM DETAILS ==================== -->
+
+            <section>
+                <h2>Add &amp; Norm: Keeping Training Stable</h2>
+                <div style="display:flex; gap:1em; align-items:flex-start;">
+                    <div style="flex:1.6;">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8em;">
+                            <!-- Residual -->
+                            <div class="fragment">
+                                <h3 style="color:#98c379; margin:0 0 0.2em 0; font-size:1em;">Residual ("Add")</h3>
+                                <p style="font-size:0.62em; margin:0 0 0.2em 0; color:#93a1a1;">Don't replace — <em>add</em> new info on top of the original.</p>
+                                <div class="formula-box" style="display:block; text-align:center; font-size:0.76em; padding:0.2em 0.5em; margin:0 0 0.2em 0;">
+                                    output = <span style="color:#e5c07b;">x</span> + Sublayer(<span style="color:#e5c07b;">x</span>)
+                                </div>
+                                <div style="font-size:0.6em; background:rgba(152,195,121,0.1); border-radius:6px; padding:0.3em 0.5em; line-height:1.55;">
+                                    <span style="color:#93a1a1;">token "cat" → self-attention:</span><br>
+                                    <span style="color:#e5c07b;">x</span> = [1.0, 2.0, 3.0]<br>
+                                    Attn = [0.2, 0.5, 0.3]<br>
+                                    out = [<span style="color:#98c379;">1.2, 2.5, 3.3</span>] &nbsp;<span style="color:#93a1a1;">✓ original kept</span>
+                                </div>
+                                <p style="font-size:0.58em; margin:0.15em 0 0 0; color:#93a1a1;">Gradient shortcut → 6+ layers trainable</p>
+                            </div>
+                            <!-- LayerNorm -->
+                            <div class="fragment">
+                                <h3 style="color:#e5c07b; margin:0 0 0.2em 0; font-size:1em;">Layer Norm ("Norm")</h3>
+                                <p style="font-size:0.62em; margin:0 0 0.2em 0; color:#93a1a1;">After each layer values can explode. Norm resets the scale.</p>
+                                <div class="formula-box" style="display:block; text-align:center; font-size:0.76em; padding:0.2em 0.5em; margin:0 0 0.2em 0;">
+                                    LN(x) = &gamma;&thinsp;&middot;&thinsp;(x &minus; &mu;) / &sigma; + &beta;
+                                </div>
+                                <div style="font-size:0.6em; background:rgba(229,192,123,0.1); border-radius:6px; padding:0.3em 0.5em; line-height:1.55;">
+                                    <span style="color:#93a1a1;">"cat" hidden state (4 dims):</span><br>
+                                    [50, 200, 10, 500] &nbsp;<span style="color:#ff6b6b;">← exploding</span><br>
+                                    &mu;=190, &sigma;&asymp;186<br>
+                                    [<span style="color:#e5c07b;">&minus;0.75, 0.05, &minus;0.97, 1.67</span>] &nbsp;<span style="color:#93a1a1;">✓ stable</span>
+                                </div>
+                                <p style="font-size:0.58em; margin:0.15em 0 0 0; color:#93a1a1;">Per-token → works with variable-length sequences</p>
+                            </div>
+                        </div>
+                        <div class="fragment" style="margin-top:0.5em; text-align:center;">
+                            <div class="formula-box" style="font-size:0.8em; padding:0.25em 1em; display:inline-block;">
+                                Combined: output = LayerNorm(<span style="color:#e5c07b;">x</span> + Sublayer(<span style="color:#e5c07b;">x</span>))
+                            </div>
+                            <p style="font-size:0.58em; margin:0.15em 0 0 0; color:#93a1a1;">Applied twice per encoder layer: after self-attention, and after FFN</p>
+                        </div>
+                    </div>
+                    <!-- Minimap -->
+                    <div style="flex:0.7; font-size:0.5em; text-align:center;">
+                        <p style="color:#93a1a1; margin:0 0 0.3em 0; letter-spacing:0.05em;">WHERE WE ARE</p>
+                        <div style="display:flex; gap:0.4em; justify-content:center;">
+                            <div style="border:1px solid rgba(126,200,227,0.35); border-radius:10px; padding:0.4em 0.35em; flex:1;">
+                                <div style="color:#7ec8e3; font-weight:bold; margin-bottom:0.3em;">Encoder ×6</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.15em auto; padding:0.2em 0.3em; background:rgba(152,195,121,0.35);"><strong>Add &amp; Norm</strong></div>
+                                <div class="arch-box ffn" style="font-size:1em; margin:0.15em auto; padding:0.2em 0.3em; opacity:0.25;">Feed-Forward</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.15em auto; padding:0.2em 0.3em; background:rgba(152,195,121,0.35);"><strong>Add &amp; Norm</strong></div>
+                                <div class="arch-box attention" style="font-size:1em; margin:0.15em auto; padding:0.2em 0.3em; opacity:0.25;">Self-Attention</div>
+                                <div style="color:#93a1a1; margin-top:0.3em; font-size:0.9em;">↑ Input Emb + PE</div>
+                            </div>
+                            <div style="border:1px solid rgba(198,120,221,0.35); border-radius:10px; padding:0.4em 0.35em; flex:1;">
+                                <div style="color:#c678dd; font-weight:bold; margin-bottom:0.3em;">Decoder ×6</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.15em auto; padding:0.2em 0.3em; background:rgba(152,195,121,0.35);"><strong>Add &amp; Norm</strong></div>
+                                <div class="arch-box ffn" style="font-size:1em; margin:0.15em auto; padding:0.2em 0.3em; opacity:0.25;">Feed-Forward</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.15em auto; padding:0.2em 0.3em; background:rgba(152,195,121,0.35);"><strong>Add &amp; Norm</strong></div>
+                                <div class="arch-box output" style="font-size:1em; margin:0.15em auto; padding:0.2em 0.3em; opacity:0.25;">Cross-Attn</div>
+                                <div class="arch-box norm" style="font-size:1em; margin:0.15em auto; padding:0.2em 0.3em; background:rgba(152,195,121,0.35);"><strong>Add &amp; Norm</strong></div>
+                                <div class="arch-box attention" style="font-size:1em; margin:0.15em auto; padding:0.2em 0.3em; opacity:0.25;">Masked Self-Attn</div>
+                                <div style="color:#93a1a1; margin-top:0.3em; font-size:0.9em;">↑ Output Emb + PE</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Residual connections come from ResNet (He et al., 2015). The key intuition:
+                    instead of learning a full transformation H(x), the layer only needs to learn
+                    the "residual" F(x) = H(x) - x. If a layer is useless, it can learn F(x)=0
+                    and pass x unchanged. Critically, gradients flow back through the identity shortcut
+                    without vanishing — this is why 6-layer (and deeper) Transformers are trainable.
+                    Example: x=[1,2,3], Attn(x)=[0.2,0.5,0.3], output=[1.2,2.5,3.3].
+                    The original token meaning is preserved and enriched, not replaced.
+                    Layer normalization (Ba et al., 2016) normalizes across the feature dimension
+                    for each token independently. For [50,200,10,500]: mean=190, std≈186,
+                    normalized ≈ [-0.75, 0.05, -0.97, 1.67]. γ and β let the model rescale if useful.
+                    Why layer norm instead of batch norm? Variable-length sequences make batch
+                    statistics unreliable. Layer norm works per-token, independent of batch.
+                    Note: original paper = Post-LN (after residual). Modern models = Pre-LN
+                    (before sublayer) — trains more stably at large scale.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 11: FFN SECTION ==================== -->
 
             <section class="section-title">
                 <h2>Feed-Forward Networks</h2>
@@ -647,7 +748,7 @@
                 </aside>
             </section>
 
-            <!-- ==================== SLIDE 15: FFN DETAILS ==================== -->
+            <!-- ==================== SLIDE 12: FFN DETAILS ==================== -->
 
             <section>
                 <h2>Position-wise Feed-Forward Network</h2>
@@ -708,83 +809,6 @@
                     factual knowledge (Geva et al., 2021). This is why larger FFN dimensions
                     correlate with more knowledge capacity.
                     Modern models often use GELU instead of ReLU, and some use gated variants (SwiGLU).
-                </aside>
-            </section>
-
-            <!-- ==================== SLIDE 16: LAYER NORM AND RESIDUAL ==================== -->
-
-            <section>
-                <h2>Layer Norm &amp; Residual Connections</h2>
-                <div style="display:flex; gap:1.2em; align-items:flex-start;">
-                    <!-- Left: existing content -->
-                    <div style="flex:1.5;">
-                        <p style="font-size: 0.78em; margin:0 0 0.2em 0;">Two critical techniques that make deep Transformers <span class="highlight-green">trainable</span>:</p>
-                        <div class="two-column fragment" style="gap:1em;">
-                            <div>
-                                <h3 style="color: #98c379; margin-bottom:0.15em;">Residual Connection</h3>
-                                <div class="formula-box" style="display:block; text-align:center; font-size:0.8em; padding:0.4em 0.8em; margin:0.2em 0;">
-                                    output = x + Sublayer(x)
-                                </div>
-                                <ul style="font-size: 0.65em; margin-top:0.3em;">
-                                    <li>Adds input directly to output</li>
-                                    <li>Gradients flow through <span class="highlight-green">shortcut path</span></li>
-                                    <li>Enables training of <strong>deep</strong> networks</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h3 style="color: #e5c07b; margin-bottom:0.15em;">Layer Normalization</h3>
-                                <div class="formula-box" style="display:block; text-align:center; font-size:0.8em; padding:0.4em 0.8em; margin:0.2em 0;">
-                                    LayerNorm(x) = &gamma; &middot; (x - &mu;) / &sigma; + &beta;
-                                </div>
-                                <ul style="font-size: 0.65em; margin-top:0.3em;">
-                                    <li>Normalizes across features (not batch)</li>
-                                    <li>Stabilizes activations during training</li>
-                                    <li>&gamma; and &beta; are learned parameters</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="fragment" style="margin-top:0.4em; text-align:center;">
-                            <div class="formula-box" style="font-size:0.85em; padding:0.35em 1em; display:inline-block;">
-                                Combined: &nbsp; output = LayerNorm(x + Sublayer(x))
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Right: minimap — Add & Norm boxes highlighted in both encoder and decoder -->
-                    <div style="flex:0.75; font-size:0.5em; text-align:center;">
-                        <p style="color:#93a1a1; margin:0 0 0.4em 0; letter-spacing:0.05em;">WHERE WE ARE</p>
-                        <div style="display:flex; gap:0.5em; justify-content:center;">
-                            <div style="border:1px solid rgba(126,200,227,0.35); border-radius:10px; padding:0.5em 0.4em; flex:1;">
-                                <div style="color:#7ec8e3; font-weight:bold; margin-bottom:0.4em;">Encoder ×6</div>
-                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; background:rgba(152,195,121,0.35);"><strong>Add &amp; Norm</strong></div>
-                                <div class="arch-box ffn" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Feed-Forward</div>
-                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; background:rgba(152,195,121,0.35);"><strong>Add &amp; Norm</strong></div>
-                                <div class="arch-box attention" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Self-Attention</div>
-                                <div style="color:#93a1a1; margin-top:0.4em; font-size:0.9em;">↑ Input Emb + PE</div>
-                            </div>
-                            <div style="border:1px solid rgba(198,120,221,0.35); border-radius:10px; padding:0.5em 0.4em; flex:1;">
-                                <div style="color:#c678dd; font-weight:bold; margin-bottom:0.4em;">Decoder ×6</div>
-                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; background:rgba(152,195,121,0.35);"><strong>Add &amp; Norm</strong></div>
-                                <div class="arch-box ffn" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Feed-Forward</div>
-                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; background:rgba(152,195,121,0.35);"><strong>Add &amp; Norm</strong></div>
-                                <div class="arch-box output" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Cross-Attention</div>
-                                <div class="arch-box norm" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; background:rgba(152,195,121,0.35);"><strong>Add &amp; Norm</strong></div>
-                                <div class="arch-box attention" style="font-size:1em; margin:0.2em auto; padding:0.25em 0.3em; opacity:0.25;">Masked Self-Attn</div>
-                                <div style="color:#93a1a1; margin-top:0.4em; font-size:0.9em;">↑ Output Emb + PE</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <aside class="notes">
-                    Residual connections (from ResNet, 2015) are essential. Without them,
-                    training a 6-layer Transformer would be very difficult due to vanishing gradients.
-                    The shortcut lets gradients bypass the sublayer entirely if needed.
-                    Layer normalization (Ba et al., 2016) normalizes across the feature dimension
-                    for each token independently. This is different from batch normalization which
-                    normalizes across the batch dimension.
-                    Why layer norm instead of batch norm? Sequences have variable lengths,
-                    so batch statistics are unreliable. Layer norm works per-token.
-                    Note: the original paper applies LayerNorm AFTER the residual (Post-LN).
-                    Modern Transformers use Pre-LN (normalize before the sublayer) which trains more stably.
                 </aside>
             </section>
 
