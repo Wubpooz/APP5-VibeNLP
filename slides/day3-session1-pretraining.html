@@ -148,6 +148,15 @@
         .highlight-green { color: #98c379; }
         .small { font-size: 0.65em; color: #93a1a1; }
 
+        /* Advanced badge */
+        .advanced-badge {
+            font-size: 0.6em;
+            letter-spacing: 0.2em;
+            color: #e5c07b;
+            text-transform: uppercase;
+            margin-bottom: 0.5em;
+        }
+
         /* Section divider */
         .section-title h2 {
             font-size: 2em;
@@ -384,7 +393,8 @@
         }
         .h-timeline .h-era .h-name {
             font-weight: bold;
-            font-size: 1em;
+            font-size: 1.1em;
+            color: #ffffff;
         }
         .h-timeline .h-arrow {
             display: flex;
@@ -473,13 +483,10 @@
                 <h2>Today's Session</h2>
                 <ol style="font-size: 0.85em;">
                     <li class="fragment">What is pre-training? <span class="small">The transfer learning revolution</span></li>
-                    <li class="fragment">Language modeling objectives <span class="small">MLM vs CLM</span></li>
-                    <li class="fragment">BERT's approach: Masked Language Modeling</li>
-                    <li class="fragment">GPT's approach: Causal Language Modeling</li>
-                    <li class="fragment">MLM vs CLM comparison</li>
+                    <li class="fragment">Language modeling objectives <span class="small">MLM, BERT's masking strategy &amp; NSP</span></li>
+                    <li class="fragment">GPT's approach <span class="small">Causal LM + MLM vs CLM comparison</span></li>
                     <li class="fragment">Scaling laws <span class="small">How big? How much data? How much compute?</span></li>
-                    <li class="fragment">Pre-training data &amp; cost</li>
-                    <li class="fragment">Key models timeline</li>
+                    <li class="fragment">Pre-training data, cost &amp; key models timeline</li>
                 </ol>
                 <aside class="notes">
                     Here is our roadmap for the next 2 hours. We will move from the conceptual motivation
@@ -699,7 +706,7 @@
                         </div>
                     </div>
                 </div>
-                <p class="fragment small" style="margin-top: 1em; max-width: 80%; margin-left: auto; margin-right: auto;">
+                <p class="fragment small" style="margin-top: 0.4em; max-width: 80%; margin-left: auto; margin-right: auto;">
                     Why? If always [MASK], the model learns to only work when it sees [MASK].<br>
                     Random + unchanged tokens force the model to maintain good representations for ALL tokens.
                 </p>
@@ -712,32 +719,40 @@
                 </aside>
             </section>
 
-            <!-- SLIDE 12: NSP -->
+            <!-- SLIDE 11b: Why 80/10/10 -->
             <section>
-                <h2>Next Sentence Prediction (NSP)</h2>
-                <p style="font-size: 0.85em;">BERT's second pre-training objective:</p>
-                <div class="fragment" style="margin: 1em auto; max-width: 80%;">
-                    <div style="background: rgba(152, 195, 121, 0.1); border: 2px solid #98c379; border-radius: 8px; padding: 0.8em; margin-bottom: 0.5em;">
-                        <span style="color: #98c379; font-weight: bold;">IsNext (50%)</span><br>
-                        <span style="font-size: 0.8em;">[CLS] The cat sat on the mat [SEP] It was a warm afternoon [SEP]</span>
+                <h2 style="margin: 0 0 0.3em 0;">Why 80/10/10? The Rationale</h2>
+                <div style="display: flex; flex-direction: column; gap: 0.4em; max-width: 820px; margin: 0 auto;">
+
+                    <div class="fragment" style="background: rgba(255,107,107,0.08); border-left: 4px solid #ff6b6b; border-radius: 6px; padding: 0.45em 0.9em;">
+                        <div style="font-weight: bold; color: #ff6b6b; font-size: 0.82em; margin-bottom: 0.1em;">❌ If always [MASK] → train/inference mismatch</div>
+                        <div style="font-size: 0.7em; line-height: 1.4;">At inference time <code>[MASK]</code> never appears. Model learns a shortcut: <em>"only think hard when I see [MASK]"</em> — leaving normal token representations useless.</div>
+                        <div style="font-size: 0.65em; color: #aaa; margin-top: 0.15em;">
+                            Train: <span style="background:#2d2d2d;padding:1px 5px;border-radius:3px;">The <span style="color:#ff6b6b;">[MASK]</span> sat</span> → predict <em>cat</em> &nbsp;|&nbsp;
+                            Inference: <span style="background:#2d2d2d;padding:1px 5px;border-radius:3px;">The cat sat</span> → no [MASK], model lost
+                        </div>
                     </div>
-                    <div style="background: rgba(255, 107, 107, 0.1); border: 2px solid #ff6b6b; border-radius: 8px; padding: 0.8em;">
-                        <span style="color: #ff6b6b; font-weight: bold;">NotNext (50%)</span><br>
-                        <span style="font-size: 0.8em;">[CLS] The cat sat on the mat [SEP] Stock prices rose sharply [SEP]</span>
+
+                    <div class="fragment" style="background: rgba(198,120,221,0.08); border-left: 4px solid #c678dd; border-radius: 6px; padding: 0.45em 0.9em;">
+                        <div style="font-weight: bold; color: #c678dd; font-size: 0.82em; margin-bottom: 0.1em;">🔀 10% random word → can't copy the input</div>
+                        <div style="font-size: 0.7em; line-height: 1.4;">Without random replacement, model learns: <em>"see a normal word? just copy it."</em> When it sees <span style="color:#c678dd;">dog</span> but must predict <span style="color:#98c379;">cat</span>, copying fails — it must rely on context.</div>
+                    </div>
+
+                    <div class="fragment" style="background: rgba(152,195,121,0.08); border-left: 4px solid #98c379; border-radius: 6px; padding: 0.45em 0.9em;">
+                        <div style="font-weight: bold; color: #98c379; font-size: 0.82em; margin-bottom: 0.1em;">✓ 10% keep original → no free pass for normal tokens</div>
+                        <div style="font-size: 0.7em; line-height: 1.4;">Any normal-looking token <em>might</em> have loss applied. The model must maintain good representations for <strong>every</strong> position — not just masked ones.</div>
+                    </div>
+
+                    <div class="fragment" style="font-size: 0.7em; text-align: center; color: #e5c07b; border-top: 1px solid rgba(229,192,123,0.3); padding-top: 0.35em;">
+                        Together: every token gets a <strong>rich, context-aware representation</strong> — exactly what fine-tuning needs.
                     </div>
                 </div>
-                <ul class="fragment" style="font-size: 0.75em;">
-                    <li>Helps the model understand <span class="highlight-blue">inter-sentence relationships</span></li>
-                    <li>Later work (RoBERTa, 2019) showed NSP may <em>not</em> be necessary</li>
-                    <li>Replaced by better objectives like Sentence Order Prediction (ALBERT)</li>
-                </ul>
                 <aside class="notes">
-                    BERT also has a second task: given two sentences, predict whether the second sentence
-                    actually follows the first in the original document. This was meant to help with
-                    tasks like question answering and natural language inference. However, later research
-                    by Liu et al. in RoBERTa showed that NSP doesn't actually help much. The MLM
-                    objective alone is powerful enough. ALBERT replaced it with Sentence Order Prediction
-                    which worked better.
+                    The three-way split solves three distinct problems.
+                    Always masking causes a train-inference mismatch because [MASK] never appears at inference time.
+                    Random replacement prevents the copy shortcut: when the visible token is wrong, the model must rely on context.
+                    Keep-original ensures the model cannot ignore non-masked positions, since any token might carry a loss signal.
+                    Together they force the model to build meaningful representations for every single token.
                 </aside>
             </section>
 
@@ -767,12 +782,46 @@
                 </aside>
             </section>
 
+            <!-- SLIDE 13b: NSP -->
+            <section>
+                <h2>Next Sentence Prediction (NSP)</h2>
+                <p style="font-size: 0.85em;">BERT's second pre-training objective:</p>
+                <div class="fragment" style="margin: 1em auto; max-width: 80%;">
+                    <div style="background: rgba(152, 195, 121, 0.1); border: 2px solid #98c379; border-radius: 8px; padding: 0.8em; margin-bottom: 0.5em;">
+                        <span style="color: #98c379; font-weight: bold;">IsNext (50%)</span><br>
+                        <span style="font-size: 0.8em;">[CLS] The cat sat on the mat [SEP] It was a warm afternoon [SEP]</span>
+                    </div>
+                    <div style="background: rgba(255, 107, 107, 0.1); border: 2px solid #ff6b6b; border-radius: 8px; padding: 0.8em;">
+                        <span style="color: #ff6b6b; font-weight: bold;">NotNext (50%)</span><br>
+                        <span style="font-size: 0.8em;">[CLS] The cat sat on the mat [SEP] Stock prices rose sharply [SEP]</span>
+                    </div>
+                </div>
+                <ul class="fragment" style="font-size: 0.75em;">
+                    <li>Helps the model understand <span class="highlight-blue">inter-sentence relationships</span></li>
+                    <li>Later work (RoBERTa, 2019) showed NSP may <em>not</em> be necessary</li>
+                    <li>Replaced by better objectives like Sentence Order Prediction (ALBERT)</li>
+                </ul>
+                <aside class="notes">
+                    BERT also has a second task: given two sentences, predict whether the second sentence
+                    actually follows the first in the original document. This was meant to help with
+                    tasks like question answering and natural language inference. However, later research
+                    by Liu et al. in RoBERTa showed that NSP doesn't actually help much. The MLM
+                    objective alone is powerful enough. ALBERT replaced it with Sentence Order Prediction
+                    which worked better.
+                </aside>
+            </section>
+
             <!-- SLIDE 14: BERT Architecture Diagram -->
             <section>
                 <h2>BERT: Architecture Overview</h2>
-                <div class="arch-diagram">
-                    <div class="arch-block" style="border-color: #ff6b6b; background: rgba(255, 107, 107, 0.1);">
-                        Output: Predict masked tokens
+                <div class="arch-diagram" style="margin-top: 0.3em;">
+                    <div style="display: flex; gap: 1em; justify-content: center;">
+                        <div class="arch-block" style="border-color: #ff6b6b; background: rgba(255, 107, 107, 0.1); flex: 1; padding: 0.4em 0.8em;">
+                            <span style="color: #ff6b6b; font-size: 0.78em;">MLM Head</span><br><span style="font-size: 0.85em;">Predict masked tokens</span><br><span class="small">(all token positions)</span>
+                        </div>
+                        <div class="arch-block" style="border-color: #c678dd; background: rgba(198, 120, 221, 0.1); flex: 1; padding: 0.4em 0.8em;">
+                            <span style="color: #c678dd; font-size: 0.78em;">NSP Head</span><br><span style="font-size: 0.85em;">IsNext / NotNext</span><br><span class="small">([CLS] token only)</span>
+                        </div>
                     </div>
                     <div class="arch-arrow">&uarr;</div>
                     <div class="arch-block" style="border-color: #7ec8e3; background: rgba(126, 200, 227, 0.1);">
@@ -785,10 +834,10 @@
                     </div>
                     <div class="arch-arrow">&uarr;</div>
                     <div class="arch-block" style="border-color: #93a1a1; background: rgba(147, 161, 161, 0.1);">
-                        Input: &quot;The [MASK] sat on the [MASK] mat&quot;
+                        Input: &quot;[CLS] The [MASK] sat [SEP] It was warm [SEP]&quot;
                     </div>
                 </div>
-                <div class="fragment" style="margin-top: 0.8em;">
+                <div class="fragment" style="margin-top: 0.4em;">
                     <div class="stat-row">
                         <div class="stat-box">
                             <div class="stat-big" style="font-size: 2em;">110M</div>
@@ -1418,6 +1467,19 @@
                     taught it any of these things. The same is true for GPT models but at even larger scale:
                     they learn to do arithmetic, write code, translate languages, all from next-token prediction.
                     This is sometimes called "emergence" - capabilities that appear at scale.
+                </aside>
+            </section>
+
+            <!-- ===================================================== -->
+            <!-- SLIDE: Advanced Section Divider -->
+            <!-- ===================================================== -->
+            <section class="section-title">
+                <p class="advanced-badge">⚡ Advanced</p>
+                <h2 style="font-size: 1.8em;">Going Deeper</h2>
+                <h3>Capstone: implement a GPT from scratch</h3>
+                <aside class="notes">
+                    The following slides are advanced / optional content for those who want to go deeper.
+                    We'll look at Andrej Karpathy's microgpt.py — a complete GPT in ~150 lines.
                 </aside>
             </section>
 

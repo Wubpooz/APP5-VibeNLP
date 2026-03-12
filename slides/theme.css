@@ -97,6 +97,9 @@ html.theme-light .reveal .small             { color: #586e75 !important; }
 html.theme-light .reveal .stat-big   { color: #dc322f !important; }
 html.theme-light .reveal .stat-label { color: #586e75 !important; }
 
+/* ── Advanced badge ── */
+html.theme-light .reveal .advanced-badge { color: #b58900 !important; }
+
 /* ── Section title (day2-session1) ── */
 html.theme-light .reveal .section-title {
     color: #268bd2 !important;
