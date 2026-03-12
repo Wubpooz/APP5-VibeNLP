@@ -74,7 +74,7 @@
         .timeline {
             display: flex;
             justify-content: center;
-            align-items: flex-end;
+            align-items: stretch;
             gap: 20px;
             margin-top: 30px;
         }
@@ -505,14 +505,16 @@
                     </div>
                     <p style="font-size: 0.6em; color: var(--grey);">Gradient signal <span class="highlight">shrinks exponentially</span> at each step</p>
                 </div>
-                <div class="fragment" style="margin-top: 20px;">
-                    <p style="font-size: 0.7em;">What this means in practice:</p>
-                    <ul style="font-size: 0.65em; line-height: 1.8;">
-                        <li>Early words get <span class="highlight">almost zero learning signal</span></li>
-                        <li>The model <em>cannot learn</em> long-range patterns</li>
-                        <li>Like trying to shout across a football field &mdash; the sound fades</li>
-                    </ul>
-                    <p style="font-size: 0.6em; color: var(--grey); margin-top: 10px;">
+                <div class="fragment" style="margin-top: 15px; text-align: left; max-width: 90%; margin-left: auto; margin-right: auto;">
+                    <p style="font-size: 0.7em; margin: 0 0 4px 0;">
+                        <span class="highlight-blue">"The cat</span>, which was sitting on the mat in the living room
+                        next to the old fireplace that hadn't been used in years,
+                        <span class="highlight-blue">was</span> very happy."
+                    </p>
+                    <p style="font-size: 0.6em; color: var(--grey); margin: 0 0 10px 0;">
+                        &uarr; "was" must agree with "cat" &mdash; 20+ words earlier. The gradient never reaches that far.
+                    </p>
+                    <p style="font-size: 0.6em; color: var(--grey);">
                         Even LSTMs &amp; GRUs (designed to fix this) struggle beyond ~200 tokens
                     </p>
                 </div>
@@ -521,8 +523,9 @@
                     the gradient signal must travel backward through every time step. At each step, the gradient gets
                     multiplied by a weight matrix. If those values are less than 1, the gradient shrinks exponentially.
                     After 20-30 steps, the gradient is essentially zero. This means the model cannot learn relationships
-                    between words that are far apart. LSTMs and GRUs helped somewhat with their gating mechanisms,
-                    but they still struggle with very long sequences.
+                    between words that are far apart. A classic example: "The cat, which was sitting on the mat..., was very happy."
+                    The verb "was" must agree with "cat", but they are separated by 20 words. The gradient simply cannot
+                    travel that far during training. LSTMs and GRUs helped somewhat, but still struggle with very long sequences.
                 </aside>
             </section>
 
@@ -613,43 +616,6 @@
                     Modern GPUs have thousands of cores designed for parallel computation, but RNNs leave most of them idle.
                     For a 1000-word document, you need 1000 sequential steps. This makes training extremely slow.
                     As we will see, attention opens the door to parallel processing of all positions simultaneously.
-                </aside>
-            </section>
-
-            <!-- ============================================================ -->
-            <!-- SLIDE 8: The Real-World Impact -->
-            <!-- ============================================================ -->
-            <section>
-                <h3>The Long-Range Dependency Problem</h3>
-                <div style="text-align: left; max-width: 85%; margin: 0 auto;">
-                    <p class="fragment" style="font-size: 0.75em; margin: 0 0 4px 0;">
-                        <span class="highlight-blue">"The cat</span>, which was sitting on the mat in the living room
-                        next to the old fireplace that hadn't been used in years,
-                        <span class="highlight-blue">was</span> very happy."
-                    </p>
-                    <p class="fragment" style="font-size: 0.65em; color: var(--grey); margin: 0 0 10px 40px;">
-                        &uarr; The verb "was" must agree with "cat" &mdash; 20+ words earlier!
-                    </p>
-                    <p class="fragment" style="font-size: 0.75em; margin: 0 0 4px 0;">
-                        <span class="highlight-green">"She</span> told him about the project during the meeting
-                        that lasted three hours on a rainy Tuesday afternoon,
-                        and then <span class="highlight-green">she</span> left."
-                    </p>
-                    <p class="fragment" style="font-size: 0.65em; color: var(--grey); margin: 0 0 0 40px;">
-                        &uarr; "she" in the second clause refers back to "She" at the very beginning
-                    </p>
-                </div>
-                <div class="fragment key-takeaway" style="margin-top: 8px;">
-                    <strong>Key insight:</strong> Language is full of long-range dependencies.
-                    A model that forgets early words will make systematic errors.
-                </div>
-                <aside class="notes">
-                    Let me give you concrete examples of why these RNN limitations matter in real language.
-                    In the first example, the verb "was" must agree with "cat", but they are separated by 20 words.
-                    An RNN would need to carry the information about "cat" through all those intermediate hidden states.
-                    In practice, this information gets diluted or lost. The model might incorrectly use "were" instead.
-                    These long-range dependencies are everywhere in natural language, and they are essential for
-                    correct translation, summarization, and understanding.
                 </aside>
             </section>
 
@@ -823,35 +789,37 @@
             <!-- ============================================================ -->
             <section>
                 <h3>From Cross-Attention to Self-Attention</h3>
-                <div class="two-column">
+                <div class="two-column" style="text-align: center;">
                     <div class="fragment">
-                        <p style="font-size: 0.7em; font-weight: bold; color: var(--blue);">Cross-Attention (Bahdanau/Luong)</p>
-                        <div class="diagram">
-                            <div class="box box-blue" style="min-width: 180px;">Decoder State</div>
-                            <div class="arrow-down" style="font-size: 0.8em;">attends to &darr;</div>
+                        <p style="font-size: 0.7em; font-weight: bold; color: var(--blue); min-height: 2.4em; display: flex; align-items: center; justify-content: center;">Cross-Attention (Bahdanau/Luong)</p>
+                        <div class="diagram" style="margin: 8px auto;">
+                            <div class="box box-blue" style="min-width: 180px;">Decoder state <span style="font-size:0.8em; color: var(--grey);">(target)</span></div>
+                            <div class="arrow-down" style="font-size: 0.8em;">looks at &darr;</div>
                             <div class="diagram-row">
                                 <div class="box box-grey" style="min-width: 50px; font-size: 0.55em;">Enc<sub>1</sub></div>
                                 <div class="box box-grey" style="min-width: 50px; font-size: 0.55em;">Enc<sub>2</sub></div>
                                 <div class="box box-grey" style="min-width: 50px; font-size: 0.55em;">Enc<sub>3</sub></div>
                             </div>
+                            <p style="font-size: 0.55em; color: var(--grey); margin: 0;">Encoder states (source)</p>
                         </div>
-                        <p style="font-size: 0.6em; color: var(--grey);">Two different sequences</p>
+                        <p style="font-size: 0.6em; color: var(--grey);">Target sequence queries source sequence</p>
                     </div>
                     <div class="fragment">
-                        <p style="font-size: 0.7em; font-weight: bold; color: var(--green);">Self-Attention</p>
-                        <div class="diagram">
-                            <div class="box box-green" style="min-width: 180px;">Each Word</div>
-                            <div class="arrow-down" style="font-size: 0.8em;">attends to &darr;</div>
+                        <p style="font-size: 0.7em; font-weight: bold; color: var(--green); min-height: 2.4em; display: flex; align-items: center; justify-content: center;">Self-Attention</p>
+                        <div class="diagram" style="margin: 8px auto;">
+                            <div class="box box-green" style="min-width: 180px;">Each word <span style="font-size:0.8em; color: var(--grey);">(source)</span></div>
+                            <div class="arrow-down" style="font-size: 0.8em;">looks at &darr;</div>
                             <div class="diagram-row">
                                 <div class="box box-green" style="min-width: 50px; font-size: 0.55em;">Word<sub>1</sub></div>
                                 <div class="box box-green" style="min-width: 50px; font-size: 0.55em;">Word<sub>2</sub></div>
                                 <div class="box box-green" style="min-width: 50px; font-size: 0.55em;">Word<sub>3</sub></div>
                             </div>
+                            <p style="font-size: 0.55em; color: var(--grey); margin: 0;">Same sequence</p>
                         </div>
-                        <p style="font-size: 0.6em; color: var(--grey);">Same sequence attends to itself</p>
+                        <p style="font-size: 0.6em; color: var(--grey);">One sequence looks at itself</p>
                     </div>
                 </div>
-                <div class="fragment key-takeaway" style="margin-top: 20px;">
+                <div class="fragment key-takeaway" style="margin-top: 8px;">
                     <strong>Self-attention:</strong> Every word in a sentence looks at every other word
                     (including itself) to build a richer representation.
                 </div>
@@ -862,6 +830,64 @@
                     at its context to understand its own meaning better.
                     For example, the word "bank" can look at nearby words to determine if it means "river bank" or "financial bank".
                     Self-attention replaces the RNN entirely: no more sequential processing!
+                </aside>
+            </section>
+
+            <!-- ============================================================ -->
+            <!-- SLIDE 22: Self-Attention Walkthrough -->
+            <!-- ============================================================ -->
+            <section>
+                <h3>Self-Attention: A Concrete Example</h3>
+                <p style="font-size: 0.65em; color: var(--grey);">Sentence: "The <span class="highlight">cat</span> sat on the <span class="highlight-blue">mat</span>"</p>
+                <div class="fragment" style="margin-top: 15px;">
+                    <p style="font-size: 0.65em; color: var(--yellow); font-weight: bold;">
+                        Focus on the word "cat" &mdash; what should it attend to?
+                    </p>
+                    <div style="margin: 15px auto; max-width: 70%;">
+                        <div class="weight-bar">
+                            <span style="min-width: 50px; color: var(--grey); font-size: 0.9em;">The</span>
+                            <div class="bar" style="width: 60px; background: var(--blue); opacity: 0.4;"></div>
+                            <span style="color: var(--grey);">0.08</span>
+                        </div>
+                        <div class="weight-bar">
+                            <span style="min-width: 50px; color: var(--red); font-size: 0.9em; font-weight: bold;">cat</span>
+                            <div class="bar" style="width: 200px; background: var(--red);"></div>
+                            <span style="color: var(--red); font-weight: bold;">0.35</span>
+                        </div>
+                        <div class="weight-bar">
+                            <span style="min-width: 50px; color: var(--grey); font-size: 0.9em;">sat</span>
+                            <div class="bar" style="width: 150px; background: var(--blue); opacity: 0.7;"></div>
+                            <span style="color: var(--grey);">0.28</span>
+                        </div>
+                        <div class="weight-bar">
+                            <span style="min-width: 50px; color: var(--grey); font-size: 0.9em;">on</span>
+                            <div class="bar" style="width: 30px; background: var(--blue); opacity: 0.3;"></div>
+                            <span style="color: var(--grey);">0.04</span>
+                        </div>
+                        <div class="weight-bar">
+                            <span style="min-width: 50px; color: var(--grey); font-size: 0.9em;">the</span>
+                            <div class="bar" style="width: 25px; background: var(--blue); opacity: 0.3;"></div>
+                            <span style="color: var(--grey);">0.03</span>
+                        </div>
+                        <div class="weight-bar">
+                            <span style="min-width: 50px; color: var(--blue); font-size: 0.9em;">mat</span>
+                            <div class="bar" style="width: 120px; background: var(--blue); opacity: 0.6;"></div>
+                            <span style="color: var(--grey);">0.22</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="fragment" style="font-size: 0.65em; color: var(--green);">
+                    "cat" attends strongly to itself (identity), "sat" (what it does), and "mat" (where it is).
+                    <br>Self-attention captures <strong>semantic relationships</strong> between all word pairs.
+                </p>
+                <aside class="notes">
+                    Let's trace through a concrete example. In "The cat sat on the mat", let's look at the word "cat".
+                    Using its Query vector, it computes attention scores with the Key vectors of all words.
+                    It attends most strongly to itself (words often need their own information), to "sat" (its verb),
+                    and to "mat" (semantically related - where the cat is). Function words like "the" and "on"
+                    get low attention scores. The output for "cat" is a weighted sum of all the Value vectors,
+                    with these weights. The result is a new representation of "cat" that is enriched with
+                    contextual information from the entire sentence.
                 </aside>
             </section>
 
@@ -889,8 +915,9 @@
                     </div>
                 </div>
                 <p class="fragment small" style="color: var(--yellow); margin-top: 8px;">
-                    In self-attention, every word generates its own Q, K, and V vectors.<br>
-                    Each word's Query is matched against all words' Keys to decide how much of each word's Value to collect.
+                    This framework applies to <strong>all attention types</strong> &mdash; cross or self.<br>
+                    The difference: in cross-attention Q comes from the decoder, K/V from the encoder;
+                    in self-attention all three come from the same sequence.
                 </p>
                 <aside class="notes">
                     The Query-Key-Value framework is central to understanding attention. Let me explain with a library analogy.
@@ -1026,64 +1053,6 @@
                     The fix is elegant: divide by the square root of d_k. This normalizes the variance of the dot products
                     back to approximately 1, keeping softmax in the region where it produces useful gradients.
                     This is why it is called SCALED dot-product attention.
-                </aside>
-            </section>
-
-            <!-- ============================================================ -->
-            <!-- SLIDE 22: Self-Attention Walkthrough -->
-            <!-- ============================================================ -->
-            <section>
-                <h3>Self-Attention: A Concrete Example</h3>
-                <p style="font-size: 0.65em; color: var(--grey);">Sentence: "The <span class="highlight">cat</span> sat on the <span class="highlight-blue">mat</span>"</p>
-                <div class="fragment" style="margin-top: 15px;">
-                    <p style="font-size: 0.65em; color: var(--yellow); font-weight: bold;">
-                        Focus on the word "cat" &mdash; what should it attend to?
-                    </p>
-                    <div style="margin: 15px auto; max-width: 70%;">
-                        <div class="weight-bar">
-                            <span style="min-width: 50px; color: var(--grey); font-size: 0.9em;">The</span>
-                            <div class="bar" style="width: 60px; background: var(--blue); opacity: 0.4;"></div>
-                            <span style="color: var(--grey);">0.08</span>
-                        </div>
-                        <div class="weight-bar">
-                            <span style="min-width: 50px; color: var(--red); font-size: 0.9em; font-weight: bold;">cat</span>
-                            <div class="bar" style="width: 200px; background: var(--red);"></div>
-                            <span style="color: var(--red); font-weight: bold;">0.35</span>
-                        </div>
-                        <div class="weight-bar">
-                            <span style="min-width: 50px; color: var(--grey); font-size: 0.9em;">sat</span>
-                            <div class="bar" style="width: 150px; background: var(--blue); opacity: 0.7;"></div>
-                            <span style="color: var(--grey);">0.28</span>
-                        </div>
-                        <div class="weight-bar">
-                            <span style="min-width: 50px; color: var(--grey); font-size: 0.9em;">on</span>
-                            <div class="bar" style="width: 30px; background: var(--blue); opacity: 0.3;"></div>
-                            <span style="color: var(--grey);">0.04</span>
-                        </div>
-                        <div class="weight-bar">
-                            <span style="min-width: 50px; color: var(--grey); font-size: 0.9em;">the</span>
-                            <div class="bar" style="width: 25px; background: var(--blue); opacity: 0.3;"></div>
-                            <span style="color: var(--grey);">0.03</span>
-                        </div>
-                        <div class="weight-bar">
-                            <span style="min-width: 50px; color: var(--blue); font-size: 0.9em;">mat</span>
-                            <div class="bar" style="width: 120px; background: var(--blue); opacity: 0.6;"></div>
-                            <span style="color: var(--grey);">0.22</span>
-                        </div>
-                    </div>
-                </div>
-                <p class="fragment" style="font-size: 0.65em; color: var(--green);">
-                    "cat" attends strongly to itself (identity), "sat" (what it does), and "mat" (where it is).
-                    <br>Self-attention captures <strong>semantic relationships</strong> between all word pairs.
-                </p>
-                <aside class="notes">
-                    Let's trace through a concrete example. In "The cat sat on the mat", let's look at the word "cat".
-                    Using its Query vector, it computes attention scores with the Key vectors of all words.
-                    It attends most strongly to itself (words often need their own information), to "sat" (its verb),
-                    and to "mat" (semantically related - where the cat is). Function words like "the" and "on"
-                    get low attention scores. The output for "cat" is a weighted sum of all the Value vectors,
-                    with these weights. The result is a new representation of "cat" that is enriched with
-                    contextual information from the entire sentence.
                 </aside>
             </section>
 
@@ -1399,18 +1368,13 @@
                         <div class="year">2017</div>
                         <div class="label" style="color: var(--yellow);">Transformer</div>
                         <div style="font-size: 0.6em; color: var(--grey); margin-top: 5px;">Self-attention<br>replaces<br>RNNs entirely</div>
+                        <div style="font-size: 0.55em; color: var(--yellow); margin-top: 8px; font-style: italic;">"Attention Is All<br>You Need"</div>
                     </div>
                     <div style="color: var(--grey); font-size: 1.2em; align-self: center;">&rarr;</div>
                     <div class="era" style="min-width: 110px; padding: 10px 12px; border-color: var(--red);">
                         <div class="year">2018+</div>
                         <div class="label" style="color: var(--red);">BERT, GPT<br>& Beyond</div>
                         <div style="font-size: 0.6em; color: var(--grey); margin-top: 5px;">LLMs built<br>entirely on<br>attention</div>
-                    </div>
-                </div>
-                <div class="fragment" style="margin-top: 30px;">
-                    <div class="quote-slide" style="font-size: 0.8em; max-width: 75%; margin: 0 auto;">
-                        "Attention Is All You Need"
-                        <br><span style="font-size: 0.7em; color: var(--grey);">&mdash; Vaswani et al., 2017</span>
                     </div>
                 </div>
                 <aside class="notes">
@@ -1432,59 +1396,55 @@
             <section>
                 <h3>The Paper That <span class="highlight">Changed Everything</span></h3>
                 <p style="font-size: 0.65em; color: var(--grey);">8 Google Brain authors, 2017 &mdash; most left Google and built billion-dollar companies</p>
-                <div style="margin: 12px auto; max-width: 88%;">
+                <div style="margin: 8px auto; max-width: 88%;">
                     <table style="width: 100%; border-collapse: collapse; font-size: 0.66em;">
                         <thead>
                             <tr style="border-bottom: 2px solid var(--blue);">
-                                <th style="text-align: left; color: var(--blue); padding: 6px 12px;">Author</th>
-                                <th style="text-align: left; color: var(--blue); padding: 6px 12px;">Company / Role</th>
+                                <th style="text-align: left; color: var(--blue); padding: 3px 12px;">Author</th>
+                                <th style="text-align: left; color: var(--blue); padding: 3px 12px;">Company / Role</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr class="fragment" style="border-bottom: 1px solid rgba(147,161,161,0.2);">
-                                <td style="padding: 4px 12px; color: var(--yellow);">Noam Shazeer</td>
-                                <td style="padding: 4px 12px;">Character.AI &mdash; co-founder</td>
+                                <td style="padding: 2px 12px; color: var(--yellow);">Noam Shazeer</td>
+                                <td style="padding: 2px 12px;">Character.AI &mdash; co-founder</td>
                             </tr>
                             <tr class="fragment" style="border-bottom: 1px solid rgba(147,161,161,0.2);">
-                                <td style="padding: 4px 12px; color: var(--yellow);">Aidan Gomez</td>
-                                <td style="padding: 4px 12px;">Cohere &mdash; co-founder &amp; CEO</td>
+                                <td style="padding: 2px 12px; color: var(--yellow);">Aidan Gomez</td>
+                                <td style="padding: 2px 12px;">Cohere &mdash; co-founder &amp; CEO</td>
                             </tr>
                             <tr class="fragment" style="border-bottom: 1px solid rgba(147,161,161,0.2);">
-                                <td style="padding: 4px 12px; color: var(--yellow);">Ashish Vaswani</td>
-                                <td style="padding: 4px 12px;">Adept AI &mdash; co-founder</td>
+                                <td style="padding: 2px 12px; color: var(--yellow);">Ashish Vaswani</td>
+                                <td style="padding: 2px 12px;">Adept AI &mdash; co-founder</td>
                             </tr>
                             <tr class="fragment" style="border-bottom: 1px solid rgba(147,161,161,0.2);">
-                                <td style="padding: 4px 12px; color: var(--yellow);">Llion Jones</td>
-                                <td style="padding: 4px 12px;">Sakana AI &mdash; co-founder</td>
+                                <td style="padding: 2px 12px; color: var(--yellow);">Llion Jones</td>
+                                <td style="padding: 2px 12px;">Sakana AI &mdash; co-founder</td>
                             </tr>
                             <tr class="fragment" style="border-bottom: 1px solid rgba(147,161,161,0.2);">
-                                <td style="padding: 4px 12px; color: var(--yellow);">Jakob Uszkoreit</td>
-                                <td style="padding: 4px 12px;">Inceptive &mdash; RNA therapeutics</td>
+                                <td style="padding: 2px 12px; color: var(--yellow);">Jakob Uszkoreit</td>
+                                <td style="padding: 2px 12px;">Inceptive &mdash; RNA therapeutics</td>
                             </tr>
                             <tr class="fragment" style="border-bottom: 1px solid rgba(147,161,161,0.2);">
-                                <td style="padding: 4px 12px; color: var(--yellow);">Illia Polosukhin</td>
-                                <td style="padding: 4px 12px;">NEAR Protocol &mdash; co-founder</td>
+                                <td style="padding: 2px 12px; color: var(--yellow);">Illia Polosukhin</td>
+                                <td style="padding: 2px 12px;">NEAR Protocol &mdash; co-founder</td>
                             </tr>
                             <tr class="fragment" style="border-bottom: 1px solid rgba(147,161,161,0.2);">
-                                <td style="padding: 4px 12px; color: var(--yellow);">Lukasz Kaiser</td>
-                                <td style="padding: 4px 12px;">OpenAI</td>
+                                <td style="padding: 2px 12px; color: var(--yellow);">Lukasz Kaiser</td>
+                                <td style="padding: 2px 12px;">OpenAI</td>
                             </tr>
                             <tr class="fragment" style="border-bottom: 1px solid rgba(147,161,161,0.2);">
-                                <td style="padding: 4px 12px; color: var(--yellow);">Niki Parmar</td>
-                                <td style="padding: 4px 12px;">Einblick &mdash; co-founder</td>
+                                <td style="padding: 2px 12px; color: var(--yellow);">Niki Parmar</td>
+                                <td style="padding: 2px 12px;">Einblick &mdash; co-founder</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-                <div class="fragment" style="margin-top: 12px; background: rgba(255, 107, 107, 0.1); border: 2px solid var(--red); border-radius: 10px; padding: 10px; text-align: center; max-width: 88%; margin-left: auto; margin-right: auto;">
+                <div class="fragment" style="margin-top: 8px; background: rgba(255, 107, 107, 0.1); border: 2px solid var(--red); border-radius: 10px; padding: 8px; text-align: center; max-width: 88%; margin-left: auto; margin-right: auto;">
                     <p style="font-size: 0.78em; margin: 0; color: var(--red); font-weight: bold;">
                         One paper &bull; 8 people &bull; entire AI industry transformed
                     </p>
                 </div>
-                <p class="paper-ref fragment" style="margin-top: 10px;">
-                    李自然说 &mdash; "20分钟读懂AI史上最重要的一篇论文《Attention Is All You Need》"
-                    &bull; <a href="https://youtu.be/_VaEjGnHgOI" style="color: var(--grey);">youtu.be/_VaEjGnHgOI</a>
-                </p>
                 <aside class="notes">
                     This slide tells the human story behind the most cited AI paper ever.
                     All 8 co-authors of "Attention Is All You Need" went on to shape the AI industry.
@@ -1494,6 +1454,7 @@
                     a blockchain platform with AI focus. This paper didn't just advance research — it seeded
                     the entire modern AI industry. One paper, 8 people, billions of dollars of value created,
                     and every LLM you use today is a direct descendant of the ideas in it.
+                    Reference: 李自然说 — "20分钟读懂AI史上最重要的一篇论文《Attention Is All You Need》" youtu.be/_VaEjGnHgOI
                 </aside>
             </section>
 
