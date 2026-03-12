@@ -1421,6 +1421,265 @@
                 </aside>
             </section>
 
+            <!-- ===================================================== -->
+            <!-- SLIDE: microgpt - Section Title -->
+            <!-- ===================================================== -->
+            <section class="section-title">
+                <h2>Capstone Reading</h2>
+                <h3>microgpt.py — The Complete Algorithm</h3>
+                <p style="font-size: 0.7em; margin-top: 1em; color: #93a1a1;">
+                    "This file is the complete algorithm. Everything else is just efficiency."
+                </p>
+                <p style="font-size: 0.65em; margin-top: 0.5em;">
+                    — <span class="highlight-blue">Andrej Karpathy</span>
+                    <a href="https://gist.github.com/karpathy/8627fe009c40f57531cb18360106ce95" target="_blank" style="color: #7ec8e3; margin-left: 0.5em;">gist.github.com/karpathy</a>
+                </p>
+                <aside class="notes">
+                    We're going to end today with a capstone challenge. Andrej Karpathy — former
+                    Director of AI at Tesla, co-founder of OpenAI — wrote a single Python file that
+                    implements a complete GPT from scratch, with zero dependencies. ~150 lines.
+                    It covers everything we've learned: tokenization (Day 1), attention & transformers
+                    (Day 2), pretraining objective (today), Adam optimizer, and inference.
+                    If you can read this file and explain every single line, you understand modern LLMs.
+                </aside>
+            </section>
+
+            <!-- ===================================================== -->
+            <!-- SLIDE: microgpt - What's In The File -->
+            <!-- ===================================================== -->
+            <section>
+                <h2>microgpt.py — Map of the File</h2>
+                <p style="font-size: 0.75em;">One file. ~150 lines. Zero dependencies. A complete GPT.</p>
+                <div style="margin-top: 1em; font-size: 0.68em; text-align: left; max-width: 90%; margin-left: auto; margin-right: auto;">
+                    <div class="fragment" style="padding: 0.4em 0.8em; margin: 0.3em 0; border-radius: 6px; background: rgba(126,200,227,0.1); border-left: 3px solid #7ec8e3;">
+                        <strong style="color: #7ec8e3;">① Tokenizer</strong> — character-level vocab, BOS token
+                        <span class="small" style="float:right;">Day 1 ✓</span>
+                    </div>
+                    <div class="fragment" style="padding: 0.4em 0.8em; margin: 0.3em 0; border-radius: 6px; background: rgba(229,192,123,0.1); border-left: 3px solid #e5c07b;">
+                        <strong style="color: #e5c07b;">② Autograd</strong> — <code>class Value</code>: forward pass + backprop from scratch
+                        <span class="small" style="float:right;">math ✓</span>
+                    </div>
+                    <div class="fragment" style="padding: 0.4em 0.8em; margin: 0.3em 0; border-radius: 6px; background: rgba(255,107,107,0.1); border-left: 3px solid #ff6b6b;">
+                        <strong style="color: #ff6b6b;">③ GPT forward pass</strong> — token emb + pos emb → attention → MLP → logits
+                        <span class="small" style="float:right;">Day 2 ✓</span>
+                    </div>
+                    <div class="fragment" style="padding: 0.4em 0.8em; margin: 0.3em 0; border-radius: 6px; background: rgba(152,195,121,0.1); border-left: 3px solid #98c379;">
+                        <strong style="color: #98c379;">④ Training loop</strong> — CLM loss → backward → Adam update
+                        <span class="small" style="float:right;">Day 3 ✓</span>
+                    </div>
+                    <div class="fragment" style="padding: 0.4em 0.8em; margin: 0.3em 0; border-radius: 6px; background: rgba(198,120,221,0.1); border-left: 3px solid #c678dd;">
+                        <strong style="color: #c678dd;">⑤ Inference</strong> — temperature sampling, KV cache
+                        <span class="small" style="float:right;">+bonus</span>
+                    </div>
+                </div>
+                <p class="fragment" style="font-size: 0.7em; margin-top: 1em;">
+                    Trains on a list of names → generates new, hallucinated names ✨
+                </p>
+                <aside class="notes">
+                    Let's map out the file before reading it. Section 1 is tokenization: building a
+                    character-level vocabulary from names.txt, adding a special BOS token.
+                    Section 2 is the most fascinating: a hand-written autograd engine using a Value class
+                    that tracks computation graphs and computes gradients via backpropagation.
+                    This is exactly what PyTorch does under the hood.
+                    Section 3 is the GPT forward function: token + positional embeddings, then for each
+                    layer: multi-head attention with KV cache, then MLP block, with residual connections.
+                    Section 4 is the training loop: CLM loss, backward pass through the graph, Adam update.
+                    Section 5 is inference: temperature-controlled sampling to generate new names.
+                </aside>
+            </section>
+
+            <!-- ===================================================== -->
+            <!-- SLIDE: microgpt - The Value Class (Autograd) -->
+            <!-- ===================================================== -->
+            <section>
+                <h2>microgpt: <span class="highlight-yellow">Autograd from Scratch</span></h2>
+                <p style="font-size: 0.7em; color: #93a1a1;">How does PyTorch compute gradients? This is how.</p>
+                <pre style="font-size: 0.42em; margin-top: 0.8em;"><code class="language-python">class Value:
+    def __init__(self, data, children=(), local_grads=()):
+        self.data = data       # scalar value (forward pass)
+        self.grad = 0          # gradient (backward pass)
+        self._children = children
+        self._local_grads = local_grads  # ∂self/∂child
+
+    def __mul__(self, other):
+        # local_grads = (∂(a*b)/∂a, ∂(a*b)/∂b) = (b, a)
+        return Value(self.data * other.data, (self, other),
+                     (other.data, self.data))
+
+    def backward(self):
+        # Topological sort → chain rule from loss to all params
+        topo = []
+        def build_topo(v):
+            for child in v._children: build_topo(child)
+            topo.append(v)
+        build_topo(self)
+        self.grad = 1
+        for v in reversed(topo):
+            for child, local_grad in zip(v._children, v._local_grads):
+                child.grad += local_grad * v.grad  # chain rule</code></pre>
+                <p class="fragment" style="font-size: 0.68em; margin-top: 0.6em;">
+                    <span class="highlight-green">Chain rule</span>: <code>∂loss/∂child = (∂loss/∂v) × (∂v/∂child)</code> — accumulated via <code>+=</code>
+                </p>
+                <aside class="notes">
+                    This is the most educational part of the file. The Value class wraps a scalar and
+                    tracks its children in the computation graph. Each operation stores the LOCAL gradient
+                    (partial derivative of the output with respect to each input).
+                    The backward() method does a topological sort of the computation graph, then walks
+                    backwards applying the chain rule: the global gradient of a node equals the sum of
+                    (local gradient × parent's global gradient) for all parents.
+                    This is EXACTLY what PyTorch's autograd does, just for scalars instead of tensors.
+                    Understanding this is the key to understanding deep learning.
+                </aside>
+            </section>
+
+            <!-- ===================================================== -->
+            <!-- SLIDE: microgpt - The GPT Forward Pass -->
+            <!-- ===================================================== -->
+            <section>
+                <h2>microgpt: <span class="highlight">GPT Forward Pass</span></h2>
+                <pre style="font-size: 0.42em; margin-top: 0.6em;"><code class="language-python">def gpt(token_id, pos_id, keys, values):
+    x = [t + p for t, p in zip(
+        state_dict['wte'][token_id],   # token embedding
+        state_dict['wpe'][pos_id]      # position embedding
+    )]
+    x = rmsnorm(x)
+
+    for li in range(n_layer):
+        x_residual = x
+        x = rmsnorm(x)
+
+        # --- Multi-head Attention ---
+        q = linear(x, state_dict[f'layer{li}.attn_wq'])
+        k = linear(x, state_dict[f'layer{li}.attn_wk'])
+        v = linear(x, state_dict[f'layer{li}.attn_wv'])
+        keys[li].append(k)    # KV cache: remember all past keys
+        values[li].append(v)  # KV cache: remember all past values
+        # ... compute attention scores, weighted sum of values ...
+        x = linear(x_attn, state_dict[f'layer{li}.attn_wo'])
+        x = [a + b for a, b in zip(x, x_residual)]  # residual
+
+        # --- MLP block ---
+        x_residual = x
+        x = [xi.relu() for xi in linear(x, mlp_fc1)]
+        x = linear(x, mlp_fc2)
+        x = [a + b for a, b in zip(x, x_residual)]  # residual
+
+    return linear(x, state_dict['lm_head'])  # logits</code></pre>
+                <p class="fragment" style="font-size: 0.65em; margin-top: 0.5em;">
+                    Every concept from Day 2 is here: embeddings, Q/K/V, KV cache, residuals, MLP
+                </p>
+                <aside class="notes">
+                    The gpt() function is the forward pass you learned on Day 2, written explicitly.
+                    Token and position embeddings are summed. Then for each transformer layer:
+                    - RMSNorm (a simplified layer norm)
+                    - Multi-head attention with Q, K, V projections
+                    - The KV cache: keys and values from previous positions are stored so we don't
+                      recompute them during inference. This is how real inference engines work.
+                    - Residual connection: x += x_residual preserves gradient flow
+                    - MLP block: two linear layers with ReLU (simplified from GeLU in GPT-2)
+                    - Another residual connection
+                    Finally the lm_head projects to vocabulary size to get logits.
+                    The whole thing is ~40 lines. Read it until you can reproduce it from memory.
+                </aside>
+            </section>
+
+            <!-- ===================================================== -->
+            <!-- SLIDE: microgpt - Training + Inference -->
+            <!-- ===================================================== -->
+            <section>
+                <h2>microgpt: <span class="highlight-green">Training & Inference</span></h2>
+                <div class="two-column" style="font-size: 0.58em;">
+                    <div>
+                        <p style="color: #98c379; font-weight: bold;">Training loop</p>
+                        <pre><code class="language-python"># CLM: predict next token
+loss = -probs[target_id].log()
+# average over sequence
+loss = (1/n) * sum(losses)
+
+# Backward pass (chain rule)
+loss.backward()
+
+# Adam optimizer
+for i, p in enumerate(params):
+    m[i] = β1*m[i] + (1-β1)*p.grad
+    v[i] = β2*v[i] + (1-β2)*p.grad**2
+    m_hat = m[i] / (1 - β1**(step+1))
+    v_hat = v[i] / (1 - β2**(step+1))
+    p.data -= lr * m_hat / (√v_hat + ε)
+    p.grad = 0  # reset gradient!</code></pre>
+                    </div>
+                    <div>
+                        <p style="color: #c678dd; font-weight: bold;">Inference (sampling)</p>
+                        <pre><code class="language-python">token_id = BOS
+for pos_id in range(block_size):
+    logits = gpt(token_id, pos_id,
+                 keys, values)
+    # temperature: low = conservative
+    #              high = creative
+    probs = softmax(
+        [l / temperature for l in logits]
+    )
+    token_id = random.choices(
+        range(vocab_size),
+        weights=[p.data for p in probs]
+    )[0]
+    if token_id == BOS: break</code></pre>
+                    </div>
+                </div>
+                <p class="fragment" style="font-size: 0.7em; margin-top: 0.6em;">
+                    <span class="highlight-yellow">Adam</span> = adaptive learning rates per parameter. <span class="highlight-purple">Temperature</span> controls creativity.
+                </p>
+                <aside class="notes">
+                    The training loop: for each document, tokenize it, feed tokens one by one to the
+                    GPT, compute the CLM loss (negative log probability of the correct next token),
+                    average over the sequence, then call backward() to compute all gradients, then
+                    Adam updates each parameter.
+                    Note: p.grad = 0 at the end — gradients must be zeroed before the next step, or
+                    they accumulate. This is a common PyTorch bug for beginners.
+                    
+                    Inference: start with BOS, repeatedly call gpt() one token at a time, sample from
+                    the distribution scaled by temperature. Low temperature = picks most likely tokens
+                    (conservative). High temperature = more random (creative/hallucinated).
+                    Stop when BOS is generated again (Karpathy's elegant trick: BOS means "end").
+                </aside>
+            </section>
+
+            <!-- ===================================================== -->
+            <!-- SLIDE: microgpt - Your Mission -->
+            <!-- ===================================================== -->
+            <section class="discussion-slide">
+                <h2>Your Mission 🎯</h2>
+                <p style="font-size: 0.85em; margin-bottom: 1em;">Read microgpt.py until you can explain every line.</p>
+                <div style="font-size: 0.72em; text-align: left; max-width: 85%; margin: 0 auto;">
+                    <p class="fragment"><span class="highlight-blue">Can you explain...</span> why <code>p.grad = 0</code> is necessary?</p>
+                    <p class="fragment"><span class="highlight-yellow">Can you explain...</span> why <code>keys[li].append(k)</code> accumulates across positions?</p>
+                    <p class="fragment"><span class="highlight-green">Can you explain...</span> why the loss uses <code>-log(prob)</code>?</p>
+                    <p class="fragment"><span class="highlight">Can you explain...</span> what happens when temperature → 0? → ∞?</p>
+                    <p class="fragment"><span class="highlight-purple">Can you explain...</span> why <code>x_residual</code> is saved before attention?</p>
+                </div>
+                <p class="fragment small" style="margin-top: 1em;">
+                    <a href="https://gist.github.com/karpathy/8627fe009c40f57531cb18360106ce95" target="_blank" style="color: #7ec8e3;">
+                        gist.github.com/karpathy/8627fe009c40f57531cb18360106ce95
+                    </a>
+                </p>
+                <aside class="notes">
+                    These are the questions that separate someone who has read the code from someone
+                    who truly understands it.
+                    Answers:
+                    1. p.grad = 0: gradients accumulate with +=. If you don't zero them, previous
+                       batch gradients mix with current batch. A classic PyTorch gotcha.
+                    2. keys accumulate: KV cache. Each position appends its key so later positions
+                       can attend to ALL previous positions (causal attention).
+                    3. -log(prob): cross-entropy loss. When prob=1 (perfect prediction), loss=0.
+                       When prob→0 (wrong prediction), loss→∞. Minimizing this maximizes probability
+                       of the correct token.
+                    4. Temperature→0: argmax (always pick the most likely token). Temperature→∞:
+                       uniform distribution (completely random).
+                    5. x_residual before attention: the residual connection adds the input BEFORE
+                       the sublayer to the output AFTER, creating a "skip path" for gradients.
+                </aside>
+            </section>
+
             <!-- SLIDE 31: References -->
             <section>
                 <h2>Key References</h2>
