@@ -1474,161 +1474,7 @@
                 </aside>
             </section>
 
-            <!-- ==================== SLIDE 30: BEYOND AUTOREGRESSIVE ==================== -->
-
-            <section class="section-title">
-                <h2>Beyond Autoregressive</h2>
-                <h3>The Next Paradigm Shift?</h3>
-                <p style="font-size: 0.7em; margin-top: 1em; color: #93a1a1;">A new challenger: Diffusion LLMs</p>
-                <aside class="notes">
-                    Everything we've discussed so far — GPT, BERT, all modern LLMs — follows the autoregressive paradigm: generate one token at a time, left to right.
-                    But a new approach is emerging that could fundamentally change how language models work.
-                </aside>
-            </section>
-
-            <!-- ==================== SLIDE 31: AUTOREGRESSIVE BOTTLENECK ==================== -->
-
-            <section>
-                <h2>The Autoregressive Bottleneck</h2>
-                <p style="font-size: 0.8em;">Current LLMs: <span class="highlight">one token at a time</span>, sequentially</p>
-                <div class="pipeline fragment" style="margin: 1.2em 0;">
-                    <div class="step">The</div>
-                    <div class="arrow">&rarr;</div>
-                    <div class="step">cat</div>
-                    <div class="arrow">&rarr;</div>
-                    <div class="step">sat</div>
-                    <div class="arrow">&rarr;</div>
-                    <div class="step">on</div>
-                    <div class="arrow">&rarr;</div>
-                    <div class="step">the</div>
-                    <div class="arrow">&rarr;</div>
-                    <div class="step">mat</div>
-                </div>
-                <div class="fragment" style="font-size: 0.75em; margin-top: 1em;">
-                    <p><span class="highlight-yellow">Problem</span>: Generation speed is <strong>fundamentally limited</strong></p>
-                    <ul style="font-size: 0.9em;">
-                        <li>Must wait for each token before generating the next</li>
-                        <li>GPU parallelism underutilized during decoding</li>
-                        <li>Latency compounds in agentic loops (10s of LLM calls)</li>
-                    </ul>
-                </div>
-                <p class="fragment" style="font-size: 0.8em; margin-top: 1em; color: #7ec8e3;">
-                    Like a <span class="highlight-blue">typewriter</span>: one letter at a time, no matter how fast you type.
-                </p>
-                <aside class="notes">
-                    This is a fundamental architectural constraint, not just an engineering problem.
-                    Even with the fastest GPUs, autoregressive models are bottlenecked by sequential generation.
-                    In agentic workflows where you might have 20-50 LLM calls chained together, this latency compounds dramatically.
-                </aside>
-            </section>
-
-            <!-- ==================== SLIDE 32: DIFFUSION LLM ==================== -->
-
-            <section>
-                <h2>Diffusion LLMs: Parallel Generation</h2>
-                <p style="font-size: 0.75em;">A fundamentally different approach: <span class="highlight-green">generate all tokens simultaneously</span></p>
-                <div class="two-column" style="margin-top: 1em; font-size: 0.68em;">
-                    <div>
-                        <h3 style="font-size: 1.1em; color: #ff6b6b;">Autoregressive</h3>
-                        <p>Like a <span class="highlight">typewriter</span></p>
-                        <ul style="font-size: 0.9em;">
-                            <li>One token at a time</li>
-                            <li>Left-to-right, sequential</li>
-                            <li>~50-200 tokens/sec typical</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 style="font-size: 1.1em; color: #98c379;">Diffusion</h3>
-                        <p>Like an <span class="highlight-green">editor revising a draft</span></p>
-                        <ul style="font-size: 0.9em;">
-                            <li>All tokens generated at once</li>
-                            <li>Iteratively refined in parallel</li>
-                            <li><strong>1000+ tokens/sec</strong> achieved</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="fragment" style="margin-top: 1.2em; padding: 0.6em; background: rgba(152,195,121,0.1); border: 2px solid #98c379; border-radius: 10px;">
-                    <p style="font-size: 0.75em; margin: 0; text-align: center;">
-                        <span class="highlight-green">Mercury 2</span> (Inception Labs, 2026): <strong>1,009 tokens/sec</strong> on NVIDIA Blackwell<br>
-                        <span class="small">"The fastest reasoning LLM, powered by diffusion"</span>
-                    </p>
-                </div>
-                <aside class="notes">
-                    Diffusion models work by starting with noise and iteratively refining toward coherent output.
-                    You've seen this in image generation (Stable Diffusion, DALL-E).
-                    Now it's being applied to text: start with random tokens, refine all of them in parallel over a few steps.
-                    Mercury 2 from Inception Labs achieved 1009 tokens/sec — more than 5x faster than typical autoregressive models.
-                    This is a paradigm shift, not just an optimization.
-                </aside>
-            </section>
-
-            <!-- ==================== SLIDE 33: HOW DIFFUSION LLM WORKS ==================== -->
-
-            <section>
-                <h2>How Diffusion LLMs Work</h2>
-                <div style="font-size: 0.7em;">
-                    <div class="fragment" style="margin-bottom: 0.8em; padding: 0.5em; background: rgba(126,200,227,0.1); border-radius: 8px;">
-                        <strong>Step 1</strong>: Start with <span class="highlight-blue">noisy/random tokens</span><br>
-                        <span style="color: #93a1a1; font-family: monospace;">[###] [???] [~~~] [***] [&amp;&amp;&amp;] [!!!]</span>
-                    </div>
-                    <div class="fragment" style="margin-bottom: 0.8em; padding: 0.5em; background: rgba(229,192,123,0.1); border-radius: 8px;">
-                        <strong>Step 2</strong>: <span class="highlight-yellow">Parallel refinement</span> — all positions updated simultaneously<br>
-                        <span style="color: #93a1a1; font-family: monospace;">[The] [cat] [sit] [in] [a] [mat]</span>
-                    </div>
-                    <div class="fragment" style="margin-bottom: 0.8em; padding: 0.5em; background: rgba(152,195,121,0.1); border-radius: 8px;">
-                        <strong>Step 3</strong>: <span class="highlight-green">Iterate</span> a few times until convergence<br>
-                        <span style="color: #93a1a1; font-family: monospace;">[The] [cat] [sat] [on] [the] [mat]</span>
-                    </div>
-                </div>
-                <p class="fragment" style="font-size: 0.75em; margin-top: 1em;">
-                    <span class="highlight-purple">Key insight</span>: Number of steps is <strong>constant</strong>, not proportional to sequence length<br>
-                    <span class="small">100 tokens or 1000 tokens — same number of diffusion steps</span>
-                </p>
-                <aside class="notes">
-                    This is the key algorithmic difference. In autoregressive models, generating N tokens requires N forward passes.
-                    In diffusion LLMs, generating N tokens requires only K diffusion steps, where K is typically small (10-50) and fixed regardless of N.
-                    This is why diffusion can be so much faster: the GPU can parallelize across all token positions at once.
-                    The model learns to denoise/refine all positions simultaneously, converging to coherent text.
-                </aside>
-            </section>
-
-            <!-- ==================== SLIDE 34: IMPLICATIONS ==================== -->
-
-            <section>
-                <h2>Why This Matters</h2>
-                <div style="font-size: 0.72em; text-align: left; max-width: 90%; margin: 0 auto;">
-                    <div class="fragment" style="margin-bottom: 0.7em; padding: 0.5em; border-left: 3px solid #ff6b6b;">
-                        <span class="highlight">Real-time voice AI</span>: sub-200ms responses enable natural conversation
-                    </div>
-                    <div class="fragment" style="margin-bottom: 0.7em; padding: 0.5em; border-left: 3px solid #7ec8e3;">
-                        <span class="highlight-blue">Agentic loops</span>: 50 LLM calls at 1000 tok/s vs 100 tok/s = 10x faster workflows
-                    </div>
-                    <div class="fragment" style="margin-bottom: 0.7em; padding: 0.5em; border-left: 3px solid #98c379;">
-                        <span class="highlight-green">Code autocomplete</span>: suggestions that feel instant, not lagging
-                    </div>
-                    <div class="fragment" style="margin-bottom: 0.7em; padding: 0.5em; border-left: 3px solid #e5c07b;">
-                        <span class="highlight-yellow">Cost efficiency</span>: same quality at lower inference cost
-                    </div>
-                </div>
-                <div class="fragment" style="margin-top: 1.2em; font-size: 0.75em;">
-                    <p><span class="highlight-purple">Open question</span>: Will diffusion LLMs match autoregressive quality at scale?</p>
-                    <p class="small">Mercury 2 claims competitive quality with GPT-5.2 at >5x the speed</p>
-                </div>
-                <p class="fragment small" style="margin-top: 0.8em;">
-                    <a href="https://www.inceptionlabs.ai/blog/introducing-mercury-2" target="_blank" style="color: #7ec8e3;">
-                        Source: Inception Labs — "Introducing Mercury 2" (2026)
-                    </a>
-                </p>
-                <aside class="notes">
-                    The implications are significant. Voice AI has been limited by latency — diffusion could make it truly real-time.
-                    Agentic workflows compound latency; faster inference changes what's architecturally possible.
-                    The open question is quality at scale. Autoregressive models have proven they scale to frontier capabilities.
-                    Diffusion LLMs are newer and less proven at the largest scales, but Mercury 2 claims competitive quality.
-                    This is an active research area — by the time you're working in industry, diffusion LLMs may be mainstream.
-                </aside>
-            </section>
-
-            <!-- ==================== SLIDE 35: KEY TAKEAWAYS ==================== -->
+            <!-- ==================== SLIDE 30: KEY TAKEAWAYS ==================== -->
 
             <section>
                 <h2>Key Takeaways</h2>
@@ -1705,6 +1551,168 @@
                     The Transformer is the most important concept in this entire course.
                     Make sure students are comfortable with all the components before moving forward.
                     Remind them that everything in modern AI is built on this architecture.
+                </aside>
+            </section>
+
+            <!-- ================================================================================== -->
+            <!-- ==================== ADVANCED SECTION (OPTIONAL / TIME PERMITTING) ============== -->
+            <!-- ================================================================================== -->
+
+            <!-- ==================== SLIDE A1: ADVANCED SECTION TITLE ==================== -->
+
+            <section class="section-title" style="background: rgba(198,120,221,0.08) !important;">
+                <div style="display: inline-block; background: rgba(198,120,221,0.2); border: 2px solid #c678dd; border-radius: 8px; padding: 0.3em 1.2em; margin-bottom: 0.8em;">
+                    <span style="color: #c678dd; font-size: 0.75em; font-weight: bold; letter-spacing: 0.1em;">⚡ ADVANCED &mdash; TIME PERMITTING</span>
+                </div>
+                <h2>Beyond Autoregressive</h2>
+                <h3>The Next Paradigm Shift?</h3>
+                <p style="font-size: 0.7em; margin-top: 0.8em; color: #93a1a1;">A new challenger: Diffusion LLMs</p>
+                <aside class="notes">
+                    This section is OPTIONAL — only cover if time permits.
+                    Everything we've discussed so far — GPT, BERT, all modern LLMs — follows the autoregressive paradigm: generate one token at a time, left to right.
+                    But a new approach is emerging that could fundamentally change how language models work.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE A2: AUTOREGRESSIVE BOTTLENECK ==================== -->
+
+            <section>
+                <h2>The Autoregressive Bottleneck</h2>
+                <p style="font-size: 0.8em;">Current LLMs: <span class="highlight">one token at a time</span>, sequentially</p>
+                <div class="pipeline fragment" style="margin: 1.2em 0;">
+                    <div class="step">The</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step">cat</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step">sat</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step">on</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step">the</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step">mat</div>
+                </div>
+                <div class="fragment" style="font-size: 0.75em; margin-top: 1em;">
+                    <p><span class="highlight-yellow">Problem</span>: Generation speed is <strong>fundamentally limited</strong></p>
+                    <ul style="font-size: 0.9em;">
+                        <li>Must wait for each token before generating the next</li>
+                        <li>GPU parallelism underutilized during decoding</li>
+                        <li>Latency compounds in agentic loops (10s of LLM calls)</li>
+                    </ul>
+                </div>
+                <p class="fragment" style="font-size: 0.8em; margin-top: 1em; color: #7ec8e3;">
+                    Like a <span class="highlight-blue">typewriter</span>: one letter at a time, no matter how fast you type.
+                </p>
+                <aside class="notes">
+                    This is a fundamental architectural constraint, not just an engineering problem.
+                    Even with the fastest GPUs, autoregressive models are bottlenecked by sequential generation.
+                    In agentic workflows where you might have 20-50 LLM calls chained together, this latency compounds dramatically.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE A3: DIFFUSION LLM ==================== -->
+
+            <section>
+                <h2>Diffusion LLMs: Parallel Generation</h2>
+                <p style="font-size: 0.75em;">A fundamentally different approach: <span class="highlight-green">generate all tokens simultaneously</span></p>
+                <div class="two-column" style="margin-top: 1em; font-size: 0.68em;">
+                    <div>
+                        <h3 style="font-size: 1.1em; color: #ff6b6b;">Autoregressive</h3>
+                        <p>Like a <span class="highlight">typewriter</span></p>
+                        <ul style="font-size: 0.9em;">
+                            <li>One token at a time</li>
+                            <li>Left-to-right, sequential</li>
+                            <li>~50-200 tokens/sec typical</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.1em; color: #98c379;">Diffusion</h3>
+                        <p>Like an <span class="highlight-green">editor revising a draft</span></p>
+                        <ul style="font-size: 0.9em;">
+                            <li>All tokens generated at once</li>
+                            <li>Iteratively refined in parallel</li>
+                            <li><strong>1000+ tokens/sec</strong> achieved</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 1.2em; padding: 0.6em; background: rgba(152,195,121,0.1); border: 2px solid #98c379; border-radius: 10px;">
+                    <p style="font-size: 0.75em; margin: 0; text-align: center;">
+                        <span class="highlight-green">Mercury 2</span> (Inception Labs, 2026): <strong>1,009 tokens/sec</strong> on NVIDIA Blackwell<br>
+                        <span class="small">"The fastest reasoning LLM, powered by diffusion"</span>
+                    </p>
+                </div>
+                <aside class="notes">
+                    Diffusion models work by starting with noise and iteratively refining toward coherent output.
+                    You've seen this in image generation (Stable Diffusion, DALL-E).
+                    Now it's being applied to text: start with random tokens, refine all of them in parallel over a few steps.
+                    Mercury 2 from Inception Labs achieved 1009 tokens/sec — more than 5x faster than typical autoregressive models.
+                    This is a paradigm shift, not just an optimization.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE A4: HOW DIFFUSION LLM WORKS ==================== -->
+
+            <section>
+                <h2>How Diffusion LLMs Work</h2>
+                <div style="font-size: 0.7em;">
+                    <div class="fragment" style="margin-bottom: 0.8em; padding: 0.5em; background: rgba(126,200,227,0.1); border-radius: 8px;">
+                        <strong>Step 1</strong>: Start with <span class="highlight-blue">noisy/random tokens</span><br>
+                        <span style="color: #93a1a1; font-family: monospace;">[###] [???] [~~~] [***] [&amp;&amp;&amp;] [!!!]</span>
+                    </div>
+                    <div class="fragment" style="margin-bottom: 0.8em; padding: 0.5em; background: rgba(229,192,123,0.1); border-radius: 8px;">
+                        <strong>Step 2</strong>: <span class="highlight-yellow">Parallel refinement</span> — all positions updated simultaneously<br>
+                        <span style="color: #93a1a1; font-family: monospace;">[The] [cat] [sit] [in] [a] [mat]</span>
+                    </div>
+                    <div class="fragment" style="margin-bottom: 0.8em; padding: 0.5em; background: rgba(152,195,121,0.1); border-radius: 8px;">
+                        <strong>Step 3</strong>: <span class="highlight-green">Iterate</span> a few times until convergence<br>
+                        <span style="color: #93a1a1; font-family: monospace;">[The] [cat] [sat] [on] [the] [mat]</span>
+                    </div>
+                </div>
+                <p class="fragment" style="font-size: 0.75em; margin-top: 1em;">
+                    <span class="highlight-purple">Key insight</span>: Number of steps is <strong>constant</strong>, not proportional to sequence length<br>
+                    <span class="small">100 tokens or 1000 tokens — same number of diffusion steps</span>
+                </p>
+                <aside class="notes">
+                    This is the key algorithmic difference. In autoregressive models, generating N tokens requires N forward passes.
+                    In diffusion LLMs, generating N tokens requires only K diffusion steps, where K is typically small (10-50) and fixed regardless of N.
+                    This is why diffusion can be so much faster: the GPU can parallelize across all token positions at once.
+                    The model learns to denoise/refine all positions simultaneously, converging to coherent text.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE A5: IMPLICATIONS ==================== -->
+
+            <section>
+                <h2>Why This Matters</h2>
+                <div style="font-size: 0.72em; text-align: left; max-width: 90%; margin: 0 auto;">
+                    <div class="fragment" style="margin-bottom: 0.7em; padding: 0.5em; border-left: 3px solid #ff6b6b;">
+                        <span class="highlight">Real-time voice AI</span>: sub-200ms responses enable natural conversation
+                    </div>
+                    <div class="fragment" style="margin-bottom: 0.7em; padding: 0.5em; border-left: 3px solid #7ec8e3;">
+                        <span class="highlight-blue">Agentic loops</span>: 50 LLM calls at 1000 tok/s vs 100 tok/s = 10x faster workflows
+                    </div>
+                    <div class="fragment" style="margin-bottom: 0.7em; padding: 0.5em; border-left: 3px solid #98c379;">
+                        <span class="highlight-green">Code autocomplete</span>: suggestions that feel instant, not lagging
+                    </div>
+                    <div class="fragment" style="margin-bottom: 0.7em; padding: 0.5em; border-left: 3px solid #e5c07b;">
+                        <span class="highlight-yellow">Cost efficiency</span>: same quality at lower inference cost
+                    </div>
+                </div>
+                <div class="fragment" style="margin-top: 1.2em; font-size: 0.75em;">
+                    <p><span class="highlight-purple">Open question</span>: Will diffusion LLMs match autoregressive quality at scale?</p>
+                    <p class="small">Mercury 2 claims competitive quality with GPT-5.2 at >5x the speed</p>
+                </div>
+                <p class="fragment small" style="margin-top: 0.8em;">
+                    <a href="https://www.inceptionlabs.ai/blog/introducing-mercury-2" target="_blank" style="color: #7ec8e3;">
+                        Source: Inception Labs — "Introducing Mercury 2" (2026)
+                    </a>
+                </p>
+                <aside class="notes">
+                    The implications are significant. Voice AI has been limited by latency — diffusion could make it truly real-time.
+                    Agentic workflows compound latency; faster inference changes what's architecturally possible.
+                    The open question is quality at scale. Autoregressive models have proven they scale to frontier capabilities.
+                    Diffusion LLMs are newer and less proven at the largest scales, but Mercury 2 claims competitive quality.
+                    This is an active research area — by the time you're working in industry, diffusion LLMs may be mainstream.
                 </aside>
             </section>
 
