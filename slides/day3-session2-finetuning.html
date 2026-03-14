@@ -333,7 +333,7 @@
                             Learn language from billions of tokens (weeks on many GPUs)
                         </span>
                     </div>
-                    <div class="arrow" style="font-size: 1.2em;">&darr;</div>
+                    <div class="arrow fragment" style="font-size: 1.2em;">&darr;</div>
                     <div class="fragment" style="display: flex; align-items: center; gap: 0.5em;">
                         <div class="step" style="min-width: 220px; border-color: #ff6b6b;">
                             Stage 2: Fine-tuning
@@ -397,64 +397,216 @@
                 </aside>
             </section>
 
-            <!-- ==================== SLIDE 8: HOW FULL FINE-TUNING WORKS ==================== -->
+            <!-- ==================== SLIDE 8: DL CONCEPTS VISUALIZED ==================== -->
             <section>
-                <h2>Full Fine-tuning: Update All Parameters</h2>
-                <div class="pipeline" style="margin: 1em 0;">
+                <h2 style="font-size: 1.1em; margin-bottom: 0.3em;">Training Loop: Key Concepts Visualized</h2>
+                <div style="display: flex; align-items: flex-start; gap: 1.5em;">
+
+                    <!-- Neural network SVG diagram -->
+                    <div style="flex: 0 0 auto; margin-top: 0.2em;">
+                        <svg width="440" height="248" viewBox="0 0 440 248" style="overflow: visible;">
+                            <defs>
+                                <marker id="mfwd" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#7ec8e3"/>
+                                </marker>
+                                <marker id="mback" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#ff6b6b"/>
+                                </marker>
+                            </defs>
+
+                            <!-- Edges: Input → H1 -->
+                            <g fill="none" stroke="#7ec8e3" stroke-width="1" opacity="0.2">
+                                <line x1="55" y1="65"  x2="155" y2="50"/>
+                                <line x1="55" y1="65"  x2="155" y2="90"/>
+                                <line x1="55" y1="65"  x2="155" y2="130"/>
+                                <line x1="55" y1="65"  x2="155" y2="170"/>
+                                <line x1="55" y1="110" x2="155" y2="50"/>
+                                <line x1="55" y1="110" x2="155" y2="90"/>
+                                <line x1="55" y1="110" x2="155" y2="130"/>
+                                <line x1="55" y1="110" x2="155" y2="170"/>
+                                <line x1="55" y1="155" x2="155" y2="50"/>
+                                <line x1="55" y1="155" x2="155" y2="90"/>
+                                <line x1="55" y1="155" x2="155" y2="130"/>
+                                <line x1="55" y1="155" x2="155" y2="170"/>
+                            </g>
+                            <!-- Edges: H1 → H2 -->
+                            <g fill="none" stroke="#7ec8e3" stroke-width="1" opacity="0.2">
+                                <line x1="155" y1="50"  x2="255" y2="65"/>
+                                <line x1="155" y1="50"  x2="255" y2="110"/>
+                                <line x1="155" y1="50"  x2="255" y2="155"/>
+                                <line x1="155" y1="90"  x2="255" y2="65"/>
+                                <line x1="155" y1="90"  x2="255" y2="110"/>
+                                <line x1="155" y1="90"  x2="255" y2="155"/>
+                                <line x1="155" y1="130" x2="255" y2="65"/>
+                                <line x1="155" y1="130" x2="255" y2="110"/>
+                                <line x1="155" y1="130" x2="255" y2="155"/>
+                                <line x1="155" y1="170" x2="255" y2="65"/>
+                                <line x1="155" y1="170" x2="255" y2="110"/>
+                                <line x1="155" y1="170" x2="255" y2="155"/>
+                            </g>
+                            <!-- Edges: H2 → Output -->
+                            <g fill="none" stroke="#7ec8e3" stroke-width="1" opacity="0.2">
+                                <line x1="255" y1="65"  x2="355" y2="90"/>
+                                <line x1="255" y1="65"  x2="355" y2="130"/>
+                                <line x1="255" y1="110" x2="355" y2="90"/>
+                                <line x1="255" y1="110" x2="355" y2="130"/>
+                                <line x1="255" y1="155" x2="355" y2="90"/>
+                                <line x1="255" y1="155" x2="355" y2="130"/>
+                            </g>
+                            <!-- Edges: Output → Loss -->
+                            <g fill="none" stroke="#98c379" stroke-width="1.5" opacity="0.35">
+                                <line x1="355" y1="90"  x2="392" y2="110"/>
+                                <line x1="355" y1="130" x2="392" y2="110"/>
+                            </g>
+
+                            <!-- Base nodes: Input (blue) -->
+                            <circle cx="55" cy="65"  r="13" fill="rgba(126,200,227,0.2)" stroke="#7ec8e3" stroke-width="2"/>
+                            <circle cx="55" cy="110" r="13" fill="rgba(126,200,227,0.2)" stroke="#7ec8e3" stroke-width="2"/>
+                            <circle cx="55" cy="155" r="13" fill="rgba(126,200,227,0.2)" stroke="#7ec8e3" stroke-width="2"/>
+                            <!-- Base nodes: H1 (grey) -->
+                            <circle cx="155" cy="50"  r="13" fill="rgba(147,161,161,0.1)" stroke="#93a1a1" stroke-width="2"/>
+                            <circle cx="155" cy="90"  r="13" fill="rgba(147,161,161,0.1)" stroke="#93a1a1" stroke-width="2"/>
+                            <circle cx="155" cy="130" r="13" fill="rgba(147,161,161,0.1)" stroke="#93a1a1" stroke-width="2"/>
+                            <circle cx="155" cy="170" r="13" fill="rgba(147,161,161,0.1)" stroke="#93a1a1" stroke-width="2"/>
+                            <!-- Base nodes: H2 (grey) -->
+                            <circle cx="255" cy="65"  r="13" fill="rgba(147,161,161,0.1)" stroke="#93a1a1" stroke-width="2"/>
+                            <circle cx="255" cy="110" r="13" fill="rgba(147,161,161,0.1)" stroke="#93a1a1" stroke-width="2"/>
+                            <circle cx="255" cy="155" r="13" fill="rgba(147,161,161,0.1)" stroke="#93a1a1" stroke-width="2"/>
+                            <!-- Base nodes: Output (green) -->
+                            <circle cx="355" cy="90"  r="13" fill="rgba(152,195,121,0.2)" stroke="#98c379" stroke-width="2"/>
+                            <circle cx="355" cy="130" r="13" fill="rgba(152,195,121,0.2)" stroke="#98c379" stroke-width="2"/>
+                            <!-- Loss box -->
+                            <rect x="390" y="97" width="45" height="26" rx="5" fill="rgba(255,107,107,0.15)" stroke="#ff6b6b" stroke-width="2"/>
+                            <text x="412" y="115" text-anchor="middle" fill="#ff6b6b" font-size="13" font-weight="bold">Loss</text>
+
+                            <!-- Layer labels -->
+                            <text x="55"  y="183" text-anchor="middle" fill="#93a1a1" font-size="10">Input</text>
+                            <text x="155" y="197" text-anchor="middle" fill="#93a1a1" font-size="10">Layer 1</text>
+                            <text x="255" y="183" text-anchor="middle" fill="#93a1a1" font-size="10">Layer 2</text>
+                            <text x="355" y="157" text-anchor="middle" fill="#93a1a1" font-size="10">Output</text>
+
+                            <!-- Fragment 1: All parameters glow rings on H1 + H2 -->
+                            <g class="fragment" data-fragment-index="1">
+                                <circle cx="155" cy="50"  r="18" fill="rgba(198,120,221,0.2)" stroke="#c678dd" stroke-width="2.5"/>
+                                <circle cx="155" cy="90"  r="18" fill="rgba(198,120,221,0.2)" stroke="#c678dd" stroke-width="2.5"/>
+                                <circle cx="155" cy="130" r="18" fill="rgba(198,120,221,0.2)" stroke="#c678dd" stroke-width="2.5"/>
+                                <circle cx="155" cy="170" r="18" fill="rgba(198,120,221,0.2)" stroke="#c678dd" stroke-width="2.5"/>
+                                <circle cx="255" cy="65"  r="18" fill="rgba(198,120,221,0.2)" stroke="#c678dd" stroke-width="2.5"/>
+                                <circle cx="255" cy="110" r="18" fill="rgba(198,120,221,0.2)" stroke="#c678dd" stroke-width="2.5"/>
+                                <circle cx="255" cy="155" r="18" fill="rgba(198,120,221,0.2)" stroke="#c678dd" stroke-width="2.5"/>
+                                <text x="205" y="215" text-anchor="middle" fill="#c678dd" font-size="10">All weights W₁…Wₙ are trainable</text>
+                            </g>
+
+                            <!-- Fragment 2: Forward pass arc -->
+                            <g class="fragment" data-fragment-index="2">
+                                <path d="M 55 33 C 200 3, 360 3, 408 95"
+                                      fill="none" stroke="#7ec8e3" stroke-width="2"
+                                      stroke-dasharray="6,3" marker-end="url(#mfwd)"/>
+                                <text x="222" y="14" text-anchor="middle" fill="#7ec8e3" font-size="11" font-weight="bold">Forward pass →</text>
+                            </g>
+
+                            <!-- Fragment 3: Backprop arc -->
+                            <g class="fragment" data-fragment-index="3">
+                                <path d="M 408 127 C 360 234, 200 234, 55 177"
+                                      fill="none" stroke="#ff6b6b" stroke-width="2"
+                                      stroke-dasharray="6,3" marker-end="url(#mback)"/>
+                                <text x="222" y="248" text-anchor="middle" fill="#ff6b6b" font-size="11" font-weight="bold">← Backprop: ∂L/∂W</text>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <!-- Concept callout boxes -->
+                    <div style="flex: 1; display: flex; flex-direction: column; gap: 0.35em; font-size: 0.65em; padding-top: 0.2em;">
+
+                        <div class="fragment" data-fragment-index="1"
+                             style="background: rgba(198,120,221,0.08); border-left: 3px solid #c678dd; padding: 0.3em 0.6em; border-radius: 0 6px 6px 0;">
+                            <div style="color:#c678dd; font-weight:bold; margin-bottom:0.1em;">① All Parameters</div>
+                            <div style="color:#ccc;">Every weight in every layer is updated — GPT-3: <strong>175B</strong> weights.</div>
+                        </div>
+
+                        <div class="fragment" data-fragment-index="2"
+                             style="background: rgba(126,200,227,0.08); border-left: 3px solid #7ec8e3; padding: 0.3em 0.6em; border-radius: 0 6px 6px 0;">
+                            <div style="color:#7ec8e3; font-weight:bold; margin-bottom:0.1em;">② Forward Pass</div>
+                            <div style="color:#ccc;">Batch → network → prediction → compute <strong>Loss</strong></div>
+                        </div>
+
+                        <div class="fragment" data-fragment-index="3"
+                             style="background: rgba(255,107,107,0.08); border-left: 3px solid #ff6b6b; padding: 0.3em 0.6em; border-radius: 0 6px 6px 0;">
+                            <div style="color:#ff6b6b; font-weight:bold; margin-bottom:0.1em;">③ Backpropagation</div>
+                            <div style="color:#ccc;">Chain rule → <strong>∂L/∂W</strong> for every weight — "how much did this weight cause the error?"</div>
+                        </div>
+
+                        <div class="fragment" data-fragment-index="4"
+                             style="background: rgba(229,192,123,0.08); border-left: 3px solid #e5c07b; padding: 0.3em 0.6em; border-radius: 0 6px 6px 0;">
+                            <div style="color:#e5c07b; font-weight:bold; margin-bottom:0.1em;">④ Learning Rate η</div>
+                            <div style="color:#ccc;"><strong>W ← W − η × ∂L/∂W</strong> &nbsp;|&nbsp; Fine-tuning: η = <strong>2e-5</strong> (tiny — preserve pre-trained knowledge)</div>
+                        </div>
+
+                        <div class="fragment" data-fragment-index="5"
+                             style="background: rgba(152,195,121,0.08); border-left: 3px solid #98c379; padding: 0.3em 0.6em; border-radius: 0 6px 6px 0;">
+                            <div style="color:#98c379; font-weight:bold; margin-bottom:0.1em;">⑤ Epoch</div>
+                            <div style="color:#ccc;">1 epoch = 1 full pass through training data &nbsp;|&nbsp; Fine-tuning: <strong>1–5 epochs</strong> (more → overfitting)</div>
+                        </div>
+
+                    </div>
+                </div>
+                <aside class="notes">
+                    Walk through step by step. The network starts with pre-trained weights. Fragment 1: ALL weights (hidden layers highlighted) are trainable — not just the last layer. Fragment 2: Feed a data batch forward, get a prediction, compute the Loss. Fragment 3: Backpropagation uses the chain rule to compute the gradient ∂L/∂W for every single weight in the network — how much each weight contributed to the error. Fragment 4: The learning rate controls step size. In fine-tuning we use a tiny η (2e-5) compared to pre-training (1e-4) because we want to gently steer, not destroy. Fragment 5: One epoch = one complete pass through your fine-tuning dataset. With full fine-tuning, ALL weights are updated every batch, every epoch — that's why memory costs explode.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 9: FULL FINE-TUNING (MERGED) ==================== -->
+            <section>
+                <h2 style="font-size: 1.35em; margin-bottom: 0.3em;">Full Fine-tuning: How It Works &amp; Why It Costs</h2>
+
+                <!-- Pipeline -->
+                <div class="pipeline" style="margin: 0.4em 0 0.6em;">
                     <div class="step" style="border-color: #7ec8e3;">Pre-trained<br>Model</div>
                     <span class="arrow">&rarr;</span>
                     <div class="step" style="border-color: #e5c07b;">Train on<br>Task Data</div>
                     <span class="arrow">&rarr;</span>
                     <div class="step" style="border-color: #98c379;">Fine-tuned<br>Model</div>
                 </div>
-                <ul style="font-size: 0.8em; margin-top: 1em;">
-                    <li class="fragment">
-                        Start with pre-trained weights, then run <strong>standard training</strong>
-                    </li>
-                    <li class="fragment">
-                        <strong>All parameters</strong> are updated via backpropagation
-                    </li>
-                    <li class="fragment">
-                        Use a <span class="highlight-blue">much smaller learning rate</span> than pre-training
-                        <span class="small">(e.g., 2e-5 vs 1e-4)</span>
-                    </li>
-                    <li class="fragment">
-                        Train for only <span class="highlight-green">a few epochs</span> (1&ndash;5 typically)
-                    </li>
-                </ul>
-                <aside class="notes">
-                    Full fine-tuning is conceptually simple. Take the pre-trained model, swap out the final layer for your task, and train everything. The small learning rate is critical -- you don't want to destroy the pre-trained knowledge. This was THE approach from 2018 to roughly 2022 for BERT-style models.
-                </aside>
-            </section>
 
-            <!-- ==================== SLIDE 9: WHY IT'S EXPENSIVE ==================== -->
-            <section>
-                <h2>Why Full Fine-tuning Is Expensive</h2>
-                <div style="display: flex; gap: 1em; justify-content: center; margin-top: 1em;">
-                    <div class="cost-card fragment">
-                        <div class="cost-value">7B</div>
-                        <div class="cost-label">Parameters in LLaMA 2</div>
-                        <div style="font-size: 0.65em; color: #93a1a1; margin-top: 0.3em;">All updated during training</div>
+                <div class="two-column" style="gap: 2.5em; align-items: flex-start;">
+
+                    <!-- Left: The process -->
+                    <div>
+                        <h3 style="font-size: 0.8em; margin-bottom: 0.4em;">The Process</h3>
+                        <ul style="font-size: 0.75em;">
+                            <li class="fragment"><strong>All parameters</strong> updated via backpropagation</li>
+                            <li class="fragment">Learning rate: <span class="highlight-blue">η = 2e-5</span>
+                                <span class="small">(pre-training uses 1e-4)</span></li>
+                            <li class="fragment">Only <span class="highlight-green">1–5 epochs</span> needed</li>
+                        </ul>
                     </div>
-                    <div class="cost-card fragment">
-                        <div class="cost-value">&sim;28 GB</div>
-                        <div class="cost-label">GPU memory (FP32)</div>
-                        <div style="font-size: 0.65em; color: #93a1a1; margin-top: 0.3em;">Weights alone, not counting gradients</div>
-                    </div>
-                    <div class="cost-card fragment">
-                        <div class="cost-value">&sim;112 GB</div>
-                        <div class="cost-label">Total GPU memory</div>
-                        <div style="font-size: 0.65em; color: #93a1a1; margin-top: 0.3em;">+ optimizer states + activations</div>
+
+                    <!-- Right: The cost -->
+                    <div>
+                        <h3 style="font-size: 0.8em; margin-bottom: 0.4em;">The Cost <span class="small">(LLaMA 2, 7B params)</span></h3>
+                        <div style="display: flex; flex-direction: column; gap: 0.35em; font-size: 0.75em;">
+                            <div class="fragment" style="display: flex; align-items: baseline; gap: 0.6em;">
+                                <span style="font-size: 1.6em; font-weight: bold; color: #ff6b6b; min-width: 3.8em;">28 GB</span>
+                                <span style="color: #93a1a1;">weights only (FP32)</span>
+                            </div>
+                            <div class="fragment" style="display: flex; align-items: baseline; gap: 0.6em;">
+                                <span style="font-size: 1.6em; font-weight: bold; color: #ff6b6b; min-width: 3.8em;">~112 GB</span>
+                                <span style="color: #93a1a1;">total with gradients + optimizer states</span>
+                            </div>
+                            <div class="fragment" style="display: flex; align-items: baseline; gap: 0.6em;">
+                                <span style="font-size: 1.6em; font-weight: bold; color: #e5c07b; min-width: 3.8em;">×N</span>
+                                <span style="color: #93a1a1;">full copies — one per task</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <ul style="font-size: 0.75em; margin-top: 1em;">
-                    <li class="fragment">Need to store <strong>full copy of model per task</strong>
-                        <span class="small">&mdash; 5 tasks = 5 x 14GB</span>
-                    </li>
-                    <li class="fragment"><span class="highlight">Catastrophic forgetting</span>: can lose pre-trained knowledge</li>
-                </ul>
+
+                <div class="fragment" style="margin-top: 0.7em; font-size: 0.75em; background: rgba(255,107,107,0.08); border-left: 3px solid #ff6b6b; padding: 0.4em 0.8em; border-radius: 0 6px 6px 0; text-align: left;">
+                    <span class="highlight">Catastrophic forgetting</span>: aggressive training can overwrite pre-trained knowledge
+                </div>
+
                 <aside class="notes">
-                    Let's do the math. A 7B parameter model in FP32 is 7 billion x 4 bytes = 28GB just for the weights. During training, you also need gradients (28GB more), optimizer states like Adam momentum (56GB more), and activation memory. That's over 100GB -- you need multiple high-end GPUs. And if you have 5 different tasks, you need 5 complete model copies. This is why the field moved toward more efficient methods.
+                    Full fine-tuning is conceptually simple: take the pre-trained model and run standard backprop on your task data. The small learning rate (2e-5 vs 1e-4) is critical — you want to steer, not destroy. But the cost is steep: 7B parameters × 4 bytes = 28GB just for weights; add gradients, Adam optimizer states, and activations and you're over 100GB. Worse, each task needs its own full copy. This drove the field toward PEFT methods.
                 </aside>
             </section>
 
@@ -833,7 +985,7 @@
                     </div>
                 </div>
                 <p class="ref" style="margin-top: 0.5em;">
-                    Houlsby et al. (2019). "Parameter-Efficient Transfer Learning" &mdash;
+                    Houlsby et al. (2019). "Parameter-Efficient Transfer Learning"<br>
                     Li &amp; Liang (2021). "Prefix-Tuning"
                 </p>
                 <aside class="notes">
@@ -1065,6 +1217,66 @@ model = get_peft_model(model, lora_config)
                 </aside>
             </section>
 
+            <!-- ==================== SLIDE 32: PRACTICAL TIPS ==================== -->
+            <section>
+                <h2>Practical Fine-tuning Tips</h2>
+                <ol style="font-size: 0.8em;">
+                    <li class="fragment">
+                        <strong>Data quality &gt; data quantity</strong><br>
+                        <span class="small">1,000 high-quality examples often beats 100,000 noisy ones</span>
+                    </li>
+                    <li class="fragment">
+                        <strong>Start with LoRA r=8</strong>, increase if needed<br>
+                        <span class="small">r=8 for simple tasks, r=16&ndash;64 for complex tasks</span>
+                    </li>
+                    <li class="fragment">
+                        <strong>Use a validation set</strong> to detect overfitting early<br>
+                        <span class="small">Fine-tuning on small datasets overfits fast</span>
+                    </li>
+                    <li class="fragment">
+                        <strong>Evaluate on real use cases</strong>, not just benchmarks<br>
+                        <span class="small">Benchmark performance doesn't always transfer</span>
+                    </li>
+                    <li class="fragment">
+                        <strong>Version your adapters</strong> like code<br>
+                        <span class="small">They're small enough to commit to Git (16 MB)</span>
+                    </li>
+                </ol>
+                <aside class="notes">
+                    These tips come from real-world experience. Data quality matters far more than quantity -- garbage in, garbage out. LoRA rank 8 is a solid default; only increase if your evaluation shows the model isn't capturing enough of the task. Overfitting happens quickly with small datasets: always hold out data for validation. Evaluate with actual users or realistic test cases, not just academic benchmarks. And since LoRA adapters are tiny, you can and should version them with Git.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 33: COMMON MISTAKES ==================== -->
+            <section class="discussion-slide">
+                <h2>Common Mistakes to Avoid</h2>
+                <ul style="font-size: 0.8em;">
+                    <li class="fragment">
+                        <span class="highlight">Fine-tuning when prompting would work</span><br>
+                        <span class="small">Always try prompting first. Seriously.</span>
+                    </li>
+                    <li class="fragment">
+                        <span class="highlight">Using low-quality training data</span><br>
+                        <span class="small">The model will learn your mistakes too</span>
+                    </li>
+                    <li class="fragment">
+                        <span class="highlight">Training too many epochs</span><br>
+                        <span class="small">1&ndash;3 epochs is usually enough; more leads to overfitting</span>
+                    </li>
+                    <li class="fragment">
+                        <span class="highlight">Ignoring the base model choice</span><br>
+                        <span class="small">A better base model = better fine-tuned model. Start with the best you can afford.</span>
+                    </li>
+                    <li class="fragment">
+                        <span class="highlight">Not evaluating properly</span><br>
+                        <span class="small">Manual evaluation by domain experts is essential</span>
+                    </li>
+                </ul>
+                <aside class="notes">
+                    Let me share the most common mistakes I've seen. Number one is the most frequent: engineers jump to fine-tuning before trying prompting. Often, a well-crafted system prompt with examples solves the problem. Number two: bad training data produces a bad model, sometimes worse than the base model. Training too many epochs is subtle: the model starts memorizing your training examples instead of learning general patterns. Base model selection matters a lot -- a fine-tuned Llama-3 will almost always beat a fine-tuned Llama-2. And finally, you must evaluate rigorously -- have domain experts actually use the model.
+                </aside>
+            </section>
+
             <!-- ==================== SECTION: WHEN TO FINE-TUNE ==================== -->
 
             <section class="section-title">
@@ -1189,66 +1401,6 @@ model = get_peft_model(model, lora_config)
                 </div>
                 <aside class="notes">
                     This flowchart is your practical guide. Always start from the top: can you solve it with prompting? If yes, stop there. If prompting fails, ask: is the problem that the model doesn't know something? Then RAG. Is the problem that the model doesn't behave the way you want? Then fine-tune. In practice, you'll often combine approaches. Print this slide and pin it to your wall.
-                </aside>
-            </section>
-
-            <!-- ==================== SLIDE 32: PRACTICAL TIPS ==================== -->
-            <section>
-                <h2>Practical Fine-tuning Tips</h2>
-                <ol style="font-size: 0.8em;">
-                    <li class="fragment">
-                        <strong>Data quality &gt; data quantity</strong><br>
-                        <span class="small">1,000 high-quality examples often beats 100,000 noisy ones</span>
-                    </li>
-                    <li class="fragment">
-                        <strong>Start with LoRA r=8</strong>, increase if needed<br>
-                        <span class="small">r=8 for simple tasks, r=16&ndash;64 for complex tasks</span>
-                    </li>
-                    <li class="fragment">
-                        <strong>Use a validation set</strong> to detect overfitting early<br>
-                        <span class="small">Fine-tuning on small datasets overfits fast</span>
-                    </li>
-                    <li class="fragment">
-                        <strong>Evaluate on real use cases</strong>, not just benchmarks<br>
-                        <span class="small">Benchmark performance doesn't always transfer</span>
-                    </li>
-                    <li class="fragment">
-                        <strong>Version your adapters</strong> like code<br>
-                        <span class="small">They're small enough to commit to Git (16 MB)</span>
-                    </li>
-                </ol>
-                <aside class="notes">
-                    These tips come from real-world experience. Data quality matters far more than quantity -- garbage in, garbage out. LoRA rank 8 is a solid default; only increase if your evaluation shows the model isn't capturing enough of the task. Overfitting happens quickly with small datasets: always hold out data for validation. Evaluate with actual users or realistic test cases, not just academic benchmarks. And since LoRA adapters are tiny, you can and should version them with Git.
-                </aside>
-            </section>
-
-            <!-- ==================== SLIDE 33: COMMON MISTAKES ==================== -->
-            <section class="discussion-slide">
-                <h2>Common Mistakes to Avoid</h2>
-                <ul style="font-size: 0.8em;">
-                    <li class="fragment">
-                        <span class="highlight">Fine-tuning when prompting would work</span><br>
-                        <span class="small">Always try prompting first. Seriously.</span>
-                    </li>
-                    <li class="fragment">
-                        <span class="highlight">Using low-quality training data</span><br>
-                        <span class="small">The model will learn your mistakes too</span>
-                    </li>
-                    <li class="fragment">
-                        <span class="highlight">Training too many epochs</span><br>
-                        <span class="small">1&ndash;3 epochs is usually enough; more leads to overfitting</span>
-                    </li>
-                    <li class="fragment">
-                        <span class="highlight">Ignoring the base model choice</span><br>
-                        <span class="small">A better base model = better fine-tuned model. Start with the best you can afford.</span>
-                    </li>
-                    <li class="fragment">
-                        <span class="highlight">Not evaluating properly</span><br>
-                        <span class="small">Manual evaluation by domain experts is essential</span>
-                    </li>
-                </ul>
-                <aside class="notes">
-                    Let me share the most common mistakes I've seen. Number one is the most frequent: engineers jump to fine-tuning before trying prompting. Often, a well-crafted system prompt with examples solves the problem. Number two: bad training data produces a bad model, sometimes worse than the base model. Training too many epochs is subtle: the model starts memorizing your training examples instead of learning general patterns. Base model selection matters a lot -- a fine-tuned Llama-3 will almost always beat a fine-tuned Llama-2. And finally, you must evaluate rigorously -- have domain experts actually use the model.
                 </aside>
             </section>
 
