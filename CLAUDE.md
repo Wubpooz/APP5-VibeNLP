@@ -44,3 +44,10 @@ Example file structure:
 ## Architecture
 
 *To be documented as the codebase develops.*
+
+## Slide Conventions
+
+### Time Display in Slides
+
+- **Do not** put specific time allocations on individual topic blocks in roadmap/agenda slides (e.g., no "13:30 – 13:50" per block).
+- Only show the overall session time on the title slide (e.g., "Day 4, Session 1 · March 19, 2026 · 13:30 – 15:30").
