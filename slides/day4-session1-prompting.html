@@ -12,6 +12,8 @@
         :root {
             --r-heading-font: 'Helvetica Neue', Arial, sans-serif;
             --r-main-font: 'Helvetica Neue', Arial, sans-serif;
+            --prompt-text: #e8e8e8;
+            --prompt-muted: #c0ccd6;
         }
         .reveal { font-size: 32px; }
         .reveal h1 { font-size: 2.2em; }
@@ -115,6 +117,7 @@
             line-height: 1.5;
             margin: 0.5em 0;
             position: relative;
+            color: #e8e8e8;
         }
         .prompt-box.bad {
             border-color: #ff6b6b;
@@ -166,6 +169,7 @@
             border-collapse: collapse;
             font-size: 0.7em;
             margin: 0.5em 0;
+            border-bottom: 1px solid #93a1a1;
         }
         .compare-table th {
             background: rgba(126, 200, 227, 0.2);
@@ -211,15 +215,15 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            gap: 1em;
+            gap: 0.5em;
             margin: 1em 0;
         }
         .paradigm-box {
             text-align: center;
-            padding: 1em;
+            padding: 0.7em;
             border-radius: 12px;
             flex: 1;
-            min-width: 180px;
+            min-width: 0;
         }
         .paradigm-box h4 {
             margin: 0 0 0.3em 0;
@@ -332,32 +336,26 @@
                 <h2>Today's Roadmap</h2>
                 <div class="session-roadmap">
                     <div class="block">
-                        <div class="time">13:30 &ndash; 13:50</div>
                         <div class="topic">What is Prompting?</div>
                         <div style="font-size: 0.85em;">The paradigm shift</div>
                     </div>
                     <div class="block">
-                        <div class="time">13:50 &ndash; 14:15</div>
                         <div class="topic">Zero &amp; Few-Shot</div>
                         <div style="font-size: 0.85em;">In-Context Learning</div>
                     </div>
                     <div class="block">
-                        <div class="time">14:15 &ndash; 14:40</div>
                         <div class="topic">Prompt Engineering</div>
                         <div style="font-size: 0.85em;">Best practices</div>
                     </div>
                     <div class="block">
-                        <div class="time">14:40 &ndash; 15:05</div>
                         <div class="topic">Chain-of-Thought</div>
                         <div style="font-size: 0.85em;">Step-by-step reasoning</div>
                     </div>
                     <div class="block">
-                        <div class="time">15:05 &ndash; 15:20</div>
                         <div class="topic">Advanced Techniques</div>
                         <div style="font-size: 0.85em;">ToT, ReAct, Self-Consistency</div>
                     </div>
                     <div class="block">
-                        <div class="time">15:20 &ndash; 15:30</div>
                         <div class="topic">Pitfalls &amp; Wrap-up</div>
                         <div style="font-size: 0.85em;">Evaluation &amp; limits</div>
                     </div>
@@ -383,17 +381,17 @@
                 <h2>The Paradigm Shift</h2>
                 <div class="paradigm-row">
                     <div class="paradigm-box paradigm-old">
-                        <h4>Traditional ML</h4>
+                        <h4>Traditional<br>ML</h4>
                         <p>Collect data &rarr; Train model &rarr; Deploy</p>
                         <p style="margin-top: 0.3em; color: #ff6b6b;">Weeks to months</p>
                     </div>
-                    <div style="font-size: 2em; color: #7ec8e3;">&rarr;</div>
+                    <div style="font-size: 1.4em; color: #7ec8e3; flex-shrink: 0;">&rarr;</div>
                     <div class="paradigm-box paradigm-old">
                         <h4>Fine-tuning</h4>
                         <p>Take pre-trained model &rarr; Adapt with data</p>
                         <p style="margin-top: 0.3em; color: #e5c07b;">Days to weeks</p>
                     </div>
-                    <div style="font-size: 2em; color: #7ec8e3;">&rarr;</div>
+                    <div style="font-size: 1.4em; color: #7ec8e3; flex-shrink: 0;">&rarr;</div>
                     <div class="paradigm-box paradigm-new">
                         <h4>Prompting</h4>
                         <p>Write instructions &rarr; Get results</p>
@@ -646,7 +644,7 @@
             <!-- ==================== SLIDE 13: CONTEXT AND CONSTRAINTS ==================== -->
             <section>
                 <h2>Rule 2: Provide Context &amp; Constraints</h2>
-                <div class="prompt-box good" style="font-size: 0.55em;">
+                <div class="prompt-box good" style="font-size: 0.48em; line-height: 1.35; padding: 0.6em 0.8em;">
                     <div class="role-label role-user">User:</div>
                     You are a <strong>senior code reviewer</strong> at a fintech company.<br>
                     Our codebase uses <strong>Python 3.11, FastAPI, and SQLAlchemy</strong>.<br>
@@ -665,7 +663,7 @@
                     &nbsp;&nbsp;&nbsp;&nbsp;return db.execute(query).first()<br>
                     ```
                 </div>
-                <p class="fragment small" style="text-align: center;">
+                <p class="fragment small" style="text-align: center; margin-top: 0.3em;">
                     <span class="highlight-blue">Role</span> +
                     <span class="highlight-green">Tech context</span> +
                     <span class="highlight-yellow">Focus areas</span> +
@@ -790,6 +788,7 @@
                         <p class="small">Brainstorming, writing<br>High variety, more risk</p>
                     </div>
                 </div>
+                <p style="font-size: 0.55em; color: #888; margin-top: 0.5em;">* Range varies by model: Claude 0–1, OpenAI 0–2</p>
                 <div class="fragment" style="margin-top: 0.8em;">
                     <h3>Other parameters to know:</h3>
                     <ul style="font-size: 0.7em;">
@@ -1055,7 +1054,7 @@
             <section>
                 <h2>Tree of Thoughts (ToT)</h2>
                 <p class="small">Yao et al., "Tree of Thoughts: Deliberate Problem Solving with LLMs" (2023)</p>
-                <div class="two-column" style="margin-top: 0.5em;">
+                <div class="two-column" style="margin-top: 0.3em;">
                     <div style="text-align: center;">
                         <p style="font-size: 0.7em; color: #93a1a1;">Chain-of-Thought (linear)</p>
                         <div class="flow" style="flex-direction: column; gap: 0.2em;">
@@ -1070,7 +1069,7 @@
                     </div>
                     <div style="text-align: center;">
                         <p style="font-size: 0.7em; color: #93a1a1;">Tree of Thoughts (branching)</p>
-                        <div style="font-size: 0.7em; line-height: 1.8;">
+                        <div style="font-size: 0.7em; line-height: 1.6;">
                             <div style="text-align: center;">
                                 <span style="border: 2px solid #7ec8e3; border-radius: 6px; padding: 2px 10px;">Start</span>
                             </div>
@@ -1088,7 +1087,7 @@
                         </div>
                     </div>
                 </div>
-                <ul class="fragment" style="font-size: 0.65em; margin-top: 0.5em;">
+                <ul class="fragment" style="font-size: 0.65em; margin-top: 0.3em;">
                     <li><span class="highlight-blue">Generate</span> multiple thoughts at each step</li>
                     <li><span class="highlight-yellow">Evaluate</span> each thought (self-evaluation or heuristic)</li>
                     <li><span class="highlight">Prune</span> unpromising branches, <span class="highlight-green">explore</span> promising ones</li>
@@ -1360,21 +1359,28 @@
             <!-- ==================== SLIDE 31: PROMPT TEMPLATE ==================== -->
             <section class="discussion-slide">
                 <h2>Your Prompting Toolkit</h2>
-                <p style="font-size: 0.75em;">A universal template you can adapt for any task:</p>
-                <div class="prompt-box" style="font-size: 0.5em; border-color: #7ec8e3;">
-                    <span class="highlight-purple"><strong>[SYSTEM]</strong></span> You are a {role} with expertise in {domain}.<br>
-                    Follow these rules: {rules}.<br><br>
-                    <span class="highlight-blue"><strong>[CONTEXT]</strong></span> Background: {relevant context}<br>
-                    Constraints: {limitations and requirements}<br><br>
-                    <span class="highlight-yellow"><strong>[EXAMPLES]</strong></span> (optional)<br>
-                    Input: {example_input_1}<br>
-                    Output: {example_output_1}<br><br>
-                    <span class="highlight-green"><strong>[TASK]</strong></span> {specific instruction}<br><br>
-                    <span class="highlight"><strong>[FORMAT]</strong></span> Respond in the following format:<br>
-                    {output_schema_or_template}<br><br>
-                    <span style="color: #93a1a1;"><strong>[REASONING]</strong></span> (optional) Think step by step before answering.
+                <p style="font-size: 0.7em; margin: 0.2em 0 0.4em;">A universal template you can adapt for any task:</p>
+                <div style="font-size: 0.62em; font-family: 'Courier New', monospace; line-height: 1.6; margin: 0.4em 0; display: flex; flex-direction: column; gap: 0.3em; text-align: left;">
+                    <div style="background: rgba(198,120,221,0.18); border-left: 4px solid #c678dd; border-radius: 5px; padding: 0.4em 0.8em; color: var(--prompt-text);">
+                        <span style="color:#c678dd;"><strong>[SYSTEM]</strong></span> You are a {role} with expertise in {domain}. Follow these rules: {rules}.
+                    </div>
+                    <div style="background: rgba(126,200,227,0.18); border-left: 4px solid #7ec8e3; border-radius: 5px; padding: 0.4em 0.8em; color: var(--prompt-text);">
+                        <span style="color:#7ec8e3;"><strong>[CONTEXT]</strong></span> Background: {relevant context} &nbsp;·&nbsp; Constraints: {limitations and requirements}
+                    </div>
+                    <div style="background: rgba(229,192,123,0.18); border-left: 4px solid #e5c07b; border-radius: 5px; padding: 0.4em 0.8em; color: var(--prompt-text);">
+                        <span style="color:#e5c07b;"><strong>[EXAMPLES]</strong></span> <em style="color:var(--prompt-muted);">(optional)</em> &nbsp; Input: {example_input_1} &nbsp;→&nbsp; Output: {example_output_1}
+                    </div>
+                    <div style="background: rgba(152,195,121,0.18); border-left: 4px solid #98c379; border-radius: 5px; padding: 0.4em 0.8em; color: var(--prompt-text);">
+                        <span style="color:#98c379;"><strong>[TASK]</strong></span> {specific instruction}
+                    </div>
+                    <div style="background: rgba(255,107,107,0.18); border-left: 4px solid #ff6b6b; border-radius: 5px; padding: 0.4em 0.8em; color: var(--prompt-text);">
+                        <span style="color:#ff6b6b;"><strong>[FORMAT]</strong></span> Respond in the following format: {output_schema_or_template}
+                    </div>
+                    <div style="background: rgba(192,204,214,0.12); border-left: 4px solid #c0ccd6; border-radius: 5px; padding: 0.4em 0.8em; color: var(--prompt-text);">
+                        <span style="color:var(--prompt-muted);"><strong>[REASONING]</strong></span> <em style="color:var(--prompt-muted);">(optional)</em> Think step by step before answering.
+                    </div>
                 </div>
-                <p class="fragment small" style="text-align: center; margin-top: 0.3em;">
+                <p class="fragment small" style="text-align: center; margin-top: 0.4em;">
                     Not every prompt needs all sections. Start minimal, add sections when output quality is insufficient.
                 </p>
                 <aside class="notes">
@@ -1460,6 +1466,20 @@
             center: true,
             plugins: [RevealHighlight, RevealNotes]
         });
+
+        // Dynamically set prompt text color based on actual background luminance
+        function updatePromptColors() {
+            const reveal = document.querySelector('.reveal');
+            const bg = window.getComputedStyle(document.body).backgroundColor;
+            const m = bg.match(/\d+/g);
+            const luminance = m ? (0.299 * m[0] + 0.587 * m[1] + 0.114 * m[2]) / 255 : 0;
+            const isDark = luminance < 0.5;
+            document.documentElement.style.setProperty('--prompt-text', isDark ? '#e8e8e8' : '#1a1a2e');
+            document.documentElement.style.setProperty('--prompt-muted', isDark ? '#c0ccd6' : '#555555');
+        }
+
+        Reveal.on('ready', updatePromptColors);
+        Reveal.on('slidechanged', updatePromptColors);
     </script>
     <script src="theme.js"></script>
 </body>
