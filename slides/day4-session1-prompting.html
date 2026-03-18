@@ -1568,15 +1568,28 @@
                     <li class="fragment"><span class="highlight">Yao et al. (2023)</span> &mdash; "Tree of Thoughts: Deliberate Problem Solving with LLMs"</li>
                     <li class="fragment"><span class="highlight-blue">Yao et al. (2022)</span> &mdash; "ReAct: Synergizing Reasoning and Acting in Language Models"</li>
                     <li class="fragment"><span class="highlight-green">Liu et al. (2022)</span> &mdash; "What Makes Good In-Context Examples for GPT-3?"</li>
+                    <li class="fragment"><span class="highlight-yellow">Wang &amp; Zhou (2024)</span> &mdash; "Chain-of-Thought Reasoning Without Prompting" (NeurIPS 2024, arXiv:2402.10200)</li>
                 </ul>
                 <p class="fragment small" style="text-align: center; margin-top: 0.5em;">
                     Recommended survey: "A Survey on In-context Learning" (Dong et al., 2024)
+                </p>
+                <p class="fragment small" style="text-align: center;">
+                    🎬 <strong>Denny Zhou, "LLM Reasoning"</strong> — Stanford CS 25 Lecture (2025)
+                    &nbsp;|&nbsp; Slides: <a href="https://dennyzhou.github.io/LLM-Reasoning-Stanford-CS-25.pdf" style="color: var(--blue);">dennyzhou.github.io</a>
+                    &nbsp;|&nbsp; Video (中文解说): <a href="https://youtu.be/s00fy5RkCHc" style="color: var(--blue);">youtu.be/s00fy5RkCHc</a>
                 </p>
                 <aside class="notes">
                     These are the foundational papers for everything we covered today.
                     If you read one paper, make it Wei et al. on Chain-of-Thought &mdash; it's the most impactful.
                     The Dong et al. survey from 2024 is an excellent overview of the entire field of in-context learning.
                     All of these are freely available on arXiv.
+
+                    The Wang & Zhou 2024 paper is crucial for understanding the deeper picture: CoT reasoning paths
+                    exist latently in pre-trained models and can be elicited without prompting, just by changing
+                    the decoding strategy. This proves the model already has the reasoning capability.
+
+                    Denny Zhou's Stanford CS 25 lecture (April 2025) is the best single resource for understanding
+                    the full arc from CoT prompting to today's reasoning models. Highly recommended watching.
                 </aside>
             </section>
 
