@@ -819,6 +819,64 @@
                 </aside>
             </section>
 
+            <!-- ==================== SLIDE 17b: THE GREEDY DECODING PROBLEM ==================== -->
+            <section>
+                <h3>Why Do LLMs Give Wrong Answers?</h3>
+                <div class="two-column" style="margin-top: 0.5em;">
+                    <div>
+                        <div style="border: 2px solid var(--red); border-radius: 8px; padding: 14px; font-size: 0.7em;">
+                            <p style="color: var(--red); font-weight: bold; margin: 0 0 8px;">🎯 Greedy Decoding (default)</p>
+                            <p style="margin: 4px 0;">At every step, pick the <strong>single most probable</strong> next token</p>
+                            <div style="background: rgba(255,107,107,0.12); padding: 8px; border-radius: 4px; margin-top: 8px; font-size: 0.95em;">
+                                Q: 17 × 24 = ?<br>
+                                → <span style="color: var(--red);">Model sees "408" as most likely answer token</span><br>
+                                → Outputs: <strong style="color: var(--red);">408 ✗</strong> (correct: 408... wait, is it? 😅)
+                            </div>
+                            <p style="margin: 8px 0 0; color: var(--grey); font-size: 0.9em;">Like answering before thinking — System 1</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="fragment" style="border: 2px solid var(--green); border-radius: 8px; padding: 14px; font-size: 0.7em;">
+                            <p style="color: var(--green); font-weight: bold; margin: 0 0 8px;">💡 The Key Insight (Denny Zhou, 2024)</p>
+                            <p style="margin: 4px 0;"><strong>Reasoning-based outputs don't appear at the top of the distribution</strong></p>
+                            <div style="background: rgba(152,195,121,0.12); padding: 8px; border-radius: 4px; margin-top: 8px; font-size: 0.95em;">
+                                The model <em>already knows</em> how to reason<br>
+                                (trained on millions of human step-by-step solutions)<br><br>
+                                But greedy decoding <span style="color: var(--red);">suppresses</span> those paths
+                            </div>
+                            <p style="margin: 8px 0 0; color: var(--grey); font-size: 0.9em;">The capability is there — we just need to unlock it</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="fragment key-takeaway" style="margin-top: 12px; padding: 8px 14px; font-size: 0.72em;">
+                    <strong>The question:</strong> How do we get the model to "slow down and think"
+                    instead of blurting out the first thing that comes to mind?
+                </div>
+                <aside class="notes">
+                    This is the motivational heart of Chain-of-Thought — the "why" that makes everything else make sense.
+
+                    By default, LLMs use greedy decoding: at each step, they pick the single most probable next token.
+                    This is like answering a question before you've had time to think about it — System 1 thinking,
+                    in Kahneman's terms. Fast, automatic, and often wrong for complex problems.
+
+                    Denny Zhou (DeepMind Chief Scientist, creator of CoT) made a crucial observation in his 2024 paper
+                    "Chain-of-Thought Reasoning Without Prompting" (arXiv:2402.10200):
+                    reasoning-based outputs don't appear at the TOP of the probability distribution.
+                    So greedy decoding never generates them.
+
+                    BUT — and this is the key — the model already has the reasoning capacity!
+                    It was trained on enormous amounts of human writing that includes step-by-step reasoning,
+                    mathematical proofs, code comments, etc.
+                    That knowledge is encoded in the weights. Greedy decoding just doesn't give it a chance to show.
+
+                    So the problem isn't that the model can't reason. The problem is that we're not letting it.
+                    CoT prompting is the first answer to this problem.
+
+                    Reference: Wang & Zhou (2024), "Chain-of-Thought Reasoning Without Prompting", NeurIPS 2024
+                    arXiv: https://arxiv.org/abs/2402.10200
+                </aside>
+            </section>
+
             <!-- ==================== SLIDE 18: COT BREAKTHROUGH ==================== -->
             <section>
                 <h2>The Breakthrough</h2>
@@ -958,39 +1016,132 @@
 
             <!-- ==================== SLIDE 21: WHY CoT WORKS ==================== -->
             <section>
-                <h2>Why Does CoT Work?</h2>
-                <div class="flow" style="margin: 1em 0;">
-                    <div class="step">Complex Problem</div>
-                    <div class="arrow">&rarr;</div>
-                    <div class="step active">Decompose</div>
-                    <div class="arrow">&rarr;</div>
-                    <div class="step">Sub-problem 1</div>
-                    <div class="arrow">&rarr;</div>
-                    <div class="step">Sub-problem 2</div>
-                    <div class="arrow">&rarr;</div>
-                    <div class="step" style="border-color: #98c379; background: rgba(152, 195, 121, 0.15);">Answer</div>
+                <h3>Why Does CoT Work? — Two Levels</h3>
+                <div class="two-column" style="margin-top: 0.4em;">
+                    <div>
+                        <p style="color: var(--blue); font-weight: bold; font-size: 0.75em; margin-bottom: 6px;">Surface level (the engineering view)</p>
+                        <ul style="font-size: 0.68em; line-height: 1.6;">
+                            <li class="fragment"><span class="highlight-blue">Decomposition</span> — breaks multi-step problems into single-step ones</li>
+                            <li class="fragment"><span class="highlight-green">Working memory</span> — context window acts as scratchpad; intermediate results persist</li>
+                            <li class="fragment"><span class="highlight-yellow">Error localization</span> — you can see <em>where</em> reasoning goes wrong</li>
+                            <li class="fragment"><span class="highlight">Autoregressive priming</span> — each generated token shifts probability of the next toward coherent reasoning</li>
+                        </ul>
+                    </div>
+                    <div class="fragment">
+                        <p style="color: var(--red); font-weight: bold; font-size: 0.75em; margin-bottom: 6px;">Deeper truth (Denny Zhou's insight)</p>
+                        <div style="border: 2px solid var(--red); border-radius: 8px; padding: 12px; font-size: 0.68em; line-height: 1.6;">
+                            <p style="margin: 0 0 6px;">Pre-trained LLMs <strong>already possess</strong> inherent reasoning capacity</p>
+                            <p style="margin: 0 0 6px; color: var(--grey);">They were trained on human step-by-step problem-solving</p>
+                            <p style="margin: 0 0 6px;"><strong>CoT prompting</strong> shifts probability mass toward reasoning paths that greedy decoding would suppress</p>
+                            <p style="margin: 0; color: var(--yellow);">More tokens = more test-time compute = better access to correct answers</p>
+                        </div>
+                        <p class="small" style="margin-top: 8px; color: var(--grey);">Wang &amp; Zhou, "CoT Reasoning Without Prompting", NeurIPS 2024</p>
+                    </div>
                 </div>
-                <ul style="font-size: 0.8em;">
-                    <li class="fragment"><span class="highlight-blue">Decomposition</span> &mdash; breaks multi-step problems into single-step ones</li>
-                    <li class="fragment"><span class="highlight-green">Working memory</span> &mdash; intermediate results are written in text (the context window is the scratchpad)</li>
-                    <li class="fragment"><span class="highlight-yellow">Error localization</span> &mdash; you can see <em>where</em> reasoning goes wrong</li>
-                    <li class="fragment"><span class="highlight">Autoregressive help</span> &mdash; each generated token conditions the next, building up correct reasoning</li>
-                </ul>
-                <p class="fragment small" style="text-align: center; margin-top: 0.5em;">
-                    Key limitation: CoT helps most with <strong>multi-step reasoning</strong>.
-                    For simple factual recall, it adds unnecessary tokens.
+                <p class="fragment small" style="text-align: center; margin-top: 8px;">
+                    CoT helps most with <strong>multi-step reasoning</strong>. For simple factual recall, it wastes tokens.
                 </p>
                 <aside class="notes">
-                    The theoretical explanation has several parts.
-                    First, decomposition: LLMs struggle with problems that require multiple reasoning steps in one shot.
-                    CoT forces the model to tackle one step at a time.
-                    Second, working memory: the model's only "memory" during generation is the context window.
-                    By writing intermediate steps as text, the model can refer back to earlier results.
-                    Think of it as the model doing scratch work on paper instead of mental math.
-                    Third, the autoregressive nature of LLMs means each token is conditioned on all previous tokens.
-                    When the model writes "Step 1: X = 5", that text helps it correctly generate Step 2.
-                    Important caveat: CoT is most useful for multi-step reasoning. For simple questions like
-                    "What is the capital of France?", CoT just wastes tokens.
+                    Let's look at CoT from two angles — the engineering explanation you'll use in practice,
+                    and the deeper theoretical insight from Denny Zhou.
+
+                    The surface-level explanation: CoT works because it decomposes hard problems, uses the context
+                    window as working memory, lets you localize errors, and primes the autoregressive process
+                    toward coherent reasoning chains.
+
+                    But the DEEPER insight — which Denny Zhou proved experimentally in his 2024 NeurIPS paper —
+                    is more profound: pre-trained LLMs already have the reasoning capacity encoded in their weights.
+                    They were trained on massive amounts of human text that includes step-by-step problem-solving,
+                    mathematical derivations, code with comments, etc.
+
+                    The problem is that greedy decoding suppresses this capacity. Reasoning-based answers
+                    don't appear at the top of the probability distribution. So the model "knows" how to reason,
+                    but its default decoding prevents it from showing that.
+
+                    CoT prompting works by shifting the probability distribution. The phrase "Let's think step by step"
+                    makes the model generate tokens like "Step 1:" which then prime the rest of the reasoning chain.
+                    You're essentially unlocking a capability that was always there.
+
+                    This insight led directly to "test-time compute" — the idea that you can get better answers
+                    by generating more tokens (thinking longer), rather than always trying to answer in one shot.
+                    This is the seed from which o1, DeepSeek-R1, and all reasoning models grew.
+                </aside>
+            </section>
+
+            <!-- ==================== SLIDE 21b: FROM COT TO REASONING MODELS ==================== -->
+            <section>
+                <h3>One Insight → A Whole Revolution</h3>
+                <p style="font-size: 0.65em; color: var(--grey); margin: 0 0 8px; text-align: center;">Denny Zhou founded Google Brain's reasoning team in 2021. Here's what grew from it:</p>
+                <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.65em; max-width: 90%; margin: 0 auto;">
+                    <div class="fragment" style="display: flex; align-items: center; gap: 12px;">
+                        <span style="color: var(--grey); min-width: 50px; font-weight: bold;">2022</span>
+                        <div style="flex: 1; background: rgba(126,200,227,0.15); border-left: 3px solid var(--blue); padding: 6px 10px; border-radius: 0 4px 4px 0;">
+                            <strong style="color: var(--blue);">CoT Prompting</strong> — "Let's think step by step" (6 words, 4× accuracy jump)
+                            <span style="color: var(--grey); float: right;">Wei et al. · Kojima et al.</span>
+                        </div>
+                    </div>
+                    <div class="fragment" style="display: flex; align-items: center; gap: 12px;">
+                        <span style="color: var(--grey); min-width: 50px; font-weight: bold;">2022</span>
+                        <div style="flex: 1; background: rgba(152,195,121,0.15); border-left: 3px solid var(--green); padding: 6px 10px; border-radius: 0 4px 4px 0;">
+                            <strong style="color: var(--green);">Self-Consistency</strong> — Sample many reasoning paths, vote on majority answer
+                            <span style="color: var(--grey); float: right;">Wang et al.</span>
+                        </div>
+                    </div>
+                    <div class="fragment" style="display: flex; align-items: center; gap: 12px;">
+                        <span style="color: var(--grey); min-width: 50px; font-weight: bold;">2023</span>
+                        <div style="flex: 1; background: rgba(229,192,123,0.15); border-left: 3px solid var(--yellow); padding: 6px 10px; border-radius: 0 4px 4px 0;">
+                            <strong style="color: var(--yellow);">Process Reward Models</strong> — Train verifiers to score each reasoning <em>step</em>, not just the final answer
+                            <span style="color: var(--grey); float: right;">Lightman et al. (OpenAI)</span>
+                        </div>
+                    </div>
+                    <div class="fragment" style="display: flex; align-items: center; gap: 12px;">
+                        <span style="color: var(--grey); min-width: 50px; font-weight: bold;">2024</span>
+                        <div style="flex: 1; background: rgba(255,107,107,0.15); border-left: 3px solid var(--red); padding: 6px 10px; border-radius: 0 4px 4px 0;">
+                            <strong style="color: var(--red);">RLVR + o1</strong> — Reinforce reasoning via verifiable rewards; bake "slow thinking" into the model
+                            <span style="color: var(--grey); float: right;">OpenAI o1</span>
+                        </div>
+                    </div>
+                    <div class="fragment" style="display: flex; align-items: center; gap: 12px;">
+                        <span style="color: var(--grey); min-width: 50px; font-weight: bold;">2025</span>
+                        <div style="flex: 1; background: rgba(198,120,221,0.15); border-left: 3px solid var(--purple); padding: 6px 10px; border-radius: 0 4px 4px 0;">
+                            <strong style="color: var(--purple);">DeepSeek-R1 / Open Reasoning</strong> — RLVR at scale, open weights, reasoning democratized
+                            <span style="color: var(--grey); float: right;">DeepSeek et al.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="fragment key-takeaway" style="margin-top: 10px; padding: 7px 14px; font-size: 0.7em;">
+                    The unifying thread: <strong>more thinking = better answers.</strong>
+                    From a 6-word prompt trick to trillion-dollar AI infrastructure — same core idea.
+                </div>
+                <aside class="notes">
+                    Here's the beautiful narrative arc that Denny Zhou's Stanford lecture traces.
+
+                    It all started with a simple question: why does "Let's think step by step" work so well?
+                    That curiosity, starting around 2021-2022, spawned an entire research agenda.
+
+                    CoT prompting showed that just asking for steps dramatically improved accuracy.
+                    Then Self-Consistency showed you could do even better by sampling multiple reasoning paths
+                    and taking the majority vote — more compute at inference time, better answers.
+
+                    Process Reward Models took it further: instead of just checking the final answer,
+                    train a separate model to evaluate each STEP in the reasoning chain.
+                    This gives much better signal for training.
+
+                    RLVR (Reinforcement Learning with Verifiable Rewards) — which we cover in Day 5 —
+                    combined these ideas: use verifiable rewards (math answers are right or wrong)
+                    to reinforce the reasoning process itself. OpenAI's o1 used this to create
+                    a model that "thinks" for seconds or minutes before answering.
+
+                    DeepSeek-R1 in 2025 showed this could be done open-source, democratizing reasoning models.
+
+                    The through-line is always the same: give the model more token budget to think,
+                    and it performs dramatically better. The "thinking" is test-time compute.
+
+                    This isn't magic. It's a fundamental insight: the model already has the knowledge,
+                    we're just giving it the space to use it.
+
+                    Source: Denny Zhou, "LLM Reasoning", Stanford CS 25, 2025
+                    https://dennyzhou.github.io/LLM-Reasoning-Stanford-CS-25.pdf
                 </aside>
             </section>
 
