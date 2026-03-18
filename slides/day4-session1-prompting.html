@@ -349,7 +349,7 @@
                     </div>
                     <div class="block">
                         <div class="topic">Chain-of-Thought</div>
-                        <div style="font-size: 0.85em;">Step-by-step reasoning</div>
+                        <div style="font-size: 0.85em;">Motivation + techniques</div>
                     </div>
                     <div class="block">
                         <div class="topic">Advanced Techniques</div>
@@ -768,6 +768,17 @@
                 </aside>
             </section>
 
+            <!-- ==================== SLIDE 17: SECTION - CHAIN OF THOUGHT ==================== -->
+            <section class="section-title">
+                <h2>Part 4</h2>
+                <h3>Chain-of-Thought Prompting</h3>
+                <p class="small">Wei et al., "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models" (2022)</p>
+                <aside class="notes">
+                    Now we get to one of the most important breakthroughs in prompting research.
+                    Chain-of-Thought fundamentally changed what we thought LLMs could do.
+                </aside>
+            </section>
+
             <!-- ==================== SLIDE 16: TEMPERATURE AND SAMPLING ==================== -->
             <section>
                 <h2>Temperature &amp; Sampling Parameters</h2>
@@ -797,25 +808,24 @@
                         <li><span class="highlight-yellow">stop sequences</span> &mdash; custom tokens that end generation</li>
                     </ul>
                 </div>
+                <div class="fragment" style="margin-top: 0.6em; padding: 6px 12px; border-left: 3px solid var(--red); font-size: 0.7em; color: var(--grey);">
+                    💡 <strong style="color: var(--red);">T=0 is exactly greedy decoding</strong> — always pick the top token.
+                    We'll see next why that can be a problem for reasoning tasks.
+                </div>
                 <aside class="notes">
-                    Temperature controls randomness. At T=0, the model always picks the highest-probability token.
-                    This is what you want for factual tasks: code generation, data extraction, math.
-                    At T=0.7, there's some randomness &mdash; good for general conversation where you want natural variation.
+                    Temperature controls randomness. At T=0, the model always picks the highest-probability token —
+                    this is literally greedy decoding. Perfect for factual tasks: code generation, data extraction, math
+                    where there's one correct answer.
+                    At T=0.7, there's some randomness — good for general conversation where you want natural variation.
                     Above 1.0, the distribution flattens and you get more creative but less reliable output.
                     Rule of thumb: if there's one correct answer, use T=0. If you want variety, use T=0.7-1.0.
                     top_p is an alternative to temperature. Using both at non-default values is not recommended.
-                    max_tokens prevents runaway generation. stop sequences are useful for structured output.
-                </aside>
-            </section>
+                    max_tokens prevents runaway generation. Stop sequences are useful for structured output.
 
-            <!-- ==================== SLIDE 17: SECTION - CHAIN OF THOUGHT ==================== -->
-            <section class="section-title">
-                <h2>Part 4</h2>
-                <h3>Chain-of-Thought Prompting</h3>
-                <p class="small">Wei et al., "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models" (2022)</p>
-                <aside class="notes">
-                    Now we get to one of the most important breakthroughs in prompting research.
-                    Chain-of-Thought fundamentally changed what we thought LLMs could do.
+                    Important foreshadowing: T=0 gives you the single most likely output — but for complex
+                    reasoning problems, that "most likely" token might not be the correct answer.
+                    Self-Consistency (coming up) deliberately uses T>0 to sample multiple different reasoning paths.
+                    Temperature isn't just a creativity dial — it's the key to unlocking diverse reasoning.
                 </aside>
             </section>
 
@@ -1577,7 +1587,8 @@
                     <li class="fragment">Prompting is a <span class="highlight">new programming paradigm</span> &mdash; natural language as code</li>
                     <li class="fragment"><span class="highlight-blue">Zero-shot</span> first, <span class="highlight-green">few-shot</span> when needed &mdash; always start simple</li>
                     <li class="fragment">Be <span class="highlight-yellow">specific</span>: role + context + format + constraints</li>
-                    <li class="fragment"><span class="highlight-purple">Chain-of-Thought</span> unlocks multi-step reasoning ("think step by step")</li>
+                    <li class="fragment"><span class="highlight-purple">Chain-of-Thought</span> unlocks multi-step reasoning &mdash; but more deeply: pre-trained LLMs <em>already have</em> reasoning capacity; CoT unlocks what greedy decoding suppresses</li>
+                    <li class="fragment">The reasoning revolution: <strong>more thinking = better answers</strong> &mdash; from CoT prompting (2022) to o1/R1 (2024–25), the same insight compounds</li>
                     <li class="fragment">Advanced techniques (Self-Consistency, ToT, ReAct) trade <span class="highlight">cost for accuracy</span></li>
                     <li class="fragment">Always validate: beware of <span class="highlight">hallucination</span>, sensitivity, and bias</li>
                 </ol>
