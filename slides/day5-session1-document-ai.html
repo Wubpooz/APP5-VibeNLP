@@ -356,13 +356,12 @@
     <h2>Session Agenda</h2>
     <div style="text-align: left; max-width: 700px; margin: 0 auto;">
         <ol style="font-size: 0.85em;">
-            <li class="fragment"><span class="highlight">Document AI: What & Why?</span> <span class="small">(15 min)</span></li>
-            <li class="fragment"><span class="highlight-blue">PDF Parsing Techniques</span> <span class="small">(25 min)</span></li>
-            <li class="fragment"><span class="highlight-green">Document Understanding</span> <span class="small">(20 min)</span></li>
-            <li class="fragment"><span class="highlight-yellow">Transition to Multimodal</span> <span class="small">(5 min)</span></li>
-            <li class="fragment"><span class="highlight-purple">Vision-Language Models</span> <span class="small">(30 min)</span></li>
-            <li class="fragment"><span class="highlight-blue">Multimodal Applications</span> <span class="small">(15 min)</span></li>
-            <li class="fragment"><span class="highlight">Demo Day Use Cases</span> <span class="small">(10 min)</span></li>
+            <li class="fragment"><span class="highlight">Document AI: What & Why?</span></li>
+            <li class="fragment"><span class="highlight-blue">PDF Parsing Techniques</span></li>
+            <li class="fragment"><span class="highlight-green">Document Understanding</span></li>
+            <li class="fragment"><span class="highlight-yellow">Transition to Multimodal</span></li>
+            <li class="fragment"><span class="highlight-purple">Vision-Language Models</span></li>
+            <li class="fragment"><span class="highlight-blue">Multimodal Applications</span></li>
         </ol>
     </div>
     <aside class="notes">
@@ -897,7 +896,7 @@ invoice = Invoice.model_validate_json(response.content[0].text)</code></pre>
 <section>
     <h2>CLIP: What Can You Do With It?</h2>
     <div class="two-column">
-        <div>
+        <div style="min-width: 0;">
             <h3 style="color: #98c379;">Zero-Shot Classification</h3>
             <pre><code class="language-python">from transformers import CLIPProcessor, CLIPModel
 
@@ -919,25 +918,26 @@ inputs = processor(
 outputs = model(**inputs)
 probs = outputs.logits_per_image.softmax(dim=-1)</code></pre>
         </div>
-        <div class="fragment">
+        <div class="fragment" style="min-width: 0;">
             <h3 style="color: #7ec8e3;">Semantic Image Search</h3>
             <pre><code class="language-python"># Index images
 image_embeddings = []
 for img in document_images:
-    inputs = processor(images=img,
-                       return_tensors="pt")
+    inputs = processor(
+        images=img, return_tensors="pt")
     emb = model.get_image_features(**inputs)
     image_embeddings.append(emb)
 
 # Search with text query
 query = "graph showing revenue growth"
-text_inputs = processor(text=query,
-                        return_tensors="pt")
+text_inputs = processor(
+    text=query, return_tensors="pt")
 text_emb = model.get_text_features(**text_inputs)
 
 # Find most similar images
-similarities = [cosine_sim(text_emb, img_emb)
-                for img_emb in image_embeddings]</code></pre>
+similarities = [
+    cosine_sim(text_emb, img_emb)
+    for img_emb in image_embeddings]</code></pre>
         </div>
     </div>
     <p class="fragment small" style="text-align: center;">CLIP's shared embedding space enables text&harr;image matching without task-specific training</p>
@@ -996,27 +996,27 @@ similarities = [cosine_sim(text_emb, img_emb)
 <!-- SLIDE 23: LLaVA Architecture -->
 <!-- ============================================================ -->
 <section>
-    <h2>LLaVA: Open-Source VLM</h2>
-    <p class="small">Liu et al., 2023 &bull; "Visual Instruction Tuning"</p>
-    <div class="arch-diagram" style="margin: 0.8em 0;">
-        <div style="display: flex; gap: 2em; justify-content: center; align-items: flex-end;">
+    <h2 style="margin-bottom: 0.1em;">LLaVA: Open-Source VLM</h2>
+    <p class="small" style="margin: 0 0 0.2em 0;">Liu et al., 2023 &bull; "Visual Instruction Tuning"</p>
+    <div class="arch-diagram" style="margin: 0;">
+        <div style="display: flex; gap: 1.5em; justify-content: center; align-items: flex-end;">
             <div class="fragment" style="text-align: center;">
-                <div class="arch-box encoder-image" style="min-width: 160px;">Image</div>
-                <div class="arch-arrow">&darr;</div>
-                <div class="arch-box encoder-image" style="min-width: 160px;">CLIP ViT-L<br><span style="font-size: 0.8em;">Vision Encoder</span></div>
-                <div class="arch-arrow">&darr;</div>
-                <div class="arch-box" style="border: 2px solid #e5c07b; background: rgba(229,192,123,0.15); min-width: 160px;">Projection Layer<br><span style="font-size: 0.8em;">(MLP)</span></div>
+                <div class="arch-box encoder-image" style="min-width: 160px; padding: 0.3em 1em;">Image</div>
+                <div class="arch-arrow" style="font-size: 1em;">&darr;</div>
+                <div class="arch-box encoder-image" style="min-width: 160px; padding: 0.3em 1em;">CLIP ViT-L<br><span style="font-size: 0.8em;">Vision Encoder</span></div>
+                <div class="arch-arrow" style="font-size: 1em;">&darr;</div>
+                <div class="arch-box" style="border: 2px solid #e5c07b; background: rgba(229,192,123,0.15); min-width: 160px; padding: 0.3em 1em;">Projection Layer<br><span style="font-size: 0.8em;">(MLP)</span></div>
             </div>
             <div class="fragment" style="text-align: center; align-self: flex-end;">
-                <div class="arch-box encoder-text" style="min-width: 160px;">User Question<br><span style="font-size: 0.8em;">(Text Tokens)</span></div>
+                <div class="arch-box encoder-text" style="min-width: 160px; padding: 0.3em 1em;">User Question<br><span style="font-size: 0.8em;">(Text Tokens)</span></div>
             </div>
         </div>
-        <div class="arch-arrow fragment">&darr; concatenate visual + text tokens</div>
-        <div class="arch-box shared fragment" style="min-width: 450px;">LLM (Vicuna / LLaMA)<br><span style="font-size: 0.8em;">Autoregressive generation</span></div>
-        <div class="arch-arrow fragment">&darr;</div>
-        <div class="arch-box output fragment" style="min-width: 450px;">Response: description, answer, analysis</div>
+        <div class="arch-arrow fragment" style="font-size: 1em;">&darr; concatenate visual + text tokens</div>
+        <div class="arch-box shared fragment" style="min-width: 450px; padding: 0.3em 1em;">LLM (Vicuna / LLaMA)<br><span style="font-size: 0.8em;">Autoregressive generation</span></div>
+        <div class="arch-arrow fragment" style="font-size: 1em;">&darr;</div>
+        <div class="arch-box output fragment" style="min-width: 450px; padding: 0.3em 1em;">Response: description, answer, analysis</div>
     </div>
-    <p class="fragment small" style="text-align: center;">Key idea: <span class="highlight-yellow">visual instruction tuning</span> &mdash; train on GPT-4-generated visual Q&A data</p>
+    <p class="fragment small" style="text-align: center; margin: 0;">Key idea: <span class="highlight-yellow">visual instruction tuning</span> &mdash; train on GPT-4-generated visual Q&A data</p>
     <aside class="notes">
         LLaVA's architecture is beautifully simple. It takes CLIP's vision encoder, adds a projection layer to map image features into the language model's token space, and feeds them alongside text tokens into a language model like Vicuna or LLaMA. The key innovation is visual instruction tuning: they used GPT-4 to generate high-quality visual question-answer pairs, then fine-tuned the model on this data. The result is an open-source model that can understand images and answer questions about them. You can run this on a single GPU -- making it practical for research and privacy-sensitive applications where you can't send data to external APIs.
     </aside>
@@ -1154,48 +1154,6 @@ similarities = [cosine_sim(text_emb, img_emb)
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 28: Section - Demo Day -->
-<!-- ============================================================ -->
-<section class="section-title">
-    <h2><span class="highlight">Part 7</span></h2>
-    <h2>Demo Day Project Ideas</h2>
-    <h3>Practical use cases you can build</h3>
-    <aside class="notes">
-        Let's close with concrete project ideas that combine everything we've covered today. These are realistic scopes for your Demo Day presentations.
-    </aside>
-</section>
-
-<!-- ============================================================ -->
-<!-- SLIDE 29: Demo Day Use Cases -->
-<!-- ============================================================ -->
-<section>
-    <h2>Demo Day: What Can You Build?</h2>
-    <div class="usecase-grid">
-        <div class="usecase-card fragment">
-            <div class="usecase-icon">&#x1F4C4;</div>
-            <div class="usecase-name">Document Processing Pipeline</div>
-            <p>Upload PDFs &rarr; classify document type &rarr; extract key fields &rarr; store structured data</p>
-            <p style="color: #7ec8e3; font-size: 0.9em; margin-top: 0.5em;">Stack: pdfplumber + Claude Vision + Pydantic + PostgreSQL</p>
-        </div>
-        <div class="usecase-card fragment">
-            <div class="usecase-icon">&#x1F916;</div>
-            <div class="usecase-name">Multimodal Chatbot</div>
-            <p>Chat with documents: upload images, PDFs, charts and ask questions in natural language</p>
-            <p style="color: #7ec8e3; font-size: 0.9em; margin-top: 0.5em;">Stack: Streamlit + Claude/GPT-4o + multimodal RAG</p>
-        </div>
-        <div class="usecase-card fragment">
-            <div class="usecase-icon">&#x1F4CA;</div>
-            <div class="usecase-name">Visual Data Extraction</div>
-            <p>Extract data from charts, infographics, and dashboards into structured tables automatically</p>
-            <p style="color: #7ec8e3; font-size: 0.9em; margin-top: 0.5em;">Stack: CLIP search + VLM extraction + pandas export</p>
-        </div>
-    </div>
-    <aside class="notes">
-        Three project ideas at different complexity levels. First, a document processing pipeline: users upload PDFs, the system classifies them, extracts key fields, and stores structured data. Use pdfplumber for simple docs, fall back to Claude Vision for complex ones, validate with Pydantic, store in PostgreSQL. Second, a multimodal chatbot: users upload documents, images, or charts and ask questions. Combine Streamlit for the UI, a VLM for understanding, and multimodal RAG for retrieval. Third, visual data extraction: automatically read charts and infographics and turn them into structured data tables. Use CLIP to find relevant charts, a VLM to extract the data, and pandas for export. All three are buildable in a few days with the tools we've covered.
-    </aside>
-</section>
-
-<!-- ============================================================ -->
 <!-- SLIDE 30: Discussion -->
 <!-- ============================================================ -->
 <section class="discussion-slide">
@@ -1236,9 +1194,7 @@ similarities = [cosine_sim(text_emb, img_emb)
         <p class="fragment"><span class="highlight-yellow">5.</span> <strong>Modern VLMs</strong> (GPT-4o, Claude, Gemini, LLaVA) can directly understand documents</p>
         <p class="fragment"><span class="highlight-blue">6.</span> <strong>Multimodal RAG</strong> = text + image retrieval + VLM generation</p>
     </div>
-    <div class="fragment" style="margin-top: 1.5em;">
-        <p style="font-size: 0.85em;"><span class="highlight-green">Up Next:</span> Session 2 &mdash; Hands-on with Document AI & Multimodal tools</p>
-    </div>
+
     <aside class="notes">
         Let's recap. Document AI addresses the massive problem of unstructured enterprise data. PDF parsing has evolved through four generations, and modern LLM-based approaches often give the best results with the least effort. Document understanding encompasses extraction, classification, table parsing, and NER. CLIP pioneered the shared vision-language space through contrastive learning. Modern VLMs can directly understand documents, images, charts, and more. And multimodal RAG extends retrieval-augmented generation to include visual data. In Session 2, you'll get hands-on experience building with these tools. Take a 10-minute break and come back ready to code.
     </aside>
