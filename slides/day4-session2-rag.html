@@ -202,7 +202,7 @@
             background: rgba(126, 200, 227, 0.1);
             border: 1px solid #7ec8e3;
             border-radius: 8px;
-            padding: 0.5em 0.8em;
+            padding: 0.3em 0.8em;
             text-align: left;
         }
         .rag-pipeline-full .pipe-box strong {
@@ -210,7 +210,7 @@
         }
         .rag-pipeline-full .pipe-connector {
             width: 2px;
-            height: 10px;
+            height: 6px;
             background: #7ec8e3;
             margin-left: 15px;
         }
@@ -322,15 +322,16 @@
             background: rgba(126, 200, 227, 0.08);
             border: 2px solid;
             border-radius: 12px;
-            padding: 0.8em;
-            margin: 0.4em 0;
+            padding: 0.45em 0.7em;
+            margin: 0.2em 0;
             text-align: left;
             font-size: 0.7em;
         }
         .decision-box.prompting { border-color: #98c379; }
         .decision-box.rag { border-color: #7ec8e3; }
         .decision-box.finetuning { border-color: #e5c07b; }
-        .decision-box h4 { margin: 0 0 0.3em 0; }
+        .decision-box h4 { margin: 0 0 0.2em 0; }
+        .decision-box p { margin: 0 0 0.15em 0; }
 
         /* RAG patterns */
         .pattern-card {
@@ -350,11 +351,12 @@
             background: rgba(126, 200, 227, 0.08);
             border-left: 4px solid;
             border-radius: 0 8px 8px 0;
-            padding: 0.5em 0.8em;
-            margin: 0.4em 0;
+            padding: 0.3em 0.8em;
+            margin: 0.2em 0;
             text-align: left;
             font-size: 0.7em;
         }
+        .eval-metric p { margin: 0 0 0.1em 0; }
     </style>
     <link rel="stylesheet" href="theme.css">
 </head>
@@ -486,7 +488,7 @@
             <section>
                 <h2>The RAG Pipeline</h2>
                 <h3>Six steps from document to answer</h3>
-                <div class="rag-pipeline-full" style="margin-top: 0.8em;">
+                <div class="rag-pipeline-full" style="margin-top: 0.4em;">
                     <div class="pipe-step fragment">
                         <div class="pipe-num">1</div>
                         <div class="pipe-box"><strong>Document Loading</strong> &mdash; Ingest PDFs, web pages, databases, APIs</div>
@@ -647,9 +649,6 @@
                         </tr>
                     </tbody>
                 </table>
-                <p class="fragment small" style="margin-top: 0.8em;">
-                    For Demo Day: start with <span class="highlight-blue">all-MiniLM-L6-v2</span> (free, fast) or <span class="highlight-blue">OpenAI text-embedding-3-small</span> (cheap, accurate)
-                </p>
                 <aside class="notes">
                     Here are the models you'll actually choose from. For your Demo Day
                     projects, I recommend starting with all-MiniLM-L6-v2 from sentence-transformers
@@ -751,9 +750,6 @@
                         <p style="margin-top: 0.3em;">Built for scale. Billion-vector range.</p>
                     </div>
                 </div>
-                <p class="fragment small" style="margin-top: 0.6em;">
-                    For Demo Day: <span class="highlight-blue">Chroma</span> (easiest to set up) or <span class="highlight-blue">FAISS</span> (if you need speed)
-                </p>
                 <aside class="notes">
                     There's an explosion of vector databases right now. For your projects,
                     I recommend Chroma -- it's the easiest to get started with. Just
@@ -1046,7 +1042,7 @@ User: What is our vacation policy?
 
             <section>
                 <h2>Three RAG Patterns</h2>
-                <div style="display: flex; gap: 0.6em; margin-top: 0.8em; font-size: 0.65em;">
+                <div style="display: flex; gap: 0.6em; margin-top: 0.5em; font-size: 0.78em;">
                     <div class="pattern-card fragment" style="flex: 1;">
                         <h4 style="color: #7ec8e3;">Naive RAG</h4>
                         <div class="pipeline" style="font-size: 0.85em; margin: 0.5em 0;">
@@ -1113,48 +1109,42 @@ User: What is our vacation policy?
 
             <section>
                 <h2>Advanced RAG Techniques</h2>
-                <div style="margin-top: 0.5em;">
-                    <div class="two-column" style="font-size: 0.65em;">
-                        <div>
-                            <div class="fragment" style="margin-bottom: 0.8em;">
-                                <p><strong class="highlight-blue">Query Expansion</strong></p>
-                                <div style="background: rgba(126, 200, 227, 0.08); border-radius: 6px; padding: 0.5em; font-size: 0.9em;">
-                                    <p>Original: <em>"vacation days"</em></p>
-                                    <p>&darr; LLM rewrites &darr;</p>
-                                    <p>Expanded: <em>"paid time off policy", "annual leave allowance", "holiday entitlement"</em></p>
-                                </div>
-                                <p style="color: #93a1a1; margin-top: 0.2em;">More queries = better recall</p>
-                            </div>
-                            <div class="fragment">
-                                <p><strong class="highlight-blue">Hybrid Search</strong></p>
-                                <div style="background: rgba(126, 200, 227, 0.08); border-radius: 6px; padding: 0.5em; font-size: 0.9em;">
-                                    <p><span class="highlight-green">Vector search</span> &mdash; semantic meaning</p>
-                                    <p>+ <span class="highlight">BM25 keyword search</span> &mdash; exact terms</p>
-                                    <p>= Combined ranking (RRF)</p>
-                                </div>
-                                <p style="color: #93a1a1; margin-top: 0.2em;">Best of both worlds</p>
-                            </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6em 1em; margin-top: 0.5em; font-size: 0.65em; align-items: start;">
+                    <div class="fragment">
+                        <p><strong class="highlight-blue">Query Expansion</strong></p>
+                        <div style="background: rgba(126, 200, 227, 0.08); border-radius: 6px; padding: 0.5em; font-size: 0.9em;">
+                            <p>Original: <em>"vacation days"</em></p>
+                            <p>&darr; LLM rewrites &darr;</p>
+                            <p>Expanded: <em>"paid time off policy", "annual leave allowance", "holiday entitlement"</em></p>
                         </div>
-                        <div>
-                            <div class="fragment" style="margin-bottom: 0.8em;">
-                                <p><strong class="highlight-blue">Re-ranking</strong></p>
-                                <div style="background: rgba(126, 200, 227, 0.08); border-radius: 6px; padding: 0.5em; font-size: 0.9em;">
-                                    <p>1. Retrieve top-20 candidates (fast)</p>
-                                    <p>2. Cross-encoder scores each (query, doc) pair</p>
-                                    <p>3. Return top-5 re-ranked results</p>
-                                </div>
-                                <p style="color: #93a1a1; margin-top: 0.2em;">Much more accurate, slight latency cost</p>
-                            </div>
-                            <div class="fragment">
-                                <p><strong class="highlight-blue">Contextual Compression</strong></p>
-                                <div style="background: rgba(126, 200, 227, 0.08); border-radius: 6px; padding: 0.5em; font-size: 0.9em;">
-                                    <p>Retrieved chunk: 500 tokens (lots of noise)</p>
-                                    <p>&darr; LLM extracts relevant part &darr;</p>
-                                    <p>Compressed: 80 tokens (focused)</p>
-                                </div>
-                                <p style="color: #93a1a1; margin-top: 0.2em;">Less noise in the prompt</p>
-                            </div>
+                        <p style="color: #93a1a1; margin-top: 0.2em;">More queries = better recall</p>
+                    </div>
+                    <div class="fragment">
+                        <p><strong class="highlight-blue">Re-ranking</strong></p>
+                        <div style="background: rgba(126, 200, 227, 0.08); border-radius: 6px; padding: 0.5em; font-size: 0.9em;">
+                            <p>1. Retrieve top-20 candidates (fast)</p>
+                            <p>2. Cross-encoder scores each (query, doc) pair</p>
+                            <p>3. Return top-5 re-ranked results</p>
                         </div>
+                        <p style="color: #93a1a1; margin-top: 0.2em;">Much more accurate, slight latency cost</p>
+                    </div>
+                    <div class="fragment">
+                        <p><strong class="highlight-blue">Hybrid Search</strong></p>
+                        <div style="background: rgba(126, 200, 227, 0.08); border-radius: 6px; padding: 0.5em; font-size: 0.9em;">
+                            <p><span class="highlight-green">Vector search</span> &mdash; semantic meaning</p>
+                            <p>+ <span class="highlight">BM25 keyword search</span> &mdash; exact terms</p>
+                            <p>= Combined ranking (RRF)</p>
+                        </div>
+                        <p style="color: #93a1a1; margin-top: 0.2em;">Best of both worlds</p>
+                    </div>
+                    <div class="fragment">
+                        <p><strong class="highlight-blue">Contextual Compression</strong></p>
+                        <div style="background: rgba(126, 200, 227, 0.08); border-radius: 6px; padding: 0.5em; font-size: 0.9em;">
+                            <p>Retrieved chunk: 500 tokens (lots of noise)</p>
+                            <p>&darr; LLM extracts relevant part &darr;</p>
+                            <p>Compressed: 80 tokens (focused)</p>
+                        </div>
+                        <p style="color: #93a1a1; margin-top: 0.2em;">Less noise in the prompt</p>
                     </div>
                 </div>
                 <aside class="notes">
@@ -1209,9 +1199,6 @@ User: What is our vacation policy?
                         <p style="color: #98c379; margin-top: 0.3em;">Best for: search-heavy apps</p>
                     </div>
                 </div>
-                <p class="fragment small" style="margin-top: 0.8em;">
-                    All three are open-source Python frameworks &bull; For Demo Day: <span class="highlight-blue">LangChain</span> has the most tutorials and examples
-                </p>
                 <aside class="notes">
                     Three main frameworks. LangChain is the most popular -- it has the
                     largest community and the most integrations. It's great for prototyping
@@ -1326,7 +1313,7 @@ User: What is our vacation policy?
             <section>
                 <h2>RAG Evaluation</h2>
                 <h3>How do you know if your RAG system is working?</h3>
-                <div style="margin-top: 0.6em;">
+                <div style="margin-top: 0.3em;">
                     <div class="eval-metric fragment" style="border-color: #7ec8e3;">
                         <p><strong class="highlight-blue">Context Relevance</strong> &mdash; Are the retrieved documents actually relevant to the query?</p>
                         <p style="color: #93a1a1; font-size: 0.9em;">Measures retrieval quality. If you retrieve garbage, the answer will be garbage.</p>
@@ -1360,47 +1347,7 @@ User: What is our vacation policy?
                 </aside>
             </section>
 
-            <!-- ==================== SLIDE 25: PRACTICAL TIPS ==================== -->
-
-            <section class="discussion-slide">
-                <h2>Practical Tips for Demo Day</h2>
-                <div class="two-column" style="margin-top: 0.5em; font-size: 0.65em;">
-                    <div>
-                        <p class="fragment"><strong class="highlight-green">Do:</strong></p>
-                        <ul>
-                            <li class="fragment">Start with Naive RAG &mdash; it's surprisingly good</li>
-                            <li class="fragment">Use <strong>Chroma</strong> + <strong>LangChain</strong> for fast prototyping</li>
-                            <li class="fragment">Chunk size ~500 tokens with ~50 token overlap</li>
-                            <li class="fragment">Retrieve top-4 to top-6 chunks</li>
-                            <li class="fragment">Include source citations in your output</li>
-                            <li class="fragment">Test with real user questions early</li>
-                            <li class="fragment">Use <code>RecursiveCharacterTextSplitter</code></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <p class="fragment"><strong class="highlight">Don't:</strong></p>
-                        <ul>
-                            <li class="fragment">Over-engineer the architecture on day one</li>
-                            <li class="fragment">Skip chunking and embed entire documents</li>
-                            <li class="fragment">Ignore evaluation &mdash; measure before optimizing</li>
-                            <li class="fragment">Use too many chunks (fills context window)</li>
-                            <li class="fragment">Forget to handle "I don't know" cases</li>
-                            <li class="fragment">Mix embedding models between indexing and query</li>
-                        </ul>
-                    </div>
-                </div>
-                <aside class="notes">
-                    Practical advice for your projects. The biggest mistake I see is
-                    over-engineering from the start. Build the simplest RAG pipeline first,
-                    test it with real questions, identify where it fails, THEN add
-                    advanced techniques. Also critical: always use the same embedding
-                    model for indexing and querying. If you embed with text-embedding-3-small
-                    at indexing time, you must use the same model at query time. Different
-                    models produce incompatible vector spaces.
-                </aside>
-            </section>
-
-            <!-- ==================== SLIDE 26: SUMMARY ==================== -->
+            <!-- ==================== SLIDE 25: SUMMARY ==================== -->
 
             <section>
                 <h2>Session Summary</h2>
@@ -1441,10 +1388,7 @@ User: What is our vacation policy?
                             <li>Building your final project</li>
                         </ul>
                     </div>
-                    <div class="fragment" style="margin-top: 1.5em;">
-                        <p><span class="highlight-green">Homework:</span> Build a simple RAG pipeline</p>
-                        <p style="font-size: 0.7em; color: #93a1a1;">Choose your Demo Day data source and index it with LangChain + Chroma</p>
-                    </div>
+
                 </div>
                 <p class="fragment" style="margin-top: 1.5em; font-size: 0.8em; color: #93a1a1;">
                     Questions? &mdash; See you on Day 5!
