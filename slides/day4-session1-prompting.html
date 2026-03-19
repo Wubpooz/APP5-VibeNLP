@@ -517,7 +517,7 @@
                 <h2>In-Context Learning: Key Questions</h2>
                 <div class="two-column">
                     <div>
-                        <h3>How many examples?</h3>
+                        <h3 style="white-space: nowrap; font-size: 0.85em;">How many examples?</h3>
                         <ul style="font-size: 0.7em;">
                             <li class="fragment"><span class="highlight">1-3 examples</span>: Usually enough for simple tasks</li>
                             <li class="fragment"><span class="highlight-blue">4-8 examples</span>: Complex extraction or classification</li>
@@ -526,7 +526,7 @@
                         </ul>
                     </div>
                     <div>
-                        <h3>Where to place them?</h3>
+                        <h3 style="white-space: nowrap; font-size: 0.85em;">Where to place them?</h3>
                         <ul style="font-size: 0.7em;">
                             <li class="fragment"><span class="highlight-yellow">Before the actual query</span> (standard)</li>
                             <li class="fragment">Most models attend more to <span class="highlight">recent tokens</span></li>
@@ -1080,8 +1080,8 @@
 
             <!-- ==================== SLIDE 21b: FROM COT TO REASONING MODELS ==================== -->
             <section>
-                <h3>One Insight → A Whole Revolution</h3>
-                <p style="font-size: 0.65em; color: var(--grey); margin: 0 0 8px; text-align: center;">Denny Zhou founded Google Brain's reasoning team in 2021. Here's what grew from it:</p>
+                <h3>One Insight → A Whole Field</h3>
+                <p style="font-size: 0.65em; color: var(--grey); margin: 0 0 8px; text-align: center;">Denny Zhou's CoT insight (Google Brain, 2021) sparked a research wave across the entire community:</p>
                 <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.65em; max-width: 90%; margin: 0 auto;">
                     <div class="fragment" style="display: flex; align-items: center; gap: 12px;">
                         <span style="color: var(--grey); min-width: 50px; font-weight: bold;">2022</span>
@@ -1216,16 +1216,16 @@
                 <h2>Tree of Thoughts (ToT)</h2>
                 <p class="small">Yao et al., "Tree of Thoughts: Deliberate Problem Solving with LLMs" (2023)</p>
                 <div class="two-column" style="margin-top: 0.3em;">
-                    <div style="text-align: center;">
+                    <div style="text-align: center; font-size: 0.8em;">
                         <p style="font-size: 0.7em; color: #93a1a1;">Chain-of-Thought (linear)</p>
-                        <div class="flow" style="flex-direction: column; gap: 0.2em;">
-                            <div class="step" style="width: 60%; margin: 0 auto;">Thought 1</div>
+                        <div class="flow" style="flex-direction: column; gap: 0.1em;">
+                            <div class="step" style="width: 60%; margin: 0 auto; padding: 4px 10px;">Thought 1</div>
                             <div style="color: #7ec8e3;">&darr;</div>
-                            <div class="step" style="width: 60%; margin: 0 auto;">Thought 2</div>
+                            <div class="step" style="width: 60%; margin: 0 auto; padding: 4px 10px;">Thought 2</div>
                             <div style="color: #7ec8e3;">&darr;</div>
-                            <div class="step" style="width: 60%; margin: 0 auto;">Thought 3</div>
+                            <div class="step" style="width: 60%; margin: 0 auto; padding: 4px 10px;">Thought 3</div>
                             <div style="color: #7ec8e3;">&darr;</div>
-                            <div class="step" style="width: 60%; margin: 0 auto; border-color: #98c379;">Answer</div>
+                            <div class="step" style="width: 60%; margin: 0 auto; padding: 4px 10px; border-color: #98c379;">Answer</div>
                         </div>
                     </div>
                     <div style="text-align: center;">
@@ -1248,7 +1248,7 @@
                         </div>
                     </div>
                 </div>
-                <ul class="fragment" style="font-size: 0.65em; margin-top: 0.3em;">
+                <ul class="fragment" style="font-size: 0.65em; margin-top: 0.3em; margin-bottom: 3em;">
                     <li><span class="highlight-blue">Generate</span> multiple thoughts at each step</li>
                     <li><span class="highlight-yellow">Evaluate</span> each thought (self-evaluation or heuristic)</li>
                     <li><span class="highlight">Prune</span> unpromising branches, <span class="highlight-green">explore</span> promising ones</li>
@@ -1303,7 +1303,7 @@
             <section>
                 <h2>Prompt Chaining</h2>
                 <p style="font-size: 0.85em;">Break complex tasks into a <span class="highlight-blue">pipeline</span> of simpler prompts.</p>
-                <div class="flow" style="margin: 1em 0;">
+                <div class="flow" style="margin: 0.6em 0;">
                     <div class="step">
                         <strong>Step 1</strong><br>
                         <span style="font-size: 0.8em;">Extract key facts</span>
@@ -1338,7 +1338,7 @@
                         </div>
                     </div>
                 </div>
-                <p class="fragment small" style="text-align: center; margin-top: 0.3em;">
+                <p class="fragment small" style="text-align: center; margin-top: 0.3em; margin-bottom: 4em;">
                     Each prompt is simple and focused. The output of one becomes the input of the next.
                 </p>
                 <aside class="notes">
@@ -1495,7 +1495,7 @@
                             <li class="fragment"><span class="highlight-purple">Anchoring</span> &mdash; model follows the framing you set</li>
                             <li class="fragment"><span class="highlight-blue">Example bias</span> &mdash; few-shot examples skew output distribution</li>
                             <li class="fragment"><span class="highlight">Sycophancy</span> &mdash; model agrees with your stated opinion</li>
-                            <li class="fragment"><span class="highlight-green">Position bias</span> &mdash; in multiple-choice, preference for certain positions</li>
+                            <li class="fragment"><span class="highlight-green">Position bias</span> &mdash; in multiple-choice, model tends to favor option A (or the last option) regardless of content</li>
                         </ul>
                     </div>
                 </div>
@@ -1521,7 +1521,7 @@
             <section class="discussion-slide">
                 <h2>Your Prompting Toolkit</h2>
                 <p style="font-size: 0.7em; margin: 0.2em 0 0.4em;">A universal template you can adapt for any task:</p>
-                <div style="font-size: 0.62em; font-family: 'Courier New', monospace; line-height: 1.6; margin: 0.4em 0; display: flex; flex-direction: column; gap: 0.3em; text-align: left;">
+                <div style="font-size: 0.62em; font-family: 'Courier New', monospace; line-height: 1.6; margin: 0.4em 0; display: flex; flex-direction: column; gap: 0.3em; text-align: left; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.6em;">
                     <div style="background: rgba(198,120,221,0.18); border-left: 4px solid #c678dd; border-radius: 5px; padding: 0.4em 0.8em; color: var(--prompt-text);">
                         <span style="color:#c678dd;"><strong>[SYSTEM]</strong></span> You are a {role} with expertise in {domain}. Follow these rules: {rules}.
                     </div>
@@ -1541,7 +1541,7 @@
                         <span style="color:var(--prompt-muted);"><strong>[REASONING]</strong></span> <em style="color:var(--prompt-muted);">(optional)</em> Think step by step before answering.
                     </div>
                 </div>
-                <p class="fragment small" style="text-align: center; margin-top: 0.4em;">
+                <p class="fragment small" style="text-align: center; margin-top: 0.6em; padding: 0.4em 1em; background: none; border: none; color: #93a1a1; font-style: italic;">
                     Not every prompt needs all sections. Start minimal, add sections when output quality is insufficient.
                 </p>
                 <aside class="notes">
@@ -1576,7 +1576,6 @@
                 <p class="fragment small" style="text-align: center;">
                     🎬 <strong>Denny Zhou, "LLM Reasoning"</strong> — Stanford CS 25 Lecture (2025)
                     &nbsp;|&nbsp; Slides: <a href="https://dennyzhou.github.io/LLM-Reasoning-Stanford-CS-25.pdf" style="color: var(--blue);">dennyzhou.github.io</a>
-                    &nbsp;|&nbsp; Video (中文解说): <a href="https://youtu.be/s00fy5RkCHc" style="color: var(--blue);">youtu.be/s00fy5RkCHc</a>
                 </p>
                 <aside class="notes">
                     These are the foundational papers for everything we covered today.
