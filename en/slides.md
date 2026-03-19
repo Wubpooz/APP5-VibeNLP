@@ -32,6 +32,7 @@ Encoder-Decoder, Multi-head Attention, Position Encoding
 ### Group Presentation Reference: Startup Toolbox
 
 <a href="{{ site.baseurl }}/slides/day2-startup-toolbox.html" class="btn btn-sm" target="_blank">View Reference</a>
+<a href="{{ site.baseurl }}/slides/student-slides/startup-toolbox.pdf" class="btn btn-sm" target="_blank">Student Slides</a>
 
 ---
 
@@ -50,6 +51,7 @@ Fine-tuning techniques, Instruction Tuning, PEFT methods (LoRA, Adapter)
 ### Group Presentation Reference: Modern AI IDEs
 
 <a href="{{ site.baseurl }}/slides/day3-modern-ai-ides.html" class="btn btn-sm" target="_blank">View Reference</a>
+<a href="{{ site.baseurl }}/slides/student-slides/Modern_AI_IDEs_Presentation.pdf" class="btn btn-sm" target="_blank">Student Slides</a>
 
 ---
 
@@ -68,6 +70,7 @@ Retrieval-Augmented Generation, Vector databases, RAG architecture
 ### Group Presentation Reference: Claude Code & MCP
 
 <a href="{{ site.baseurl }}/slides/day4-claude-code-mcp.html" class="btn btn-sm" target="_blank">View Reference</a>
+<a href="{{ site.baseurl }}/slides/student-slides/Pr%C3%A9sentation%20Claude%20Code.pdf" class="btn btn-sm" target="_blank">Student Slides</a>
 
 ---
 

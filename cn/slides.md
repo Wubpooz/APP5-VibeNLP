@@ -32,6 +32,7 @@ RNN的局限性、注意力机制、自注意力
 ### 小组展示参考：创业工具箱
 
 <a href="{{ site.baseurl }}/slides/day2-startup-toolbox.html" class="btn btn-sm" target="_blank">查看参考</a>
+<a href="{{ site.baseurl }}/slides/student-slides/startup-toolbox.pdf" class="btn btn-sm" target="_blank">学生展示</a>
 
 ---
 
@@ -50,6 +51,7 @@ RNN的局限性、注意力机制、自注意力
 ### 小组展示参考：现代AI IDE
 
 <a href="{{ site.baseurl }}/slides/day3-modern-ai-ides.html" class="btn btn-sm" target="_blank">查看参考</a>
+<a href="{{ site.baseurl }}/slides/student-slides/Modern_AI_IDEs_Presentation.pdf" class="btn btn-sm" target="_blank">学生展示</a>
 
 ---
 
@@ -68,6 +70,7 @@ Zero/Few-shot、提示工程、上下文学习、思维链
 ### 小组展示参考：Claude Code与MCP
 
 <a href="{{ site.baseurl }}/slides/day4-claude-code-mcp.html" class="btn btn-sm" target="_blank">查看参考</a>
+<a href="{{ site.baseurl }}/slides/student-slides/Pr%C3%A9sentation%20Claude%20Code.pdf" class="btn btn-sm" target="_blank">学生展示</a>
 
 ---
 

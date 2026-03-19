@@ -32,6 +32,7 @@ Encodeur-Décodeur, Attention multi-têtes, Encodage positionnel
 ### Référence présentation de groupe : Boîte à outils Startup
 
 <a href="{{ site.baseurl }}/slides/day2-startup-toolbox.html" class="btn btn-sm" target="_blank">Voir la référence</a>
+<a href="{{ site.baseurl }}/slides/student-slides/startup-toolbox.pdf" class="btn btn-sm" target="_blank">Diapositives étudiants</a>
 
 ---
 
@@ -50,6 +51,7 @@ Techniques de fine-tuning, Instruction Tuning, Méthodes PEFT (LoRA, Adapter)
 ### Référence présentation de groupe : IDE IA modernes
 
 <a href="{{ site.baseurl }}/slides/day3-modern-ai-ides.html" class="btn btn-sm" target="_blank">Voir la référence</a>
+<a href="{{ site.baseurl }}/slides/student-slides/Modern_AI_IDEs_Presentation.pdf" class="btn btn-sm" target="_blank">Diapositives étudiants</a>
 
 ---
 
@@ -68,6 +70,7 @@ Génération augmentée par récupération, Bases de données vectorielles, Arch
 ### Référence présentation de groupe : Claude Code & MCP
 
 <a href="{{ site.baseurl }}/slides/day4-claude-code-mcp.html" class="btn btn-sm" target="_blank">Voir la référence</a>
+<a href="{{ site.baseurl }}/slides/student-slides/Pr%C3%A9sentation%20Claude%20Code.pdf" class="btn btn-sm" target="_blank">Diapositives étudiants</a>
 
 ---
 
